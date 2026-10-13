@@ -12,7 +12,7 @@ Sist verifisert: 2026-10-13
 - **Mekanisme:** FreeCAD Assembly (kinematikk, klaring) og MuJoCo 3.15 (dynamikk). MuJoCo-MCP-ene har ≤ 9 ⭐.
 - **3D-print:** OrcaSlicer 2.4.2 og PrusaSlicer 2.9.6 har CLI. mcp-3D-printer-server krever menneskelig bekreftelse før start og oppvarming.
 - **Plate:** FreeCAD SheetMetal (V0.8.25, i dag) gir utbretting og DXF. Ingen moden, åpen MCP for plate eller CAM.
-- **Visualisering:** Blender 5.2 LTS. [mcp-for-blender](https://github.com/ahujasid/mcp-for-blender) (tidligere ahujasid/blender-mcp, 30,6k ⭐) er kraftig, men har to CVE-er i 2026 og kjører vilkårlig Python. [design-os-3d-blender](https://github.com/jangtrinh/design-os-3d-blender) finnes (94 ⭐, én vedlikeholder), men PyPI-navnet i installasjonsguiden er ikke registrert (risiko for navnekapring).
+- **Visualisering:** Blender 5.2 LTS. [mcp-for-blender](https://github.com/ahujasid/mcp-for-blender) (tidligere ahujasid/blender-mcp, 30,6k ⭐) er kraftig, men kjører vilkårlig Python. Socket-serveren har verken autentisering eller kryptering, og det er rapportert to CVE-er i 2026 ⚠️ (ikke bekreftet på repo-siden). [design-os-3d-blender](https://github.com/jangtrinh/design-os-3d-blender) finnes (94 ⭐, én vedlikeholder), men PyPI-navnet i installasjonsguiden er ikke registrert (risiko for navnekapring).
 - **Byggeguide:** Ingen moden, åpen pipeline fra STEP til monteringsveiledning. Kombiner FreeCAD Assembly (stykkliste, eksplodert visning), headless Blender-render og GitBuilding.
 
 ## Anbefaling for Surdeigsbaker
@@ -86,7 +86,7 @@ Sist verifisert: 2026-10-13
 
 ## Risiko og tillit
 
-- **Vilkårlig kode:** `execute_blender_code` (CVE-2026-10688; CVE-2026-10661 er fikset i 5b37be2), neka-nat `execute_code`, AnkusDrive `run_script`, cad-cae-copilot `execute_build123d` og Foam-Agent `Allrun`. Kjør i container eller VM uten hemmeligheter, bundet til localhost.
+- **Vilkårlig kode:** `execute_blender_code` (socket-serveren har verken autentisering eller kryptering ifølge README; CVE-2026-10688 og CVE-2026-10661 er nevnt i søk ⚠️, men ikke bekreftet på repo-siden), neka-nat `execute_code`, AnkusDrive `run_script`, cad-cae-copilot `execute_build123d` og Foam-Agent `Allrun`. Kjør i container eller VM uten hemmeligheter, bundet til localhost.
 - **Fysisk risiko:** Printer-MCP-er kan varme opp og bevege maskiner. Sett aldri `PRINT_REQUIRE_CONFIRMATION=0`. klipper-mcp (Charleslotto) binder til 0.0.0.0 og har `run_gcode`. **Gi aldri en agent skrivetilgang til Surdeigsbakerens egen Klipper eller 1800 W-elementet**, bare lesetilgang til loggene.
 - **Navnekapring:** design-os sier `uvx design-os-3d-blender`, men pakken gir 404 på PyPI. Bruk `uvx --from git+https://github.com/jangtrinh/design-os-3d-blender@<commit>`. Kopirepoer med autogenererte brukernavn (f.eks. `offthehook-implication870/bambu-printer-mcp`) ligner et kjent mønster for skadevare ⚠️.
 - **Telemetri:** mcp-for-blender sender anonym bruksstatistikk som standard, og asset- og 3D-generatorene sender data til tredjeparter. Slå begge av.
@@ -99,5 +99,6 @@ Sist verifisert: 2026-10-13
 - Lisensene til Drake, manifold3d og ezdxf (fra hukommelsen).
 - Bambu Studios CLI, og eksport fra Assembly Guide uten GUI. Siste versjon av Kiln.
 - CNC-MCP-ene (CNCjs-MCP, ugs-mcp), som bare er sett i søkeresultater.
+- CVE-numrene for mcp-for-blender. De står ikke på repo-siden og må sjekkes i GitHubs sikkerhetsmeldinger eller i NVD.
 - Bambus krav til Developer Mode i 2026, headless EEVEE uten GPU og headless SheetMetal.
 - Steinullverdiene og varmekapasitetene i eksempel A, som bare er grove anslag.
