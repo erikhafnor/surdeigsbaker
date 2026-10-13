@@ -1,0 +1,93 @@
+# Maskinvennlig oppskrift v0 – UTKAST
+#
+# Dette er både (1) hypotesen H0 fra docs/01-prosessanalyse.md og
+# (2) et utkast til oppskriftsformatet som fastvarens oppskriftsmotor skal lese.
+# Formatet er inspirert av trinnlister med inngangs- og utgangsbetingelser
+# (jf. Anova-ovnens API). Det er ikke frosset, og endringer er forventet.
+#
+# Alle mengder er plassholdere til eksperiment E01 har gjort skjeemål om til gram.
+
+format: surdeigsbaker-oppskrift/0.1
+navn: Maskinvennlig v0
+basert_paa: referanse-v7
+status: utkast
+
+# Totalmengder for hele deigen, inkludert det som går til levain og saltlake (gram)
+ingredienser:
+  mel_siktet: 500        # inkl. 40 g i levain
+  mel_sammalt: 110       # inkl. 10 g i levain
+  vann: 470              # inkl. 50 g i levain og vannet i saltlaken. Gir ca. 77 % hydrering.
+  salt: 12               # ca. 2 %, dosert som 20 % saltlake (60 g lake = 12 g salt + 48 g vann)
+  surdeig_start: 20      # ca. 1 ss fra kjøleskapet. Tilsettes av mennesket (N2/N3).
+
+maal:
+  ferdig_kl: null        # f.eks. "07:00". Tidsplanleggeren regner baklengs.
+  deigtemperatur: 26     # ønsket deigtemperatur (DDT), °C
+
+trinn:
+  - id: levain
+    doser: {mel_siktet: 40, mel_sammalt: 10, vann: 50}
+    vanntemperatur: 26
+    bland: {hastighet: lav, tid: 60s}
+    hold: {temperatur: 26}
+    ferdig_naar:
+      en_av:
+        - heving_relativ: ">= 2.0"   # krever ToF-sensor over bollen (E14)
+        - modell: levain_topp        # fermenteringsmodell fra E02
+      maks_tid: 12h
+      ved_tidsavbrudd: varsle_og_vent
+
+  - id: fermentolyse                 # erstatter autolysen (E04)
+    doser: {mel_siktet: rest, mel_sammalt: rest, vann: rest_unntatt_saltlake}
+    vanntemperatur: beregn_fra_ddt   # 4 × DDT − (mel + rom + levain + friksjon)
+    bland: {hastighet: lav, tid: 3min}
+    hold: {temperatur: 26, tid: 40min}
+
+  - id: salt_og_elting
+    doser: {saltlake: 60}
+    bland: {hastighet: lav, tid: 10min}
+
+  - id: bulk
+    hold: {temperatur: 26}
+    bearbeid: {hver: 30min, antall: 4, hastighet: svaert_lav, tid: 15s}   # E05
+    ferdig_naar:
+      en_av:
+        - heving_relativ: ">= 1.25"  # kalibreres i E01/E09
+        - modell: bulk_slutt
+      maks_tid: 5h
+
+  - id: kald_bulk                    # E09. Buffer i tidsplanen.
+    hold: {temperatur: 6}
+    ferdig_naar:
+      tidsplan: ferdig_kl
+      min_tid: 8h
+      maks_tid: 20h
+
+  - id: forvarm
+    gryte: {temperatur: 260, lokk: lukket}
+    ferdig_naar: {gryte_temperatur: ">= 255", stabil_i: 10min}
+
+  - id: overfor                      # E10. Konsept C: vipp bollen ned i varm gryte.
+    handling: vipp_bolle
+    gryte: {lokk: aapne_for_overforing}
+    ferdig_naar: {bollevekt_redusert_med: ">= 95%"}
+    ved_feil: stopp_varme_og_varsle
+
+  - id: stek_med_lokk
+    gryte: {temperatur: 250, lokk: lukket}
+    ferdig_naar: {tid: 20min}
+
+  - id: stek_uten_lokk
+    gryte: {temperatur: 200, lokk: aapen}
+    ferdig_naar: {tid: 25min}
+
+  - id: ferdig
+    gryte: {varme: av, ventiler: true}     # ingen varm og fuktig oppbevaring
+    varsle: "Brødet er ferdig! Ta det ut på rist."
+
+# Sikkerhetsgrenser som oppskriften ALDRI kan overstyre. De håndheves av
+# sikkerhetsvakten uavhengig av oppskriften. Verdiene står her bare som informasjon.
+#   gryte_maks: 270 °C (programvare). Termosikringen i maskinvaren ligger over dette
+#               og under det laveste materialet tåler.
+#   bolle_maks: 40 °C
+#   maks_total_tid: 48 h

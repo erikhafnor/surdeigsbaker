@@ -1,0 +1,22 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# ESPHome / PlatformIO
+.esphome/
+.pio/
+secrets.yaml
+
+# KiCad / FreeCAD backup
+*-backup/
+*.FCStd1
+*.bak
+fp-info-cache
