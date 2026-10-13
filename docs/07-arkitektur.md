@@ -101,6 +101,8 @@ Til sammenligning bruker brødmaskiner 480–800 W totalt (element 430–550 W o
    - I tillegg kommer en **separat sikkerhetsvakt** (lag 2 i [`06-sikkerhet.md`](06-sikkerhet.md)).
 3. Valget tas i ADR-004 ved port G2.
 
+Utviklingsverktøyene (CAD, KiCad, ESPHome-CI, simulatorer) og sperrene for AI-agenter er beskrevet i [`10-verktoykjede.md`](10-verktoykjede.md).
+
 ## 6. Programvarearkitektur
 
 ```mermaid

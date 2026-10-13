@@ -76,6 +76,9 @@ Kildelisten ble satt sammen i forstudien i oktober 2026. **De fleste nettsidene 
 
 ## Maskinvare og programvare
 
+> Verktøy for CAD, EDA, simulering og fastvare med agentstøtte (MCP) er samlet i [`10-verktoykjede.md`](10-verktoykjede.md) og de fire rapportene i [`forskning/verktoy/`](forskning/verktoy/).
+
+
 - ⭐ ESPHome (PID-regulering, HX711, NAU7802, MAX318xx): <https://esphome.io/>
 - ⭐ Klipper, konfigurasjonsreferanse (varmesikkerhet, `load_cell`, `manual_stepper`): <https://github.com/Klipper3d/klipper/blob/master/docs/Config_Reference.md>
 - MadMachine SwiftIO Micro: <https://docs.madmachine.io/hardware/swiftio-micro>, SDK: <https://github.com/madmachineio/mm-sdk>, drivere: <https://github.com/madmachineio/MadDrivers>

@@ -14,4 +14,6 @@ firmware/
 
 Arkitektur: [`docs/07-arkitektur.md`](../docs/07-arkitektur.md). Oppskriftsformat (utkast): [`oppskrifter/maskinvennlig-v0.yaml`](../oppskrifter/maskinvennlig-v0.yaml).
 
+**Sperrer for AI-agenter:** Flashing krever alltid at et menneske godkjenner (se [`.claude/settings.json`](../.claude/settings.json) og [`docs/10-verktoykjede.md`](../docs/10-verktoykjede.md)). Endringer i `sikkerhet/` krever også godkjenning. Ny fastvare testes først i simulator (Wokwi eller ESPHome `host`) og deretter med dummylast.
+
 Kode og kommentarer skrives på engelsk. Lisens: GPL-3.0-or-later.

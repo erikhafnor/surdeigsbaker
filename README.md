@@ -61,6 +61,7 @@ Detaljer, tidslinje og risikoregister: [`docs/04-veikart.md`](docs/04-veikart.md
 | [07 – Arkitektur](docs/07-arkitektur.md) | Moduler, sensorer, effekt, termikk, styring og programvare |
 | [08 – Kilder](docs/08-kilder.md) | Leseliste og kjente løsninger |
 | [09 – Budsjett og innkjøp](docs/09-budsjett-og-innkjop.md) | Handleliste per fase |
+| [10 – Verktøykjede](docs/10-verktoykjede.md) | Åpne CAD-, EDA-, simulerings- og fastvareverktøy for AI-agenter (MCP), med sikkerhetssperrer |
 | [Beslutninger (ADR)](docs/beslutninger/) | Viktige valg og begrunnelser |
 | [Referanseoppskrift](oppskrifter/referanse-v7.md) | Gullstandarden, oversatt til prosessparametre |
 

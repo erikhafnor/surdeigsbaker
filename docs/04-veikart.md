@@ -38,6 +38,8 @@ gantt
 - [ ] Analyser kjente løsninger og søk i patenter (FO2)
 - [ ] Mål kjøkkenbenken (plass under overskap, plassering av stikkontakt og hvilken sikringskurs den har)
 - [ ] Velg plattform for måleoppsettet i fase 1 (ADR-002, se [arkitektur](07-arkitektur.md))
+- [ ] Sett opp verktøykjeden for agentstyrt design ([`10-verktoykjede.md`](10-verktoykjede.md), ADR-005). Installer de låste versjonene, legg inn CI-sjekker og test sikkerhetssperrene i `.claude/settings.json`.
+- [ ] Innfør en månedlig rutine for å skanne nye verktøy og MCP-servere
 - [ ] Bestill deler til fase 1 ([handleliste](09-budsjett-og-innkjop.md))
 
 **Port G0:** Kravspesifikasjon v1 er frosset (oppdatert [`00-visjon-og-suksesskriterier.md`](00-visjon-og-suksesskriterier.md)), E01 er fullført og alle kunnskapsnotatene er skrevet.
@@ -46,7 +48,7 @@ gantt
 
 **Mål:** Finne ut hvilke håndgrep maskinen *ikke* trenger å gjøre, og lage en fermenteringsmodell.
 
-- [ ] Bygg måleoppsettet: ESP32 med temperaturfølere, ToF-sensor, lastcelle og logging til dashboard eller CSV
+- [ ] Bygg måleoppsettet: ESP32 med temperaturfølere, ToF-sensor, lastcelle og logging til dashboard eller CSV. ESPHome-oppsettet valideres og kompileres i CI og testes i Wokwi før et menneske flasher det.
 - [ ] Bygg en hevekasse med varme og kjøling (isolert kasse, varmeelement og Peltier). Den er både et eksperimentkammer og en tidlig prototype av surdeigs- og hevemodulen.
 - [ ] Kjør E02 og E03 (surdeigskinetikk og «klar»-signal)
 - [ ] Kjør E04–E09 (forenklinger av prosessen og stekemetode) med kjøkkenmaskin og vanlig ovn
@@ -77,7 +79,7 @@ gantt
 - [ ] Overføring: vippemekanisme og bollebelegg (**E10, gjøres først**: den største risikoen)
 - [ ] Stekemodul: gryte, varmeelementer, isolasjon og motorisert lokk (E08 og E13)
 - [ ] Dosering (for N3): snegle for mel, pumpe for vann og saltlake (E11 og E12)
-- [ ] Mekanisk konsept i CAD og elektrisk skjema (KiCad)
+- [ ] Mekanisk konsept i CAD (build123d og FreeCAD) og elektrisk skjema (KiCad 10, med separat 230 V-kort og lavspenningskort), se [verktøykjeden](10-verktoykjede.md)
 
 **Port G3:** Alle delsystemene har bestått testene sine. CAD-modellen av hele maskinen viser at den får plass innenfor rammene.
 

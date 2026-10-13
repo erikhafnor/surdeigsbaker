@@ -14,3 +14,12 @@ Ett kort notat (1–3 sider) per forskningsområde i [forskningsplanen](../02-fo
 | `FO8-brukeropplevelse.md` | Brukeropplevelse | ⚪ |
 
 Forstudien er oppsummert i [`02-forskningsplan.md`](../02-forskningsplan.md) under «foreløpige funn».
+
+## Verktøyrapporter (verifisert 2026-10-13)
+
+Hva som er det beste innen åpne verktøy for agentstyrt design. Rapportene er samlet i [`10-verktoykjede.md`](../10-verktoykjede.md).
+
+- [3D/mekanisk CAD](verktoy/3d-cad.md)
+- [Simulering, produksjon og visualisering](verktoy/simulering-og-produksjon.md)
+- [Elektronikkdesign (EDA)](verktoy/elektronikk-eda.md)
+- [Kretssimulering, fastvare og lab](verktoy/firmware-simulering-lab.md)

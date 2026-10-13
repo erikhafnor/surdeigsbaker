@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "ask": [
+      "Bash(esphome run *)",
+      "Bash(esphome upload *)",
+      "Bash(idf.py flash *)",
+      "Bash(idf.py app-flash *)",
+      "Bash(esptool *)",
+      "Bash(esptool.py *)",
+      "Bash(python -m esptool *)",
+      "Bash(pio run -t upload *)",
+      "Bash(pio run --target upload *)",
+      "Bash(platformio run -t upload *)",
+      "Bash(platformio run --target upload *)",
+      "Bash(arduino-cli upload *)",
+      "mcp__esphome__install",
+      "mcp__esphome__set_secret",
+      "mcp__idf__flash_project",
+      "mcp__printer",
+      "Edit(firmware/sikkerhet/**)"
+    ],
+    "deny": [
+      "Read(**/secrets.yaml)",
+      "Edit(**/secrets.yaml)"
+    ]
+  }
+}
