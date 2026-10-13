@@ -2,6 +2,8 @@
 
 Sist verifisert: 2026-10-13
 
+> **Merknad (2026-10-13):** Etter at rapporten ble skrevet, er det bestemt at maskinen ikke skal steke ([ADR-006](../../beslutninger/ADR-006-steking-i-vanlig-ovn.md)). Eksempelet med forvarming av gryta er derfor ikke lenger en designoppgave. Den samme RC-metoden brukes nå på kjølekammeret.
+
 *Metode: GitHub-repo-, release-, commit- og søkesider, README-er (raw.githubusercontent), PyPI/npm-registrene og 16 nettsøk. Ingenting er installert eller kjørt. ⚠️ = ikke verifisert direkte. CAD dekkes i [`3d-cad.md`](3d-cad.md).*
 
 ## Sammendrag

@@ -11,6 +11,9 @@
 | Oppskrift og versjon | f.eks. `referanse-v7` eller `maskinvennlig-v0` |
 | Eksperiment-ID | f.eks. E05-b (eller «–») |
 | Automasjonsnivå | N0–N5 |
+| Overlevering | A «tipp og stek» / B «med forming» |
+| Stekeklar: planlagt / faktisk | kl. … / kl. … (avvik: … min) |
+| Kaldhold etter stekeklar tid | … t |
 
 ## Ingredienser (veid)
 

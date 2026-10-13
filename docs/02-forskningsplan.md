@@ -8,13 +8,16 @@ Formålet med researchen er å **ta riktige designvalg tidlig** og unngå å byg
 
 Forstudien (oktober 2026) har allerede gitt en del svar. De står under hvert område som *foreløpige funn*. Kildene finnes i [`08-kilder.md`](08-kilder.md).
 
+> **Avgrensning:** Maskinen leverer stekeklar deig, og stekingen skjer i vanlig ovn ([ADR-006](beslutninger/ADR-006-steking-i-vanlig-ovn.md)). Funn om steking er derfor nyttige for brukerveiledningen, men ikke for designet av maskinen.
+
 > **Kildekvalitet:** Forstudien bygger delvis på søkeresultater og forum. Funn merket ⚠️ er ikke bekreftet i primærkilder. De må sjekkes før vi bygger på dem.
 
 ## Overordnede forskningsspørsmål
 
-- **HS1:** Kan en maskin på kjøkkenbenken lage et surdeigsbrød som får ≥ 70 % av referansebrødets poengsum, uten manuell forming og snitting?
+- **HS1:** Kan en maskin på kjøkkenbenken lage en surdeigsdeig som, stekt som referansen i vanlig ovn, får ≥ 80 % av referansebrødets poengsum med høyst to korte manuelle grep (eventuell forming og tipping i gryta)?
 - **HS2:** Hvilke trinn i referanseprosessen kan fjernes eller forenkles uten vesentlig kvalitetstap?
-- **HS3:** Hva er den enkleste robuste arkitekturen (antall overføringer, plassering av kjøling og steking) som oppfyller kravspesifikasjonen?
+- **HS3:** Hva er den enkleste robuste arkitekturen (eltemekanisme, kjøling og overlevering) som oppfyller kravspesifikasjonen?
+- **HS5:** Hvor presist kan maskinen treffe «stekeklar kl. X», og hvor lenge kan deigen kaldholdes uten tap?
 - **HS4:** Hvordan kan maskinen avgjøre *når* et trinn er ferdig, slik at den ikke bare følger klokka?
 
 ## Forskningsområder (FO)
@@ -44,7 +47,7 @@ Forstudien (oktober 2026) har allerede gitt en del svar. De står under hvert om
 
 **Foreløpige funn**
 - **Ingen hjemmeprodukter automatiserer hele brødet** fra surdeig til ferdig brød. Det er en reell åpning for dette prosjektet.
-- **Brødmaskiner** når bare ca. **140–155 °C** i formen, ifølge målinger fra brukere. De gir hull etter padlen, og ingen av dem kan kjøle. Det bekrefter at konsept A ikke kan gi referanseskorpe.
+- **Brødmaskiner** når bare ca. **140–155 °C** i formen, ifølge målinger fra brukere. De gir hull etter padlen, og ingen av dem kan kjøle. For oss er det uviktig, siden vi ikke steker i maskinen. Brødmaskinens drivverk og form er derimot laget for elting og kan brukes i K1.
 - **Sourdough Sidekick** (FirstBuild/GE og King Arthur, 2025–26) er en automatisk surdeigsmater med melbeholder, vanntank og omrøring. Den planlegger etter ønsket bakedag og romtemperatur. Den er det nærmeste eksisterende produktet til Surhild-modulen (N4).
 - **Brød & Taylor Sourdough Home** holder et glass på opptil 1 L ved 5–50 °C med maks ca. 38 W kjøling. Det viser at et lite Peltier-kammer for surdeigen er realistisk (⚠️ at det er Peltier, er ikke bekreftet av produsenten).
 - **Rotimatic** (automatisk flatbrødmaskin) har hatt store problemer med meldosering og deigfeil, og krever godkjente melmerker. Lærdom: **meldosering er den største pålitelighetsrisikoen**, så hold den enkel eller valgfri.
@@ -87,12 +90,14 @@ Forstudien (oktober 2026) har allerede gitt en del svar. De står under hvert om
 
 ### FO5 – Termikk
 
-**Spørsmål:** Effektbudsjett, oppvarmingstid, isolasjon, Peltier eller kompressor, kondens og energibruk per brød.
+**Spørsmål:** Kjøling (Peltier eller kompressor), svak varme, isolasjon, kondens, støy, motorvarme og energibruk per brød.
 
-**Metode:** Beregninger, datablad og E08/E13. Se [`07-arkitektur.md`](07-arkitektur.md).
+**Metode:** Beregninger, datablad og E13. Se [`07-arkitektur.md`](07-arkitektur.md).
 
 **Foreløpige funn**
-- Kaldstart i gryte har **blandede resultater**: Noen kilder rapporterer liten forskjell, mens andre fikk sammenfalte brød og brent bunn. Deig til kaldstart må ofte heves litt kortere. Derfor blir E08 et viktig eksperiment.
+- Peltier er marginalt for et kammer på 15–20 L med 1 kg deig (40–80 W elektrisk). En kompressor (ombygd vinkjøleskap) er omtrent fire ganger mer effektiv.
+- Retarder-proofere varmer langsomt opp fra kald tilstand for å unngå kondens på deigen.
+- *For brukerveiledningen (E08):* Kaldstart i gryte har blandede resultater. Noen kilder rapporterer liten forskjell, mens andre fikk sammenfalte brød og brent bunn.
 
 ### FO6 – Styring og programvare
 
@@ -110,7 +115,7 @@ Forstudien (oktober 2026) har allerede gitt en del svar. De står under hvert om
 
 ### FO8 – Brukeropplevelse
 
-**Spørsmål:** Hva *vil* du gjøre selv, og hva vil du slippe? Hvor ofte er det greit å fylle på og vaske? Hvor stille må maskinen være? Hvordan vil du planlegge brødet (app eller knapp)?
+**Spørsmål:** Hva *vil* du gjøre selv, og hva vil du slippe? Er forming noe du liker å gjøre (variant B), eller noe du vil slippe (variant A)? Når på døgnet er det greit å få varsel om forming og forvarming? Hvor ofte er det greit å fylle på og vaske? Hvor stille må maskinen være? Hvordan vil du planlegge brødet (app eller knapp)?
 
 **Metode:** Egen dagbok i fase 0 over hva som er kjedelig og hva som er gøy med å bake. Kort spørreundersøkelse blant surdeigsbakere (f.eks. Facebook-grupper, r/Sourdough, The Fresh Loaf).
 
@@ -146,6 +151,7 @@ Dette fant forstudien **ikke** dokumentert. Det betyr at vi må finne svarene se
 - Et hjemmeapparat som lager hele surdeigsbrødet automatisk
 - En dokumentert hjemmebygd hevekasse som både varmer og kjøler med Peltier, med beskrevet regulering
 - Kontrollerte sammenligninger av strekk og brett mot maskinbearbeiding
-- Gode og repeterbare sammenligninger av kaldstart og varmstart i gryte
+- Gode og repeterbare sammenligninger av kaldstart og varmstart i gryte (for brukerveiledningen)
+- Systematiske data på hvor lenge en surdeigsdeig kan kaldholdes etter kald heving
 - Målte CO₂-nivåer i toppen av surdeigsglass over tid
 - Formemekanismer i bolleformat for hjemmebruk

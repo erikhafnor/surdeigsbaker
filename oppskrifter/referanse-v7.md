@@ -31,6 +31,8 @@ Oppskriften er **gullstandarden** i prosjektet. Brødet bakes for hånd og logge
 
 ## Prosesstrinn og parametre
 
+Trinn 1–10 er det maskinen skal overta. **Trinn 11–15 gjøres som i dag, i vanlig ovn** ([ADR-006](../docs/beslutninger/ADR-006-steking-i-vanlig-ovn.md)).
+
 | # | Trinn | Tid | Temperatur | Mekanisk handling | Ferdig når |
 |---|---|---|---|---|---|
 | 1 | Mating av surdeig | ca. 8 t | Lunt (ca. 24–28 °C?) | Dosere, røre | Flytetest bestått |
@@ -69,7 +71,7 @@ Dag 2  ca. 08–19  Forvarm gryte (ca. 45 min), stek 45 min, avkjøl 1–2 t
 ## Nøkkelobservasjoner for maskindesign
 
 - **Temperatur er hovedratten.** Oppskriften bruker «lunt» mange steder. Maskinen erstatter dette med faste settpunkter og kan da regne ut tidene.
-- **Kald etterheving er en buffer.** Opptil 24 t i kjøleskap gjør tidsplanen fleksibel. Maskinen kan bruke kjøling til å treffe «ferdig kl. X».
-- **De vanskeligste trinnene er 7, 8 og 12** (forming, overføring og snitting). Dette er den viktigste grunnen til eksperimentene E05–E07 og E10 i [eksperimentplanen](../docs/05-eksperimenter.md).
-- **Oppskriften er bevisst moderat i hydrering** («Her safer vi!»). Det er en fordel for maskinen, fordi fastere deig er lettere å håndtere og overføre.
+- **Kald etterheving er en buffer.** Opptil 24 t i kjøleskap gjør tidsplanen fleksibel. Maskinen kan bruke kjøling til å treffe «stekeklar kl. X», og holde deigen kald til du er klar.
+- **De vanskeligste trinnene for en maskin er 7, 8 og 12** (forming, overføring og snitting). Trinn 12 gjør mennesket uansett ved ovnen. Forming kan enten droppes («tipp og stek») eller gjøres av mennesket på 2–5 min når maskinen varsler. Se E05–E07 og E10 i [eksperimentplanen](../docs/05-eksperimenter.md).
+- **Oppskriften er bevisst moderat i hydrering** («Her safer vi!»). Det er en fordel for maskinen, fordi fastere deig er lettere å håndtere, og fordi deig som ikke formes, holder formen bedre ved moderat hydrering.
 - **Flytetesten** er et ja/nei-kriterium som er vanskelig å måle automatisk, og den regnes som upålitelig: Surdeigen kan flyte lenge før den har doblet seg, og våte eller grove surdeiger kan synke selv om de er aktive (se [forskningsplanen](../docs/02-forskningsplan.md), FO3). Maskinen bruker heller heving og temperatur, og validerer det mot flytetesten (E03).

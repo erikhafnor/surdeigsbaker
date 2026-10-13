@@ -13,16 +13,17 @@ Eksperimentene skal fjerne den største usikkerheten **før** vi bygger mekanikk
 | E03 | Flytetest mot sensorer | 1 | 🟠 | Hva skal maskinen måle i stedet for flytetesten? |
 | E04 | Autolyse eller fermentolyse | 1 | 🟢 | Kan levainen bygges i bollen fra start? |
 | E05 | Bretting med maskin | 1 | 🔴 | Kan strekk og brett erstattes av maskinbearbeiding? |
-| E06 | Uten forming | 1 | 🔴 | Trenger vi forming i v1? |
+| E06 | Uten forming | 1 | 🔴 | «Tipp og stek» eller «med forming» som standard? |
 | E07 | Sømsiden opp i stedet for snitting | 1 | 🟠 | Trenger vi snitting i v1? |
-| E08 | Varm eller kald gryte | 1 | 🔴 | Konsept C eller D? Hvilken gryte? |
+| E08 | Steking av kald deig i vanlig ovn | 1 | 🟢 | Beste stekeprosedyre for mennesket. Er K4 (kaldstart) aktuell? |
 | E09 | Kald bulkheving | 1 | 🔴 | Kan kald heving skje i bollen? |
-| E10 | Slipp fra bollen | 3 | 🔴 | Kan deigen overføres med tyngdekraften? |
+| E10 | Overlevering for hånd | 1–3 | 🟠 | Er det lett å få deigen ut av bollen eller kurven og ned i gryta? |
 | E11 | Dosering av mel | 3 | 🟠 | Er en snegle nøyaktig nok? |
 | E12 | Dosering av vann og saltlake | 3 | 🟠 | Fungerer saltlake? Er nøyaktigheten god nok? |
-| E13 | Termikk: oppvarming og kjøling | 3 | 🔴 | Klarer vi effekt og tid innenfor 2000 W? |
+| E13 | Termikk: kjøling og svak varme | 1–3 | 🔴 | Klarer kammeret 1 kg deig til ≤ 6 °C, stille og uten kondensproblemer? |
 | E14 | Måling av heving i bollen | 3 | 🟠 | Kan bulkheving måles automatisk? |
 | E15 | Ubemannet drift og feilinjeksjon | 4 | 🔴 | Er maskinen trygg å la stå? |
+| E16 | Kaldhold | 1 | 🔴 | Hvor lenge kan deigen vente kald etter kald heving uten kvalitetstap? |
 
 ## Detaljer
 
@@ -56,26 +57,28 @@ Eksperimentene skal fjerne den største usikkerheten **før** vi bygger mekanikk
 ### E06 – Uten forming 🔴
 - **Hypotese:** Deig som tippes rett fra bollen og ned i gryta, uten forming, gir ≥ 80 % av volumet og formen til et formet brød, fordi gryta holder på formen.
 - **Metode:** Varianter: (a) formet etter v7.0, (b) uten forming, tippet fra bollen, (c) «tippeforming», der deigen glir over en melet rampe/skrå flate. Bak i samme gryte.
-- **Bestått når:** (b) eller (c) ≥ 80 % av (a) på volum og form. Konsekvens: Hvis det ikke er bestått, må forming inn i v1, og det er en stor risiko.
+- **Bestått når:** (b) eller (c) ≥ 80 % av (a) på volum og form. Da blir «tipp og stek» standard. Hvis ikke, blir varianten «med forming» standard: mennesket former når maskinen varsler. Det er en akseptabel løsning, ikke en stor risiko.
 
 ### E07 – Sømsiden opp i stedet for snitting 🟠
 - **Hypotese:** Deig som legges med sømsiden eller den ujevne siden opp, sprekker kontrollert og ser akseptabel ut uten snitting.
 - **Metode:** Snittet, usnittet med sømsiden ned, og usnittet med sømsiden opp. To brød per variant.
 
-### E08 – Varm eller kald gryte 🔴
-- **Hypotese:** Kaldstart (deigen i kald gryte som så varmes opp) gir ≤ 15 % lavere volum enn forvarmet gryte. Lettere gryter reduserer forskjellen.
-- **Metode:** Gryter: emaljert jerngryte og en lettere gryte av karbonstål eller tynt stål. Hver gryte bakes med forvarming og med kaldstart. Logg effekt og energi (kWh) med en energimåler i stikkontakten.
-- **Konsekvens:** Avgjør mellom konsept C og D, og hvilken gryte vi velger.
+### E08 – Steking av kald deig i vanlig ovn 🟢
+- **Bakgrunn:** Stekingen skjer i vanlig ovn ([ADR-006](beslutninger/ADR-006-steking-i-vanlig-ovn.md)). Eksperimentet optimaliserer det mennesket gjør etter overleveringen. Det er ikke et designvalg for maskinen.
+- **Spørsmål:** Trengs det tid på benken etter kaldholdet før steking? Gir kaldstart i kald gryte (K4) akseptabelt resultat?
+- **Metode:** Kald deig rett i forvarmet gryte (referansen), etter 30 min på benken, og med kaldstart i kald ovn. To brød per variant.
+- **Konsekvens:** Gir standard stekeprosedyre for brukerveiledningen og varselteksten («forvarm ovnen nå»). Avgjør om K4 skal vurderes videre.
 
 ### E09 – Kald bulkheving 🔴
-- **Hypotese:** Kald heving av hele deigen i bollen (bulk retard ved 4–8 °C) gir like god smak som kald heving i kurven etter forming. Kald deig er dessuten lettere å overføre.
+- **Hypotese:** Kald heving av hele deigen i bollen (bulk retard ved 4–8 °C) gir like god smak som kald heving i kurven etter forming. Kald deig er dessuten lettere å tippe i gryta og snitte.
 - **Metode:** (a) v7.0 med kald etterheving i kurv, (b) kald bulkheving 12 t etterfulgt av kort varm heving, (c) uten kald heving. Lag også et smakspanel og mål pH.
-- **Konsekvens:** Avgjør om kjøling trengs i bollen eller i stekerommet.
+- **Konsekvens:** Avgjør hvordan kald heving skal skje: i bulk i bollen (variant A, «tipp og stek») eller etter forming i kurv (variant B).
 
-### E10 – Slipp fra bollen 🔴
-- **Hypotese:** Kald deig (6–10 °C) slipper en vippet bolle (≥ 120°) innen 60 s med ≤ 10 g igjen i bollen, med et egnet belegg.
-- **Metode:** Bolle med PTFE-belegg, med silikonbelegg og av rustfritt stål med olje eller mel. Deigen er kald eller romtemperert. Vippevinkel 90–180°. Hjelpemidler: en vibrator, en skrape som beveger seg langs bunnen, eller bakepapir som slynge.
-- **Måling:** Tid til deigen slipper, rester i bollen (g) og om deigen er skadet (degassing).
+### E10 – Overlevering for hånd 🟠
+- **Hypotese:** Kald deig (4–8 °C) kan tippes fra en avtakbar bolle eller kurv og ned i en varm gryte på ≤ 30 s, med ≤ 10 g igjen og uten at deigen mister mye luft.
+- **Metode:** Bolle med PTFE-belegg (greit, siden det ikke er varme), bolle av rustfritt stål med olje eller mel, og hevekurv med klede og rismel. Hjelpemidler: myk skrape og bakepapir som slynge. Prøv også bollens form: lav og vid, eller dyp.
+- **Måling:** Tid, rester (g), om deigen er skadet, og hvor enkelt testpersonene synes det er (1–5).
+- **Konsekvens:** Gir bollens form og belegg i K2.
 
 ### E11 – Dosering av mel 🟠
 - **Mål:** ±1 % på 550 g og ±2 g på små mengder til levain. Mål også tid og hvor ofte melet henger seg opp («bridging»).
@@ -86,8 +89,15 @@ Eksperimentene skal fjerne den største usikkerheten **før** vi bygger mekanikk
 - **Metode:** Peristaltisk pumpe og magnetventil styrt av vekta. Saltlake på 20 % (mettet er ca. 26 %, så vi holder god avstand). Vannmengden i saltlaken trekkes fra i oppskriften.
 
 ### E13 – Termikk: oppvarming og kjøling 🔴
-- **Mål:** Gryta skal nå 250–260 °C på ≤ 45 min innenfor 2000 W. Bollen skal kjøle 1 kg deig fra 25 °C til ≤ 8 °C på ≤ 3 t.
-- **Metode:** Mål oppvarmingskurven til gryta med et termoelement, med ulike typer isolasjon. Sammenlign kjølekurven for et kompressoroppsett (ombygd vinkjøleskap) og et Peltier-oppsett, med en 1 kg vannbalong eller deig. Mål strømforbruk og kondens. Grove beregninger finnes i [arkitekturen](07-arkitektur.md#4-termikk-grove-tall).
+- **Mål:**
+  - Kammeret skal kjøle 1 kg deig fra 25 °C til ≤ 6 °C på ≤ 3 t, og holde 4–6 °C ±0,5 °C i ≥ 24 t.
+  - Det skal varme fra 6 til 24 °C på ≤ 1 t uten kondens på deigen.
+  - Det skal være stille om natten (≤ ca. 40 dB).
+- **Metode:**
+  - Sammenlign kjølekurvene for et kompressoroppsett (ombygd vinkjøleskap) og et Peltier-oppsett, med en 1 kg vannbalong eller deig.
+  - Mål strømforbruk, støy og kondens.
+  - Mål hvor mye eltemotoren varmer kammeret.
+  - Grove beregninger finnes i [arkitekturen](07-arkitektur.md#4-termikk-grove-tall).
 
 ### E14 – Måling av heving i bollen 🟠
 - **Hypotese:** En ToF-sensor eller et kamera over bollen kan måle bulkheving med ±5 prosentpoeng sammenlignet med måleglasset.
@@ -95,7 +105,12 @@ Eksperimentene skal fjerne den største usikkerheten **før** vi bygger mekanikk
 
 ### E15 – Ubemannet drift og feilinjeksjon 🔴
 - **Metode:** Først 10 tørrkjøringer uten deig, deretter 5 kjøringer med vann og til slutt 3 med deig. Feilinjeksjon: koble fra en temperaturføler, simuler et fastlåst SSR (termosikringen skal løse ut), strømbrudd midt i et program, tapt nettverk og fastkjørt motor.
-- **Bestått når:** Alle feil gir en trygg tilstand (varmen av, motoren av, varsel) innenfor definert tid. Se [`06-sikkerhet.md`](06-sikkerhet.md).
+- **Bestått når:** Alle feil gir en trygg tilstand innenfor definert tid: varmen av, motoren av, varsel, og **kjølingen på hvis det finnes deig** i kammeret, slik at deigen ikke overgjærer. Se [`06-sikkerhet.md`](06-sikkerhet.md).
+
+### E16 – Kaldhold 🔴
+- **Hypotese:** Deig som har hatt kald heving, kan holdes ved 4–6 °C i minst 12 t ekstra med ≤ 10 % tap på brødkortet.
+- **Metode:** Lag én deig (variant A eller B), del den i tre og stek etter 0, 12 og 24 t ekstra kaldhold. Gjenta med en ny deig. Mål pH og smak (blindtest).
+- **Konsekvens:** Bestemmer hvor stort «stekevindu» maskinen kan love. Akseptansekriterium 3 bygger på resultatet.
 
 ## Utstyr til eksperimentene i fase 0–1
 

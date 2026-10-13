@@ -12,3 +12,4 @@ Mal: [`ADR-000-mal.md`](ADR-000-mal.md). Filnavn: `ADR-NNN-kort-tittel.md`.
 | [ADR-003](ADR-003-sprak-og-lisens.md) | Dokumentasjonsspråk og lisenser | Foreslått | G0 |
 | ADR-004 | Hovedstyring for prototypen | Åpen | G2 |
 | [ADR-005](ADR-005-verktoykjede.md) | Verktøykjede for design med AI-agenter | Foreslått | G0 |
+| [ADR-006](ADR-006-steking-i-vanlig-ovn.md) | Maskinen leverer stekeklar deig, og stekingen skjer i vanlig ovn | **Vedtatt** | G0 |

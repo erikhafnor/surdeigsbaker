@@ -7,10 +7,12 @@
 | Fase | Innhold | Anslag (kr) |
 |---|---|---|
 | 0 | Måleverktøy for referansebrød | 1 450–3 850 (650–1 350 uten pH-meter) |
-| 1 | Måleoppsett og hevekasse | 3 300–7 350 (inkl. valgfri CO₂-sensor) |
-| 2 | Gangbart skjelett (brødmaskin) | 1 450–3 400 |
-| 3–4 | Prototype v1 | 6 900–19 000 |
-| **Totalt** | | **ca. 13 000–34 000** |
+| 1 | Måleoppsett og smart hevekabinett (K3) | 3 300–7 350 (inkl. valgfri CO₂-sensor) |
+| 2 | Gangbart skjelett: brødmaskindrev i kabinettet (K1) | 1 550–3 700 |
+| 3–4 | Prototype v1 (K2) | 5 600–14 000 |
+| **Totalt** | | **ca. 12 000–29 000** |
+
+Fordi stekingen skjer i vanlig ovn ([ADR-006](beslutninger/ADR-006-steking-i-vanlig-ovn.md)), trengs verken stekemodul, gryte eller varmeelementer for høy temperatur.
 
 ## Fase 0 – måleverktøy (kjøp nå)
 
@@ -25,7 +27,7 @@
 
 Har allerede (antagelig): kjøkkenvekt (1 g), jerngryte, hevekurv, bakeskraper og kjøkkenmaskin.
 
-## Fase 1 – måleoppsett og hevekasse
+## Fase 1 – måleoppsett og smart hevekabinett (K3)
 
 | Vare | Til | Anslag (kr) |
 |---|---|---|
@@ -36,46 +38,47 @@ Har allerede (antagelig): kjøkkenvekt (1 g), jerngryte, hevekurv, bakeskraper o
 | Lastcelle 5 kg og NAU7802- eller HX711-forsterker | Vekt og dosering | 100–200 |
 | Koblingsbrett, ledninger, kontakter og koblingsboks | | 150–300 |
 | Sous vide-pinne og kasse | Vannbad med stabil temperatur (E02) | 600–1 200 |
-| Brukt lite vinkjøleskap med **kompressor** (Finn) | Hevekasse med kjøling ([arkitektur, avsnitt 4](07-arkitektur.md#4-termikk-grove-tall)) | 500–1 500 |
-| Varmekilde (varmekabel eller PTC-element) og SSR eller relé for styring | Varme i hevekassen | 300–600 |
+| Brukt lite vinkjøleskap med **kompressor** (Finn), med plass til bolle og hevekurv | Hevekabinettet (K3), som blir første trinn av maskinen ([arkitektur, avsnitt 4](07-arkitektur.md#4-termikk-grove-tall)) | 500–1 500 |
+| Varmekilde (varmefolie, varmekabel eller PTC-element ≤ 100 W), termosikring og SSR eller relé | Varme i hevekabinettet | 300–600 |
 | Sertifisert strømforsyning (5 V/12 V) og bærbar jordfeilbryter | Sikkerhet | 300–500 |
 | *Valgfritt:* CO₂-sensor for høye nivåer (STC31 eller SprintIR) | E03 | 500–1 500 |
 
 > **Sikkerhet:** Vinkjøleskapet skal ikke bygges om på 230 V-siden. Styr det eksternt med en sertifisert smartplugg eller et relé i egen godkjent boks, slik BrewPi-oppsett gjør. Selve kjølekretsen skal du ikke åpne.
 
-## Fase 2 – gangbart skjelett
+## Fase 2 – gangbart skjelett: brødmaskindrev i kabinettet (K1)
 
 | Vare | Anslag (kr) |
 |---|---|
-| Brukt brødmaskin (Finn) | 200–600 |
-| Nullgjennomgangs-SSR med kjøleribbe | 150–300 |
-| Topolet relé eller kontaktor (sikkerhetsfrakobling) | 150–400 |
+| Brukt brødmaskin (Finn), for motor, drivverk og form | 200–600 |
+| SSR med kjøleribbe (til den svake varmen) | 150–300 |
+| Topolet relé (sikkerhetsfrakobling) | 150–400 |
 | Termosikring (engangs) og termostat med manuell tilbakestilling | 100–300 |
-| PT1000 og MAX31865 | 200–400 |
-| Styring av AC-motor (relé, triac-modul eller ny girmotor) | 200–400 |
+| Temperaturfølere til deig og kammer (DS18B20/PT1000) | 100–300 |
+| Styring av AC-motor (relé eller triac-modul) og strømmåling for overvåking av blokkering | 200–400 |
 | Sertifisert strømforsyning og apparatinntak | 150–300 |
-| Høytemperaturledning (silikon eller PTFE), kabelsko og strekkavlastning | 100–300 |
-| Kabinett eller koblingsboks for elektronikken | 200–400 |
+| Ledninger, kabelsko og strekkavlastning | 100–200 |
+| Kabinett eller koblingsboks for elektronikken (utenfor kammeret) | 200–400 |
+| Mekanisk tilpasning: brakett, gjennomføringer og tetninger i kabinettet | 200–500 |
 
-## Fase 3–4 – prototype v1 (grovt)
+## Fase 3–4 – prototype v1 (K2, grovt)
 
 | Delsystem | Innhold | Anslag (kr) |
 |---|---|---|
-| Gryte | 24 cm emaljert jerngryte eller lettere gryte av karbonstål (du har kanskje allerede en) | 0–2 500 |
-| Stekemodul | Varmeelementer, steinull eller AES-ull, plater og sikringer | 800–2 000 |
-| Kjøling av bollen | Kompressorenhet eller Peltier-sett med kjøleribber og vifter | 800–2 500 |
-| Elte- og hevemodul | Bolle i rustfritt stål, krok, girmotor (100–200 W) og driver | 1 000–2 500 |
-| Aktuatorer | Steppere eller lineæraktuatorer til vipp og lokk, endebrytere | 500–1 500 |
+| Elte- og hevemodul | Bolle i rustfritt stål, krok, girmotor (100–200 W) og driver, lastcelle | 1 000–2 500 |
+| Kammer og kjøling | Kompressorenhet (fra vinkjøleskap eller kjøleboks) eller Peltier-sett, og isolasjon | 500–2 000 |
+| Svak varme | Varmefolie eller PTC (≤ 100 W) og termosikring | 200–500 |
+| Lokk og mekanikk | Hengsel eller løft til krok og lokk, brytere for lokk og bolle | 300–1 000 |
 | Dosering (N3) | Melsnegle med omrører, to peristaltiske pumper og tank | 800–2 000 |
-| Ramme og kabinett | Aluminiumsprofiler, platearbeid og festemidler | 1 000–2 500 |
-| Elektronikk | Raspberry Pi, MCU-kort, sikkerhetsvakt og eventuelt eget kretskort | 1 000–2 000 |
-| Diverse | Ledninger, kontakter, matgodkjent silikon og skruer | 1 000–1 500 |
+| Ramme og kabinett | Aluminiumsprofiler, platearbeid og festemidler | 800–2 000 |
+| Elektronikk | Raspberry Pi eller Home Assistant-vert, MCU-kort, sikkerhetsvakt og eventuelt eget kretskort | 1 000–2 000 |
+| Overlevering | Ekstra bolle og en hevekurv som passer i kammeret | 200–500 |
+| Diverse | Ledninger, kontakter, matgodkjent silikon og skruer | 800–1 500 |
 
 ## Verktøy og tilgang
 
 Disse trenger du ikke eie, men du trenger tilgang til dem:
 
-- 3D-skriver (bare for deler utenfor matkontakt og varmesoner)
+- 3D-skriver (bare for deler utenfor matkontakt)
 - Loddestasjon og multimeter
 - Bor og gjengeverktøy
 - Gjerne et makerspace med platebearbeiding

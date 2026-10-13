@@ -1,6 +1,6 @@
 # 10 – Verktøykjede: design med AI-agenter
 
-> **Sist verifisert: 2026-10-13.** Feltet endrer seg svært raskt. Et GitHub-søk på «kicad mcp» gir over 200 repoer, og flere av dem oppdateres hver time. Dokumentet bygger på fire verktøyrapporter i [`forskning/verktoy/`](forskning/verktoy/). Nøkkelpåstandene er stikkprøvekontrollert mot PyPI, npm, GitLab og kildekoden på GitHub. Verktøylisten skannes på nytt hver måned (se [«Holde seg oppdatert»](#holde-seg-oppdatert)).
+> **Sist verifisert: 2026-10-13.** Maskinen steker ikke ([ADR-006](beslutninger/ADR-006-steking-i-vanlig-ovn.md)). Det rapportene sier om ovn, gryte og 250 °C, er derfor bare bakgrunn. Feltet endrer seg svært raskt. Et GitHub-søk på «kicad mcp» gir over 200 repoer, og flere av dem oppdateres hver time. Dokumentet bygger på fire verktøyrapporter i [`forskning/verktoy/`](forskning/verktoy/). Nøkkelpåstandene er stikkprøvekontrollert mot PyPI, npm, GitLab og kildekoden på GitHub. Verktøylisten skannes på nytt hver måned (se [«Holde seg oppdatert»](#holde-seg-oppdatert)).
 
 ## Anbefalt verktøykjede
 
@@ -9,7 +9,7 @@
 | Mekanisk CAD | **build123d** `>=0.11.1,<0.12` (Python, STEP som hovedformat) | **build123d-mcp** 0.3.90: kjør, render, mål og eksporter | Endringer i deler nær varme- og matsonen | [3D-CAD](forskning/verktoy/3d-cad.md) |
 | Plate, tegninger, enkel FEM | **FreeCAD 1.1.4** (SheetMetal, TechDraw, FEM/CalculiX), kjørt headless | `freecadcmd`-skript, eventuelt neka-nat/freecad-mcp **bare i container** | DXF før bestilling hos laserleverandør | [3D-CAD](forskning/verktoy/3d-cad.md) |
 | Geometrisjekk | trimesh og manifold3d i pytest (CI) | Kjøres av agenten og av CI | – | [3D-CAD](forskning/verktoy/3d-cad.md) |
-| Termikk | **Eget RC-nettverk i Python** (SciPy, `ht`, CoolProp), deretter Elmer FEM | Python og CLI, uten MCP | Antakelser og kalibrering mot E08 | [Simulering](forskning/verktoy/simulering-og-produksjon.md) |
+| Termikk (kjøling og svak varme) | **Eget RC-nettverk i Python** (SciPy, `ht`, CoolProp) for kammer, bolle og deig, eventuelt Elmer FEM for kuldebroer | Python og CLI, uten MCP | Antakelser og kalibrering mot E13 | [Simulering](forskning/verktoy/simulering-og-produksjon.md) |
 | Mekanisme | FreeCAD Assembly (klaring), MuJoCo ved behov | Python | – | [Simulering](forskning/verktoy/simulering-og-produksjon.md) |
 | 3D-print | PrusaSlicer 2.9.6 / OrcaSlicer 2.4.2 med CLI og låste profiler | Printer-MCP bare med bekreftelsessperre (`mcp__printer` krever godkjenning) | **Start av hver print** | [Simulering](forskning/verktoy/simulering-og-produksjon.md) |
 | Render og byggeguide | Blender 5.2 LTS headless (bpy-skript) og GitBuilding | mcp-for-blender bare til utforsking (`SAFE_MODE`, telemetri av) | – | [Simulering](forskning/verktoy/simulering-og-produksjon.md) |
