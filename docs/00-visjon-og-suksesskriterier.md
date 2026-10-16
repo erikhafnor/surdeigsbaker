@@ -41,6 +41,8 @@ Suksess er en **ferdig prototype på kjøkkenbenken som har laget deigen til sin
 | Strekkmål | N4 | Egen surdeigsmodul («Surhild-modulen») |
 | Senere versjoner | N5 | Forming er det vanskeligste å automatisere |
 
+Hvordan en bakedag ser ut for deg på N2 (v0) og N3 (v1), står i [`11-bruksscenarier.md`](11-bruksscenarier.md).
+
 ### Overlevering: to varianter
 
 Maskinen gir fra seg deigen når bulkhevingen er ferdig. Eksperiment E06 avgjør hvilken av de to variantene under som blir standard.

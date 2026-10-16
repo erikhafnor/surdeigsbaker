@@ -6,7 +6,7 @@
 
 v0 er en benkemaskin som **blander, elter, holder temperaturen og bretter deigen under bulkhevingen**. Den måler hevingen og varsler deg når **deigen er klar for forming** ([ADR-007](../../docs/beslutninger/ADR-007-ingen-kjoling.md)). Etter det tar du over: du former, setter kurven i ditt eget kjøleskap og steker i vanlig ovn ([ADR-006](../../docs/beslutninger/ADR-006-steking-i-vanlig-ovn.md)).
 
-Du veier og heller i ingrediensene selv (nivå N2). Automatisk dosering av levain og vann er flyttet til en v1-modul (se [§ 9](#9-kjente-begrensninger-og-neste-steg)). Designvalgene er begrunnet i [ADR-008](../../docs/beslutninger/ADR-008-v0-design.md).
+Du veier og heller i ingrediensene selv (nivå N2). Automatisk dosering av levain og vann er flyttet til en v1-modul (se [§ 10](#10-kjente-begrensninger-og-neste-steg)). Designvalgene er begrunnet i [ADR-008](../../docs/beslutninger/ADR-008-v0-design.md).
 
 | | |
 |---|---|
@@ -28,8 +28,9 @@ Du veier og heller i ingrediensene selv (nivå N2). Automatisk dosering av levai
 5. [Kapp, bor og bøy](#5-kapp-bor-og-bøy)
 6. [Montering](#6-montering)
 7. [Idriftsetting](#7-idriftsetting)
-8. [Sikkerhet og hygiene](#8-sikkerhet-og-hygiene)
-9. [Kjente begrensninger og neste steg](#9-kjente-begrensninger-og-neste-steg)
+8. [En vanlig bakedag med v0](#8-en-vanlig-bakedag-med-v0)
+9. [Sikkerhet og hygiene](#9-sikkerhet-og-hygiene)
+10. [Kjente begrensninger og neste steg](#10-kjente-begrensninger-og-neste-steg)
 
 ## 1. Filene
 
@@ -267,7 +268,45 @@ Fungerer det dårlig, prøv i denne rekkefølgen: høyere fart, kortere interval
 
 Når E17 er godkjent: Bak etter [referanseoppskriften](../../oppskrifter/referanse-v7.md) med prosessen i [`oppskrifter/maskinvennlig-v0.yaml`](../../oppskrifter/maskinvennlig-v0.yaml). Før logg i [`docs/maler/bakelogg.md`](../../docs/maler/bakelogg.md). Sammenlign med et brød laget for hånd samme dag.
 
-## 8. Sikkerhet og hygiene
+## 8. En vanlig bakedag med v0
+
+**Eksempel:** Du står opp kl. 07, er ute hele dagen og vil steke et brød neste morgen.
+
+v0 kan ikke starte deigen om morgenen og passe den mens du er borte. Den har ingen utsatt start og ingen kjøling, og når bulkhevingen er ferdig, må deigen formes innen ca. 1 time (E16). Derfor bruker du **dagen til levainen**, **kvelden til deigen** og **natta til kjøleskapet**.
+
+Mengdene er fra [`oppskrifter/maskinvennlig-v0.yaml`](../../oppskrifter/maskinvennlig-v0.yaml). De er foreløpige til referansebrødet (E01) er bakt og veid. Tidene er anslag.
+
+| Tid | Du gjør | Maskinen gjør | Din tid |
+|---|---|---|---|
+| **07:00** | Lag levainen rett i maskinbollen: **10 g surdeig**, 40 g siktet mel, 10 g sammalt mel og 50 g vann (ca. 22 °C). Rør med en skje, sett bollen i maskinen og lukk lokket. | Ingenting. Den kan stå avslått. | 5 min |
+| 07:30–17:30 | Du er ute. | Levainen modnes ved romtemperatur. | – |
+| **17:30** | Sjekk at levainen er boblete og hevet. Hell i 460 g siktet mel, 100 g sammalt mel og 372 g vann (ca. 27 °C). Bland saltlaken i en kopp: 12 g salt og 48 g vann. Lukk og lås lokket, og trykk **Start**. | Blander i 3 min, deretter fermentolyse i 40 min ved 26 °C. | 10 min |
+| **ca. 18:15** | Maskinen piper: *«Tilsett saltlaken.»* Åpne lokket, hell i saltlaken, lukk og lås, og trykk **Start**. | Elter i 10 min. | 2 min |
+| 18:25–ca. 22:00 | Fri kveld. Hold mobilen eller ørene i nærheten. | Holder 26 °C, bretter deigen fire ganger (hver halvtime) og måler hevingen. | – |
+| **ca. 22:00** | Varsel: *«Deigen er klar for forming.»* Ta ut bollen og tipp deigen ut på benken. Forform, la den hvile 20 min og gi den endelig form. Legg den i en melet hevekurv med klede over og sett den i kjøleskapet. Trykk **Start** for å kvittere. Skyll bollen og kroken. | Slår av varmen når deigen er klar. Minner deg på etter 1 time hvis du ikke har kvittert. | 20–30 min |
+| Natta | Du sover. | – (deigen kaldhever i kjøleskapet, 8–24 t er greit) | – |
+| **07:00** | Sett jerngryta med lokk i ovnen og forvarm til 260 °C. Vent minst 10 min etter at ovnen har nådd temperaturen. | – | 2 min |
+| **ca. 07:50** | Strø litt helkorn i gryta, tipp den kalde deigen i og snitt. Stek 20 min ved 250 °C med lokk, deretter 25 min ved 200 °C uten lokk. | – | 5 min |
+| **ca. 08:40** | Ta ut brødet. Kjernen skal være minst 96 °C. La det avkjøles på rist i 1–2 timer. | – | – |
+
+Det blir ca. 45–60 minutter med aktivt arbeid, fordelt på fem korte økter. Bare levainen skjer om morgenen.
+
+**Mindre surdeig i levainen:** Oppskriften bruker 20 g surdeig. Med 10 g bruker levainen hele dagen (ca. 10–12 timer ved 20–22 °C) i stedet for å bli overmoden før du kommer hjem. Det er en tommelfingerregel som E02 skal tallfeste.
+
+### Hvis tidene ikke passer
+
+- **Bulken blir for sen:** Sett *Bulkheving maks (t)* til 4 på nettsiden. Da er deigen klar senest ca. kl. 22:30, selv om den ikke har hevet seg helt. Litt for kort bulk er bedre enn at du har lagt deg. Du kan også sette *Bulkheving temperatur* til 27 °C.
+- **Du kommer senere hjem enn 17:30:** Bruk enda mindre surdeig i levainen (5 g), eller sett bollen et kjøligere sted om morgenen.
+- **Du vil slippe å være til stede for saltlaken:** Slå av *Vent på saltlake* og ha saltet i sammen med resten kl. 17:30. Det avviker litt fra oppskriften, men gjør kvelden enklere.
+- **Husk å trekke maskinen fram** fra overskapene før du åpner lokket. Lyser LED-en blått (den arbeider), trykker du **Pause** først, så parkerer kroken.
+
+### De første gangene
+
+- Bli i nærheten mens maskinen elter, til eltetesten (E17) er gjort og du stoler på maskinen.
+- Levainprogrammet i maskinen (hold **Start** inne i 2 s) holder temperaturen mens du er ute. Vent med å bruke det til du har bakt flere brød (se [§ 9](#9-sikkerhet-og-hygiene)). Programmet styres uansett mest av tid i v0, fordi ToF-sensoren knapt ser en så tynn levain i bunnen av bollen.
+- Skriv i [bakeloggen](../../docs/maler/bakelogg.md) når levainen var klar og hvor lenge bulken varte. Det er de tallene en senere tidsplanlegger trenger for å treffe tiden for deg.
+
+## 9. Sikkerhet og hygiene
 
 - **Strøm:** Bare 24 V (SELV) i maskinen. Åpne aldri strømforsyningen. Bruk riktige sikringer (1, 2, 3 og 5 A).
 - **Klemfare:** Lokkbryteren og nødstoppen bryter motoren i maskinvaren. Ikke koble dem forbi, heller ikke under testing. Kroken er treg, men sterk (flere N·m).
@@ -277,7 +316,7 @@ Når E17 er godkjent: Bak etter [referanseoppskriften](../../oppskrifter/referan
 - **Lagrene** sitter over bollen. Bruk tettede lager med matgodkjent fett.
 - Fullstendig risikovurdering: [`docs/06-sikkerhet.md`](../../docs/06-sikkerhet.md).
 
-## 9. Kjente begrensninger og neste steg
+## 10. Kjente begrensninger og neste steg
 
 **Kjente begrensninger i v0:**
 
@@ -291,8 +330,8 @@ Når E17 er godkjent: Bak etter [referanseoppskriften](../../oppskrifter/referan
 
 **Planlagt for v1:**
 
-- **Doseringsmodul:** tippekopp for levain og pumpe for vann og saltlake. Den ble tatt ut av v0 fordi den ikke fikk plass i hjørnet, og fordi helleretningen kolliderte med kroken.
-- Tidsplanlegger som treffer et valgt tidspunkt for forming.
+- **Doseringsmodul:** melbeholder med snegle og vekt, og pumper for vann og saltlake. Den ble tatt ut av v0 fordi den ikke fikk plass, og fordi helleretningen kolliderte med kroken.
+- Tidsplanlegger som treffer et valgt tidspunkt for forming. Hvordan en bakedag blir da, står i [`docs/11-bruksscenarier.md`](../../docs/11-bruksscenarier.md).
 - Kretskort (KiCad) i stedet for hullkort.
 - VL53L1X eller kamera for bedre måling av hevingen.
 - Lavere maskin, kanskje med motoren ved siden av bollen og en vinkelgir.

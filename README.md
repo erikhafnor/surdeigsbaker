@@ -68,6 +68,7 @@ Detaljer, tidslinje og risikoregister: [`docs/04-veikart.md`](docs/04-veikart.md
 | [08 – Kilder](docs/08-kilder.md) | Leseliste og kjente løsninger |
 | [09 – Budsjett og innkjøp](docs/09-budsjett-og-innkjop.md) | Handleliste per fase |
 | [10 – Verktøykjede](docs/10-verktoykjede.md) | Åpne CAD-, EDA-, simulerings- og fastvareverktøy for AI-agenter (MCP), med sikkerhetssperrer |
+| [11 – Bruksscenarier](docs/11-bruksscenarier.md) | En bakedag med v0 og med v1: hva du gjør, og hva maskinen gjør |
 | [Beslutninger (ADR)](docs/beslutninger/) | Viktige valg og begrunnelser |
 | [Referanseoppskrift](oppskrifter/referanse-v7.md) | Gullstandarden, oversatt til prosessparametre |
 | [**Byggeveiledning v0**](hardware/v0/README.md) | Hva du skal måle, kjøpe, printe, kappe og montere, og hvordan du setter maskinen i drift |
