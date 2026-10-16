@@ -1,0 +1,229 @@
+# Surdeigsbaker v1 – masterparametre (alle mål i mm)
+#
+# All geometri i hardware/cad/v1/ leses herfra. Endre en verdi og kjør
+#   python hardware/cad/v1/bygg.py
+# for å lage nye STL-, STEP- og DXF-filer, bilder og sjekkrapport.
+#
+# Verdier merket ⚠️ er typiske mål for innkjøpte deler. MÅL DINE EGNE DELER
+# (brødform, kobling, motor, lastcelle, pumpe og vanntank) og oppdater før du printer.
+#
+# Koordinater: origo i eltebladets aksel, z = 0 på oversiden av bunnplata.
+# +x mot høyre (kammeret), -x mot venstre (tårnet). +y bakover, -y mot døra.
+
+versjon: v1.0
+
+skriver:            # byggevolum delene sjekkes mot (Prusa MK4: 250 × 210 × 220)
+  x: 250
+  y: 210
+  z: 220
+
+skrue:
+  m3_klaring: 3.4
+  m3_innsats: 4.0     # hull for varmeinnsats M3 × 5,7
+  m4_klaring: 4.5
+  m5_klaring: 5.5
+  m5_hode: 9.5
+  m6_klaring: 6.5
+
+ramme:              # 2020-aluminiumsprofil, utvendige mål for rammen (uten plater)
+  profil: 20
+  x0: -310            # venstre ytterkant (tårnet)
+  x1: 165             # høyre ytterkant (kammeret)
+  y0: -135            # front
+  y1: 165             # bak
+  skille_x: -148      # høyre flate på de to skilleveggstolpene (mot kammeret)
+  ringer_z: [0, 38, 313, 488]   # underkant av de fire profilringene
+  hoyde: 508          # stolpene
+
+plate_t: 3            # ACM-sideplater, dør og topplate
+bunnplate_t: 5        # aluminium, bærer lastcella
+fot_h: 10
+isolasjon_t: 20       # XPS
+
+mellomgulv:         # 3 mm aluminium på den nest nederste ringen
+  z: 58
+  t: 3
+
+toppplate:          # 3 mm aluminium på ringen under taket: tak i kammeret, gulv i toppen
+  z: 333
+  t: 3
+
+kammer:             # innvendig, inne i isolasjonen
+  x: [-125, 125]
+  y: [-95, 125]
+  gulv_z: 81
+  tak_z: 310          # underkant av takforingen
+  foring_t: 3
+
+dor:                # dør foran kammeret, hengslet på høyre side
+  plugg_t: 40         # XPS-plugg (2 × 20 mm) som går inn i åpningen
+  klaring: 2          # rundt pluggen
+  hengsel_z: [110, 270]
+  hengsel_akse: [172, -142]   # (x, y) for hengselaksen
+  apning_grader: 105
+
+form:               # ⚠️ Panasonic SD-2500/2501/ZB2502 (XL). MÅL DIN FORM.
+  topp: [180, 140]    # utvendig ved kanten (x, y)
+  bunn: [170, 130]    # utvendig ved bunnen
+  hoyde: 150
+  hjorneradius: 28
+  gods: 1.5
+  fot_d: 115          # foten med bajonettknastene
+  fot_h: 22
+  knast: [12, 6]      # bredde × utstikk for de to knastene
+  masse_kg: 0.75
+  loft: 28            # hvor høyt formen løftes før den trekkes ut
+
+formholder:         # printet bajonettkopp som foten låses i
+  kopp_dybde: 20
+  vegg: 6
+  klaring_fot: 1.0
+  spor_klaring: 4     # spalter rundt kragen i gulvet (veiespalte)
+  knast_vinkel: 15    # ⚠️ dreiing for å låse og løsne formen
+
+krage:              # printet krage i hullet i kammergulvet
+  hoyde: 12
+  vegg: 3
+
+lagersoyle:         # printet lagerhus for eltebladets aksel
+  r: 25
+  flens_r: 40
+  flens_t: 5
+  lager: [12, 28, 8]  # 6001-2RS (indre, ytre, bredde)
+
+aksel:
+  d: 12
+
+koblingsdel:        # ⚠️ Panasonic «base connector» (reservedel). Mål boringen.
+  d: 30
+  h: 12
+
+plattform:          # 6 mm aluminium, alt som veies står på den
+  x: [-270, 100]
+  y: [-100, 100]
+  z: 46               # underkant
+  t: 6
+
+lastcelle:          # ⚠️ enpunkts lastcelle 10 kg, klasse C3 (f.eks. Zemic L6D)
+  l: 130
+  b: 30
+  h: 22
+  kapasitet_kg: 10
+  x_fast: -165        # venstre ende (fast ende på bunnplata)
+  y: -40
+  avstand_t: 12       # aluminiumsklosser under og over cella
+  hull_fra_ende: 15
+
+overlast:           # M6-settskruer i bunnplata under plattformens hjørner
+  klaring: 0.3
+  pos: [[-255, -85], [-255, 85], [85, -85], [85, 85]]
+
+eltemotor:          # ⚠️ 24 V børstet planetgirmotor 120 W, ⌀63, ca. 300–400 o/min. MÅL DIN.
+  pos: [-215, 80]
+  d: 63
+  lengde: 170         # fra flensen og opp, med Hall-teller
+  aksel_d: 12
+  aksel_l: 30
+  flens_hull: 52      # ⚠️ hullsirkel for M5 i flensen
+  masse_kg: 1.6
+  effekt_w: 120
+
+reim:               # HTD 5M, 15 mm bred, under plattformen
+  deling: 5
+  bredde: 15
+  z: 23               # underkant av reima
+  tenner_motor: 20
+  tenner_aksel: 40
+  standard: [560, 600, 610, 635, 650, 665, 695]
+
+trakt:              # melbeholder med U-trau, printes i ett stykke
+  x: [-285, -55]
+  y_senter: 45
+  topp_b: 130         # innvendig bredde (y) øverst
+  vinkel: 60          # skråveggene fra horisontalen
+  vegg: 2.4
+  romvekt: 0.55       # g/cm³, løst mel
+
+melskrue:
+  d: 28
+  kjerne_d: 14
+  stigning: 28
+  aksel_d: 8          # rustfri 316, D-profil
+  klaring: 2          # mellom skrue og trau
+  vinge_t: 2.5
+  utlop_x: 10         # senter av fallrøret
+  segmenter: 2
+
+rorverk:            # rører over sporet, drives med tannhjul fra skruen
+  aksel_d: 6
+  avstand: 36         # akseavstand til skruen (modul 1,5, 12 og 36 tenner)
+  modul: 1.5
+  tenner: [12, 36]
+  r: 16               # radius for trådpinnene
+  pinne_d: 3
+
+melmotor:           # NEMA17 med planetgir 5:1, i utløpsenden
+  kropp: 42
+  lengde: 48
+  gir_l: 38
+  gir_d: 36
+
+saltboks:           # tett boks med silikagel i lokket, ca. 250 ml
+  x: [-125, -65]
+  y: [-85, -26]
+  z: [345, 505]
+  vegg: 2.4
+  bunnvinkel: 50      # skrå bunn ned mot skruen
+
+saltskrue:
+  d: 10
+  kjerne_d: 5
+  stigning: 8
+  aksel_d: 5          # stepperens aksel går rett inn i skruen
+  utlop: [-40]        # x for fallrøret. y er midt i saltboksen.
+
+saltmotor:          # NEMA17 pannekake (20 mm)
+  kropp: 42
+  lengde: 20
+
+vann:
+  dyse: [40, -25]
+  tank: [[-285, -175], [-113, 27], [64, 159]]   # ⚠️ 1 l matboks med lokk
+  pumpe: [[-195, -150], [-100, 5], [180, 235]]  # ⚠️ Kamoer KPHM400 24 V
+
+tak:                # takmodul med sensorer og utløp, i takisolasjonen
+  modul: [[-90, 90], [-80, 80]]
+  tof: [-45, 25]
+  ir: [50, 30]
+  kamera: [-5, -15]
+  servo: [23, 12.5, 29]   # MG90S
+
+varme:              # silikonmatte bak en kjøleribbe på bakveggen, vifte foran kanalen
+  plate: [120, 150, 3]   # bredde (x) × høyde (z) × tykkelse
+  plate_z: 125
+  finner: 6
+  finne_d: 18
+  matte: [100, 100]
+  vifte: 40          # 40 × 40 × 10 mm, 24 V (må gå klar av formen når den dreies løs)
+  vifte_t: 10
+  kanal_vegg: 2.4
+
+elektronikk:
+  bærekort: [[-298, -255], [-90, 40], [175, 305]]   # ESP32-S3-bærekort med drivere
+  kontrollpanel: [[-285, -175], [200, 300]]   # x og z på tårnfronten
+  tankluke: [[-288, -172], [62, 165]]
+
+elektrisk:          # 24 V SELV – all 230 V er inne i en ferdig, CE-merket strømforsyning
+  spenning_v: 24
+  psu_w: 221          # Mean Well GST220A24-R7B
+  motor_w: 120
+  varme_w: 60
+  steppere_w: 18
+  pumpe_w: 10
+  vifte_w: 2
+  elektronikk_w: 9    # ESP32-S3, sensorer og Pi Zero 2 W med kamera
+
+deig:               # standardoppskriften, se oppskrifter/
+  masse_g: 1010       # 560 g mel, ca. 420 g vann, 12 g salt og 20 g surdeig
+  tetthet: 1.05       # g/cm³ rett etter elting
+  maks_heving: 1.0    # +100 % skal få plass i formen

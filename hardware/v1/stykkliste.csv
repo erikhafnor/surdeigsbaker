@@ -1,0 +1,84 @@
+kategori,id,del,spesifikasjon,antall,enhet,ca_pris_per_enhet_nok,ca_sum_nok,sokeord,kjopested_forslag,merknad
+Ramme,R1,"Aluminiumsprofil 2020, spor 6","Kappet: 6 × 508 (stolper), 8 × 293, 8 × 122 og 9 × 260 mm. Til sammen ca. 8,7 m.",1,sett,900,900,2020 aluminium profile slot 6 cut to length,"Motedis, Dold Mechatronik, AliExpress","Bestill ferdig kappet. Endene må være rette (±0,3 mm)."
+Ramme,R2,Hjørnevinkel 2020 med skrue og T-mutter,"Aluminium, for spor 6",56,stk,5,280,2020 corner bracket aluminium slot 6,"AliExpress, Motedis","50 trengs, 6 i reserve."
+Ramme,R3,ACM-plater 3 mm (aluminiumskompositt),"8 plater fra hardware/v1/dxf/ (panel_*), ca. 1,2 m²",1,sett,1500,1500,ACM aluminiumskomposittplate 3 mm laserkutting/CNC,Skiltmaker eller CNC-tjeneste,Send DXF-filene. Pris inkl. kapping og hull.
+Ramme,R4,Aluminiumsplater,"bunnplate 5 mm (475 × 300), mellomgulv og toppplate 3 mm (475 × 300), plattform 6 mm (370 × 200), fra hardware/v1/dxf/",1,sett,1400,1400,aluminium plate 5083 6082 vannskjæring laserkutting,"Metallbutikk, CNC-/vannskjæringstjeneste",Plattformen må være plan. Bunnplata har 4 gjengede M6-hull for overlaststoppene.
+Ramme,R5,Takforing,"3 mm hvit ACM eller PP-plate, 250 × 240 mm (DXF takforing)",1,stk,100,100,PP plate hvit 3 mm,"Plastbutikk, skiltmaker",Kan kappes sammen med R3.
+Ramme,R6,XPS-isolasjon 20 mm,"Ca. 0,6 m²: gulv, sider, bak, tak og 2 lag i dørpluggen",1,plate,200,200,XPS isolasjonsplate 20 mm,Byggevarehus,Kappes med kniv. Venstre kant av dørpluggen skjæres skrått (se sjekkrapporten).
+Ramme,R7,Dørpakning,"EPDM- eller silikonlist, selvklebende, ca. 9 × 3 mm, 2 m",1,stk,80,80,tetningslist EPDM 9x3 selvklebende,"Biltema, Clas Ohlson",Rundt døråpningen.
+Ramme,R8,Magnet og stålskive til døra,Neodym ⌀10 × 3 mm + stålskive M5,2,sett,15,30,neodymmagnet 10x3,"Clas Ohlson, Kjell",1 i reserve.
+Ramme,R9,Hengselbolt M6 × 45 med låsemutter,"Rustfri, sylinderhode",2,stk,10,20,M6x45 rustfri bolt,"Biltema, Clas Ohlson",
+Ramme,R10,Gummipute til føttene,"Selvklebende, ⌀ 24 mm",4,stk,6,24,gummiføtter selvklebende 24 mm,"Clas Ohlson, Biltema",
+Ramme,R11,Kabelgjennomføring,"Gummi, for ⌀ 16 mm hull",4,stk,10,40,kabelgjennomføring gummi 16 mm,"Clas Ohlson, Biltema",
+Form og drivverk,D1,"Brukt Panasonic SD-2500, SD-2501 eller SD-ZB2502 (giver)","Brødmaskin med XL-form. Gir formen, eltebladet og koblingen.",1,stk,350,350,Panasonic SD-2500 / SD-2501 / SD-ZB2502 brødmaskin,Finn.no,Kjør deigen din i maskinens deigprogram og mål formen og koblingen før du låser CAD-målene. Helst to like maskiner.
+Form og drivverk,D2,Ekstra elteblad,Panasonic ADD96E160,1,stk,150,150,Panasonic ADD96E160 kneading blade,"eBay, reservedelsforhandler",Valgfri reserve.
+Form og drivverk,D3,"Planetgirmotor 24 V DC, 120 W","Børstet, ⌀ 63 mm, 300–400 o/min ut, ≥ 2,5 N·m, aksel ⌀ 12 mm med kile eller flate, Hall-teller, 4 × M5 i flensen",1,stk,1100,1100,63mm planetary gear motor 24V 120W 300rpm hall encoder,AliExpress,"MÅL kropp, flens og aksel og oppdater eltemotor: i hardware/spec/v1.yaml."
+Form og drivverk,D4,"Reimskive HTD 5M, 20 tenner","For 15 mm reim, boring 12 mm (= motoraksel), settskruer",1,stk,150,150,HTD5M 20T pulley 15mm belt 12mm bore,"AliExpress, Motedis",
+Form og drivverk,D5,"Reimskive HTD 5M, 40 tenner","For 15 mm reim, boring 12 mm, settskruer",1,stk,200,200,HTD5M 40T pulley 15mm belt 12mm bore,"AliExpress, Motedis",
+Form og drivverk,D6,Tannreim HTD 610-5M-15,"Lukket, 122 tenner, 15 mm bred",1,stk,120,120,HTD 610-5M-15 timing belt,"AliExpress, Motedis, lagerforhandler",Se sjekkrapporten for stramming.
+Form og drivverk,D7,"Aksel ⌀ 12 mm, rustfri","AISI 303/304, 150 mm. Kappes til ca. 105 mm, flate for settskruene.",1,stk,100,100,rustfritt rundstål 12 mm,Metallbutikk,Mål koblingsdelen fra giveren: boringen avgjør enden av akselen.
+Form og drivverk,D8,Kulelager 6001-2RS,"12 × 28 × 8 mm, tettet",2,stk,40,80,6001-2RS bearing,"Lagerforhandler, AliExpress",
+Form og drivverk,D9,Settring ⌀ 12 mm,"Stål eller rustfri, med settskrue",2,stk,30,60,shaft collar 12mm,"AliExpress, Motedis",Holder akselen aksialt i lagersøylen.
+Form og drivverk,D10,"Enpunkts lastcelle 10 kg, klasse C3","Aluminium, for plattform ≥ 300 × 300 mm, ca. 130 × 30 × 22 mm, 2 × M6 i hver ende (f.eks. Zemic L6D eller L6E)",1,stk,600,600,single point load cell 10kg C3 Zemic L6D,"Vektforhandler, AliExpress",Ikke kjøp TAL220 (kryper mer). MÅL hullbildet og oppdater lastcelle: i spec-fila.
+Form og drivverk,D11,Avstandsklosser 30 × 30 × 12 mm,"Aluminium flattstang 30 × 12, kappet, 2 × M6-hull",2,stk,30,60,aluminium flattstang 30x12,Metallbutikk,"Mellom cella og bunnplata, og mellom cella og plattformen."
+Form og drivverk,D12,Overlaststopp M6 × 50,Settskrue (stål) med 2 låsemuttere,4,stk,10,40,M6x50 settskrue,Biltema,"Gjenges inn i bunnplata. Settes 0,3 mm under plattformen."
+Dosering,M1,NEMA17 stepper med planetgir 5:1,"Ca. 0,4 N·m, 1,7 A, med girboks 5,18:1, utgående aksel ⌀ 8 mm (f.eks. StepperOnline 17HS19-1684S-PG5)",1,stk,450,450,NEMA17 planetary gearbox 5:1 stepper 17HS19-1684S-PG5,"StepperOnline, AliExpress",MÅL hullbildet på girflensen og oppdater melmotorfeste ved behov.
+Dosering,M2,NEMA17 pannekakestepper 20 mm,"Ca. 0,16 N·m, 1 A, aksel ⌀ 5 mm med flate (f.eks. 17HS08-1004S)",1,stk,120,120,NEMA17 pancake stepper 20mm 17HS08-1004S,"StepperOnline, AliExpress",Driver saltskruen direkte.
+Dosering,M3,"Rustfri aksel ⌀ 8 mm, AISI 316","400 mm, slipes en flate (0,5 mm) langs hele lengden. Kappes til ca. 335 mm.",1,stk,150,150,rustfri aksel 8 mm 316,"Metallbutikk, Motedis",Melskruen og tannhjulet tres på flaten.
+Dosering,M4,"Rustfri aksel ⌀ 6 mm, AISI 316",300 mm (røreverket). Kappes til ca. 255 mm.,1,stk,60,60,rustfri rundstang 6 mm 316,Metallbutikk,
+Dosering,M5,"Rustfri tråd ⌀ 3 mm, AISI 316",1 m (pinnene i røreverket),1,stk,80,80,rustfri tråd 3 mm 316,"Metallbutikk, Biltema",Bor ⌀ 3 tvers gjennom 6 mm-akselen og lim pinnene.
+Dosering,M6,"Kulelager 608-2RS, rustfritt","8 × 22 × 7 mm, tettet, matgodkjent fett",2,stk,50,100,S608-2RS stainless bearing food grade,"Lagerforhandler, AliExpress",I begge endene av melskruen.
+Dosering,M7,Fleksibel kobling 8–8 mm,"Aluminium, ⌀ 20 × 25 mm",1,stk,60,60,flexible coupling 8mm 8mm D20 L25,AliExpress,Mellom girakselen og melskruen.
+Dosering,M8,Servo MG90S,"Metallgir, 5 V",3,stk,60,180,MG90S servo,"Kjell, AliExpress",Klaffene for mel og salt. 1 i reserve.
+Dosering,M9,Peristaltisk pumpe 24 V,"Kamoer KPHM400 (ca. 400 ml/min), med slange av platinaherdet silikon",1,stk,550,550,Kamoer KPHM400 24V peristaltic pump,"Kamoer, AliExpress",MÅL pumpen og oppdater vann.pumpe: i spec-fila.
+Dosering,M10,"Silikonslange, matgodkjent","Platinaherdet, indre ⌀ som pumpeslangen (ofte 3–4 mm), 2 m",1,stk,120,120,platinum cured silicone tubing food grade,"AliExpress, labforhandler",Byttes en gang i året.
+Dosering,M11,"Rustfritt rør ⌀ 4 × 0,5 mm","AISI 316, 300 mm (dyse og sugerør)",1,stk,80,80,rustfritt rør 4 mm 316,"Metallbutikk, modellbutikk",
+Dosering,M12,Hurtigkobling for slange,"Matgodkjent, med stengeventil på begge sider (f.eks. CPC PLC-serien, 1/8"")",1,par,180,180,CPC PLC quick disconnect food grade 1/8,"Colder/CPC-forhandler, AliExpress","Ved lokket på vanntanken, så tanken kan tas ut."
+Dosering,M13,Vanntank 1 l,"Matboks i PP med lokk, maks 110 × 140 × 95 mm utvendig",1,stk,80,80,matboks 1 l rektangulær,"IKEA, Clas Ohlson",MÅL boksen og oppdater vann.tank: i spec-fila.
+Dosering,M14,Silikagel,"Poser à 5 g, matgodkjent",10,stk,6,60,silica gel 5g food grade,"Clas Ohlson, AliExpress",I saltlokket. Tørkes i ovn.
+Dosering,M15,Silikonsnor ⌀ 2 mm,"Matgodkjent O-ringsnor, 1 m",1,stk,40,40,silikon o-ringsnor 2 mm food grade,"AliExpress, pakningsleverandør",Pakning i saltlokket.
+Varme,V1,"Silikonvarmematte 24 V, 60 W","100 × 100 mm, selvklebende, uten innebygd termostat (f.eks. Keenovo)",1,stk,300,300,silicone heater pad 100x100 24V 60W,"Keenovo, AliExpress","Sjekk at motstanden er ca. 9,6 Ω."
+Varme,V2,Kjøleprofil i aluminium,"120 mm bred, finner ca. 18 mm, kappet til 150 mm",1,stk,200,200,aluminium kjøleprofil 120 mm heatsink,"Elfa/RS, Kjell, AliExpress",Matta limes på den flate baksiden.
+Varme,V3,"Vifte 40 × 40 × 10 mm, 24 V","Stillegående, kulelager",1,stk,90,90,40x40x10 fan 24V,"RS, Mouser, AliExpress",
+Varme,V4,Bimetall-termostat KSD301,"50 °C, NC, manuell reset",2,stk,30,60,KSD301 50C normally closed manual reset,AliExpress,1 i reserve. Skrus mot kjøleprofilen.
+Varme,V5,Termosikring 72–77 °C,"Aksial, 10 A",5,stk,6,30,thermal fuse 72C 10A,"AliExpress, RS","Krympes, ikke loddes. 4 i reserve."
+Elektronikk,E1,"Strømforsyning 24 V, 221 W","Mean Well GST220A24-R7B (9,2 A, CE), med 4-pinners DIN-plugg",1,stk,1300,1300,Mean Well GST220A24-R7B,"RS Norge, Mouser, DigiKey, Electrokit",Den eneste delen med 230 V. Kjøp fra en seriøs forhandler.
+Elektronikk,E2,Strømledning Schuko–C13,"1,8 m",1,stk,80,80,strømkabel schuko C13,"Kjell, Clas Ohlson",
+Elektronikk,E3,Panelkontakt KPJX-PM-4S,"Kycon, 4-pinners strøm-DIN for panel, 7,5 A per pinne",1,stk,90,90,Kycon KPJX-PM-4S,"Mouser, DigiKey",MÅL hullet og pinnefordelingen før du kobler.
+Elektronikk,E4,ESP32-S3-DevKitC-1,N16R8,1,stk,150,150,ESP32-S3-DevKitC-1 N16R8,"Kjell, Electrokit, AliExpress",
+Elektronikk,E5,Motordriver Pololu G2 24v13,"6,5–40 V, 13 A, strømgrense og strømsignal (#2995)",1,stk,500,500,Pololu G2 high-power motor driver 24v13,"Pololu, Electrokit, Mouser",Still strømgrensen til ca. 8 A før første kjøring.
+Elektronikk,E6,Stepperdriver TMC2209,"Modul (f.eks. BTT TMC2209 v1.3), step/dir",2,stk,90,180,TMC2209 stepper driver module,"AliExpress, Electrokit","Still strømmen med potmeteret: 1,2 A (mel), 0,7 A (salt)."
+Elektronikk,E7,Motordriver DRV8871,"Modul (Adafruit 3190), 3,6 A",1,stk,100,100,DRV8871 motor driver breakout,"Electrokit, Kjell, Adafruit","Vannpumpen, framover og bakover."
+Elektronikk,E8,MOSFET-modul D4184,"To AOD4184, 15 A, 3,3 V-styring",3,stk,15,45,D4184 MOSFET module,AliExpress,"Varme (PWM), spolen til varmereléet og vifta."
+Elektronikk,E9,"Relé 24 V for bil, 4-pinners","Spole 24 V, kontakt 20–30 A",3,stk,60,180,relé 24V 4-pol bil,"Biltema, Clas Ohlson","K1 motor, K2 varme, K3 dosering."
+Elektronikk,E10,Relésokkel 4-pinners,Med ledninger,3,stk,35,105,relésokkel 4-pol,Biltema,
+Elektronikk,E11,Sikringsboks for bladsikringer,"6 kurser, 12/24 V",1,stk,120,120,sikringsboks bladsikring 6-veis,"Biltema, Clas Ohlson",
+Elektronikk,E12,Bladsikringer,"1 A, 2 A, 3 A, 5 A og 10 A, 2 av hver",1,sett,60,60,bladsikring sortiment,Biltema,
+Elektronikk,E13,"Buck-omformer 24 → 5 V, 3 A",Inn ≤ 36 V (f.eks. Pololu D24V30F5 eller tilsvarende),2,stk,120,240,Pololu D24V30F5 5V 3A step-down,"Electrokit, Pololu, AliExpress","Én for logikk og Pi, én for servoene."
+Elektronikk,E14,Vektforsterker NAU7802,SparkFun Qwiic Scale (SEN-15242),1,stk,200,200,SparkFun Qwiic Scale NAU7802,"Electrokit, SparkFun","Monteres på bunnplata ved lastcella. Korte, tvunnede ledninger."
+Elektronikk,E15,Avstandssensor VL53L0X,"Modul med 3,3 V-regulator",1,stk,60,60,VL53L0X module,"Kjell, AliExpress",
+Elektronikk,E16,IR-termometer MLX90614,"GY-906, 3,3 V-versjon (BAA)",1,stk,120,120,MLX90614 GY-906 3.3V,"AliExpress, Electrokit",Måler overflaten av deigen.
+Elektronikk,E17,Temperatur og fukt SHT40,"Modul, I²C",1,stk,80,80,SHT40 module,"Electrokit, Adafruit, AliExpress","Kammerlufta, i takmodulen."
+Elektronikk,E18,DS18B20 i rustfri hylse,"Vanntett, ⌀ 6 × 30 mm, 1 m kabel",3,stk,30,90,DS18B20 waterproof stainless 6x30,"Kjell, AliExpress","Deig (formbunnen), kjøleprofil og rom."
+Elektronikk,E19,Trykkfjær for deigføleren,"Ytre ⌀ 6 mm, ca. 15 mm, myk",3,stk,5,15,compression spring 6mm,AliExpress (sortiment),
+Elektronikk,E20,"OLED 1,3"" SH1106","128 × 64, I²C",1,stk,80,80,1.3 inch OLED SH1106 I2C,"AliExpress, Kjell",
+Elektronikk,E21,Dreieknapp EC11 med trykk,Med knott,1,stk,40,40,EC11 rotary encoder knob,"Kjell, AliExpress",
+Elektronikk,E22,Nødstopp 22 mm,"Sopp, vri for å løse ut, 1 NC-kontakt (helst 2)",1,stk,150,150,nødstopp 22mm NC,"Biltema, AliExpress, RS",
+Elektronikk,E23,Mikrobryter KW11 med vippearm,"20 × 10 × 6,4 mm, 5 A",2,stk,15,30,KW11 micro switch,"Kjell, AliExpress",Dørbryteren. 1 i reserve.
+Elektronikk,E24,I/O-utvider PCF8574,"Modul, I²C",1,stk,40,40,PCF8574 module,"AliExpress, Electrokit","Dreieknappens trykk, dør- og nødstoppvakt, summer og lysdioder."
+Elektronikk,E25,Summer og lysdioder,"Aktiv summer 5 V, tofarget LED 5 mm, motstander",1,sett,30,30,active buzzer 5V bicolor LED,Kjell,
+Elektronikk,E26,Koblingskort og kontakter,"Prototypekort 120 × 100 mm, stiftlister, sokler, skrueterminaler, JST-XH",1,sett,250,250,prototypekort skrueterminal JST-XH sett,"Kjell, Electrokit",Bærekortet for ESP32 og driverne.
+Elektronikk,E27,Småkomponenter,"1N4007 × 10, 1000 µF/35 V × 2, P6KE33A × 2, motstander (4,7 k, 10 k, 100 k, 15 k)",1,sett,80,80,1N4007 1000uF 35V P6KE33A,"Kjell, Electrokit",
+Elektronikk,E28,Ledninger,"Silikon 1,0 mm² rød/svart 3 m hver, silikon 0,25 mm² flerfarget 10 m, skjermet 4-leder 1 m, krympestrømpe, hylser",1,sett,400,400,silikonledning 18 AWG 24 AWG,"Kjell, Biltema",Bruk myke silikonledninger over veiespalten.
+Kamera,C1,Raspberry Pi Zero 2 W,Med stiftlist,1,stk,250,250,Raspberry Pi Zero 2 W,"Kjell, Electrokit, Pimoroni",ADR-009.
+Kamera,C2,Raspberry Pi Camera Module 3 Wide,"120° vidvinkel, autofokus",1,stk,450,450,Raspberry Pi Camera Module 3 Wide,"Kjell, Electrokit",
+Kamera,C3,Kamerakabel for Pi Zero,"22 → 15 pinner, 300 mm",1,stk,60,60,Pi Zero camera cable 300mm,"Kjell, Pimoroni",
+Kamera,C4,microSD 32 GB,A1,1,stk,100,100,microSD 32GB A1,Kjell,
+Kamera,C5,Lys for kameraet,"2 × hvit LED 5 mm (høy CRI), NPN-transistor, motstander",1,sett,30,30,white LED 5mm high CRI,"Kjell, Electrokit",Styres fra Pi-en.
+Festemidler,S1,Varmeinnsatser M3 og M5,"M3 × 5,7 (50 stk) og M5 × 7 (10 stk), messing",1,sett,150,150,heat set insert M3 M5,"AliExpress, Kjell",
+Festemidler,S2,Skruer og muttere,"M3 × 8–20, M4 × 10–16, M5 × 10–16 (sylinderhode, rustfri), muttere og skiver",1,sett,300,300,rustfri skrue sortiment M3 M4 M5,"Biltema, Clas Ohlson",
+Festemidler,S3,T-mutter M5 for spor 6,Glidemutter,150,stk,1.5,225,T-nut M5 slot 6,"AliExpress, Motedis",
+Festemidler,S4,Næringsmiddelgodkjent silikon,"Transparent, 80 ml",1,stk,120,120,silikon næringsmiddelgodkjent,"Biltema, byggevarehus",Tetter skjøten mellom beholderen og utløpsrøret.
+Filament,F1,PETG naturfarget for matkontakt,"1 kg, med samsvarserklæring etter EU 10/2011",1,rull,350,350,PETG natural food contact EU 10/2011,"Prusament, Extrudr, 3DJake","Beholder, trau, skruer, saltboks, klaffer og fallrør. Print med dyse av rustfritt stål."
+Filament,F2,PETG,"1 kg, valgfri farge",1,rull,250,250,PETG filament 1 kg,"Prusament, 3DJake",Resten av delene.
+Filament,F3,Dyse av herdet eller rustfritt stål,"0,4 mm, passer printeren",1,stk,150,150,stainless steel nozzle 0.4,Printerprodusent,For delene med matkontakt.
