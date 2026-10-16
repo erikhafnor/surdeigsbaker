@@ -70,6 +70,16 @@ Maskinen kan bare varme, ikke kjøle. Den kan derfor gjøre gjæringen raskere v
 
 Når du velger tidspunkt, viser maskinen hva som er mulig. Med start kl. 07 kan det for eksempel være **tidligst ca. 15:00 og senest ca. 22:00** (anslag, avhenger av E02 og romtemperaturen). Målet er at deigen er klar innen **±30 min** av valgt tid ([akseptansekriterium 3](00-visjon-og-suksesskriterier.md#akseptansekriterier-for-første-surdeigsbrød)).
 
+### Kameraet i v1
+
+Et kamera i lokket ([ADR-009](beslutninger/ADR-009-kamera.md)) gjør scenariet tryggere:
+
+- **Bilde i varslene:** *«Levainen er i rute»* og *«Deigen er klar for forming»* kommer med et bilde av deigen, så du kan se den selv.
+- **Bedre heving:** Kameraet måler hvor høyt deigen står langs bolleveggen, og ToF-sensoren måler i midten. Sammen gir de en sikrere prognose.
+- **Tidlige feilvarsler:** for eksempel *«Bollen er tom – har du glemt surdeigen?»*, *«Deigen klatrer på kroken»* (sammen med motorstrømmen) eller *«Deigen er nær kanten»*.
+
+Bildene analyseres i Home Assistant, på en PC eller i skyen, ikke i selve maskinen. Maskinen virker også uten kamera.
+
 ### Sammenligning
 
 | | v0 (N2, nå) | v1 (N3, mål) |
@@ -92,7 +102,8 @@ Når du velger tidspunkt, viser maskinen hva som er mulig. Med start kl. 07 kan 
 | **Levain i bollen fra 1 ss** | Fermentolyse med levain i bollen gir like godt brød | E04 |
 | **«Levainen er klar»-signal** | Måling som forteller når levainen er klar, uten flytetest | E02, E03 |
 | **Fermenteringsmodell** | Forutsier levain og bulk innenfor ±1 t ut fra temperatur og blandingsforhold | E02 |
-| **Hevemåling** | Bulkhevingen måles innenfor ±5 prosentpoeng | E14 |
+| **Hevemåling** | Bulkhevingen måles innenfor ±5 prosentpoeng med ToF og kamera | E14 |
+| **Feilvarsling** | Kamera og motorstrøm oppdager grove feil | E18 |
 | **Ventevindu** | Hvor lenge deigen tåler å vente ved romtemperatur. Det avgjør hvor presis planen må være. | E16 |
 | **Tidsplanlegger og prognose** | Planlegger baklengs, justerer temperaturen og varsler tidlig om avvik | Fastvare v1 |
 | **Brukergrensesnitt** | Velge tidspunkt på displayet eller i appen, og se planen og prognosen | Fastvare v1 |

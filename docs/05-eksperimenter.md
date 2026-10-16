@@ -21,10 +21,11 @@ Eksperimentene skal fjerne den største usikkerheten **før** vi bygger mekanikk
 | E11 | Dosering av mel | 3 | 🟠 | Er en snegle nøyaktig nok? |
 | E12 | Dosering av vann og salt | 3 | 🟠 | Kan maskinen lage saltlaken selv av tørt salt og vann? Er nøyaktigheten god nok? |
 | E13 | Termikk: varmeplate og kammer | 2 | 🔴 | Holder v0 deigen på 24–27 °C ±0,5 °C med 50 W, uten varme flekker i bunnen? |
-| E14 | Måling av heving i bollen | 3 | 🟠 | Kan bulkheving måles automatisk? |
+| E14 | Måling av heving i bollen | 2–3 | 🟠 | Kan bulkheving måles automatisk med ToF og kamera? |
 | E15 | Ubemannet drift og feilinjeksjon | 4 | 🔴 | Er maskinen trygg å la stå? |
 | E16 | Ventevindu etter bulk | 1–2 | 🔴 | Hvor lenge kan deigen vente ved romtemperatur etter bulk før forming, uten kvalitetstap? |
 | E17 | Eltetest i v0 | 2 | 🔴 | Elter C-kroken i v0 deigen godt nok, uten at deigen bare går rundt med kroken? |
+| E18 | Kamera: feil og aktivitet | 2–3 | 🟠 | Kan kameraet og motorstrømmen sammen oppdage feil og vise hvor aktiv deigen er? |
 
 ## Detaljer
 
@@ -104,8 +105,12 @@ Eksperimentene skal fjerne den største usikkerheten **før** vi bygger mekanikk
 - **Konsekvens:** Gir PID-verdier og maks platetemperatur for fastvaren, og viser om 50 W er nok.
 
 ### E14 – Måling av heving i bollen 🟠
-- **Hypotese:** En ToF-sensor eller et kamera over bollen kan måle bulkheving med ±5 prosentpoeng sammenlignet med måleglasset.
-- **Metode:** Kjør målingene parallelt med måleglasset (aliquot jar) under E05 og E09.
+- **Hypotese:** ToF-sensoren (høyden i midten) og kameraet (linjen der deigen møter bolleveggen) gir sammen bulkhevingen med ±5 prosentpoeng sammenlignet med måleglasset. Hver for seg gir de trolig ±5–10 (se [`forskning/kamera-og-ai.md`](forskning/kamera-og-ai.md)).
+- **Metode:**
+  1. Kalibrer først med vann: 250 ml av gangen fra 0,5 til 3 l, med en dråpe melk for kontrast og en hvit flottør for ToF-sensoren.
+  2. Kjør deretter målingene parallelt med et måleglass (aliquot jar) i kammeret under vanlige bakinger.
+  3. Prøv også en 8 × 8 ToF med flere soner (VL53L8CX) hvis ToF-sensoren og kameraet ikke holder.
+- **Konsekvens:** Avgjør om v1 skal ha kamera, 8 × 8 ToF eller begge ([ADR-009](beslutninger/ADR-009-kamera.md)).
 
 ### E15 – Ubemannet drift og feilinjeksjon 🔴
 - **Metode:** Først 10 tørrkjøringer uten deig, deretter 5 kjøringer med vann og til slutt 3 med deig. Feilinjeksjon: koble fra en temperaturføler, simuler en fastlåst MOSFET (KSD301 og termosikringen skal løse ut), strømbrudd midt i et program, tapt nettverk, fastkjørt motor og lokket åpnet mens kroken går.
@@ -123,6 +128,17 @@ Eksperimentene skal fjerne den største usikkerheten **før** vi bygger mekanikk
 - **Metode:** Testdeig uten surdeig: 500 g hvetemel, 380 g vann og 10 g salt. Elt med 30, 50 og 70 % fart. Film ovenfra, logg motorstrømmen og ta vindusprøve hvert 3. minutt. Gjenta med 77 % hydrering som i den maskinvennlige oppskriften. Se [`hardware/v0/README.md`](../hardware/v0/README.md#76-e17-eltetest-gjør-dette-tidlig).
 - **Bestått når:** Vindusprøven er bestått på ≤ 12 min, motorstrømmen er under 3 A, og bollen står stille.
 - **Hvis ikke:** Prøv i rekkefølge: høyere fart, kortere intervall mellom retningsskift, spiralkrok, krok ut fra senter. Det siste krever ny CAD.
+
+### E18 – Kamera: feil og aktivitet 🟠
+- **Bakgrunn:** Ferdige bildemodeller er usikre på fine vurderinger. Motorstrømmen er det beste signalet for feil under eltingen ([`forskning/kamera-og-ai.md`](forskning/kamera-og-ai.md)).
+- **Hypotese:** En ferdig bildemodell (lokalt eller i skyen) oppdager grove feil uten trening: tom bolle, glemt surdeig, deig over kanten og mel som ikke er blandet inn. Finere feil (deigen klatrer på kroken, danner ikke ball, klistrer seg fast) oppdages med motorstrøm og en liten modell trent på egne bilder.
+- **Metode:**
+  1. Ta bilder hvert 5.–10. sekund under eltingen, og hvert 2. minutt under bulken.
+  2. Merk feil med en knapp i Home Assistant mens det skjer.
+  3. Sammenlign bildemodellen og motorstrømmen med merkingen.
+  4. Logg også teksturen og forskjellen mellom bilder som mål på aktivitet (bobler).
+- **Bestått når:** Grove feil oppdages i ≥ 90 % av tilfellene med ≤ 1 falsk alarm per baking.
+- **Konsekvens:** Avgjør om v1 trenger en trent modell, og om den kan kjøre utenfor maskinen ([ADR-009](beslutninger/ADR-009-kamera.md)).
 
 ## Utstyr til eksperimentene i fase 0–1
 

@@ -23,3 +23,7 @@ Hva som er det beste innen åpne verktøy for agentstyrt design. Rapportene er s
 - [Simulering, produksjon og visualisering](verktoy/simulering-og-produksjon.md)
 - [Elektronikkdesign (EDA)](verktoy/elektronikk-eda.md)
 - [Kretssimulering, fastvare og lab](verktoy/firmware-simulering-lab.md)
+
+## Andre undersøkelser
+
+- [Kamera og AI i maskinen](kamera-og-ai.md) (2026-10-16): maskinvare, hva andre har gjort, metoder og praktiske problemer. Grunnlag for [ADR-009](../beslutninger/ADR-009-kamera.md).

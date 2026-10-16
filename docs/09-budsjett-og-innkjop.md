@@ -31,6 +31,8 @@ Fra [`hardware/v0/stykkliste.csv`](../hardware/v0/stykkliste.csv):
 | Filament (PETG ca. 1,1 kg, litt TPU) | 700 |
 | **Sum** | **ca. 8 900** |
 
+**Valgfritt kamera** for E14, E17 og E18 ([ADR-009](beslutninger/ADR-009-kamera.md)): Raspberry Pi Zero 2 W, Camera Module 3 Wide, minnekort, glassvindu, varmemotstand og hvitt LED-lys, ca. 900–1 100 kr.
+
 Bestill bollen, motoren og varmeelementet først. De må måles før du printer (se [byggeveiledningen](../hardware/v0/README.md#2-mål-delene-dine-før-du-printer)).
 
 ## Fase 0 – måleverktøy (kjøp nå)

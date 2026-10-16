@@ -62,7 +62,7 @@ Detaljer, tidslinje og risikoregister: [`docs/04-veikart.md`](docs/04-veikart.md
 | [02 – Forskningsplan](docs/02-forskningsplan.md) | Forskningsspørsmål, forskningsområdene FO1–FO8 og foreløpige funn |
 | [03 – Konsepter](docs/03-konsepter.md) | Fire konsepter, en Pugh-matrise og hvorfor v0 ble K2 uten kjøling |
 | [04 – Veikart](docs/04-veikart.md) | Faser, porter, risikoer og arbeidsform |
-| [05 – Eksperimenter](docs/05-eksperimenter.md) | E01–E17 |
+| [05 – Eksperimenter](docs/05-eksperimenter.md) | E01–E18 |
 | [06 – Sikkerhet](docs/06-sikkerhet.md) | Elektrisk sikkerhet, brannsikkerhet, matkontakt og regelverk ⚠️ |
 | [07 – Arkitektur](docs/07-arkitektur.md) | Moduler, sensorer, effekt, termikk, styring og programvare |
 | [08 – Kilder](docs/08-kilder.md) | Leseliste og kjente løsninger |

@@ -126,7 +126,7 @@ Forstudien (oktober 2026) har allerede gitt en del svar. De står under hvert om
 | Litteraturstudie | FO1, FO3, FO5 | Kunnskapsnotat per område |
 | Produktanalyse og teardown | FO2, FO4 | Tabell over kjente løsninger og teardown-notat med bilder |
 | Patentsøk | FO2 | Liste over relevante patenter og ideer (og et første blikk på fri bruksrett, hvis prosjektet kan bli kommersielt) |
-| Eksperimenter (E01–E17) | FO1, FO3–FO5 | Eksperimentrapporter og data i `data/` |
+| Eksperimenter (E01–E18) | FO1, FO3–FO5 | Eksperimentrapporter og data i `data/` |
 | Nettsamfunn og fagfolk | Alle | Innspill. Mulige fagmiljøer: Nofima (korn- og bakeforskning), lokale håndverksbakerier og makerspace eller verksted ved universitetet |
 | Prototyping | FO4–FO6 | Fungerende delsystemer |
 

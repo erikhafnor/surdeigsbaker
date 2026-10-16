@@ -44,7 +44,8 @@ flowchart TB
 | Kammer- og deigtemperatur | DS18B20 (vanntett), PT1000 + MAX31865 for bedre nøyaktighet | Deigtemperaturen måles med føler mot bollen eller stikkføler |
 | Romklima | SHT4x | Romtemperaturen brukes i modellen (som i Panasonic-brødmaskiner). Fukt i kammeret gir varsel om kondens. |
 | Heving i surdeigsglass | VL6180X (ToF, kort rekkevidde) | Dekkvindu må kalibreres for krysstale og dugg |
-| Heving i bollen | VL53L1X (minimum ca. 4 cm), eventuelt kamera | E14 |
+| Heving i bollen | v0: VL53L0X. Tillegg: kamera (Pi Zero 2 W + Camera Module 3 Wide) ved kanten. Senere kanskje 8 × 8 ToF. | E14, [ADR-009](beslutninger/ADR-009-kamera.md) |
+| Feil og aktivitet | Motorstrøm (INA226) og kamera | E18 |
 | Vekt (dosering) | 5–10 kg lastcelle + NAU7802 eller HX711 | Tarer før hver tilsetning. Temperaturdrift ved 4–30 °C må kompenseres. |
 | CO₂ (valgfritt, E03) | STC31 (0–100 vol%) eller SprintIR-6S-100 | SCD41 blir mettet |
 | Kjøling | Kompressorenhet (ombygd vinkjøleskap eller kjøleboks) eller Peltier | Se avsnitt 4 |

@@ -15,3 +15,4 @@ Mal: [`ADR-000-mal.md`](ADR-000-mal.md). Filnavn: `ADR-NNN-kort-tittel.md`.
 | [ADR-006](ADR-006-steking-i-vanlig-ovn.md) | Maskinen leverer stekeklar deig, og stekingen skjer i vanlig ovn | **Vedtatt** | G0 |
 | [ADR-007](ADR-007-ingen-kjoling.md) | Ingen kjøling i maskinen – kald etterheving skjer i brukerens kjøleskap | **Vedtatt** | G0 |
 | [ADR-008](ADR-008-v0-design.md) | Første maskindesign (v0): benkemaskin med C-krok, varmeplate og 24 V | **Vedtatt** (revideres etter E17) | G2 |
+| [ADR-009](ADR-009-kamera.md) | Kamera i maskinen – analysen gjøres utenfor maskinen («tynn kant») | Foreslått | G3 |
