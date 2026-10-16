@@ -83,7 +83,7 @@ Forstudien (oktober 2026) har allerede gitt en del svar. De står under hvert om
 **Metode:** Teardown av en brødmaskin og en kjøkkenmaskin, enkle prototyper og eksperimentene E10–E12.
 
 **Foreløpige funn**
-- Saltlake gjør salt til væskedosering.
+- Saltlake gjør salt til væskedosering. Maskinen kan lage saltlaken selv av tørt salt og vann, så brukeren bare fyller på mel, salt og vann (E12).
 - Ved å bygge levain i bollen slipper vi å dosere klissen surdeig.
 - No-knead-metoden og sømsiden opp gjør at vi kanskje slipper forming og snitting.
 - Ifølge America's Test Kitchen ble no-knead-brød med 80 % hydrering flatt, mens 68 % hevet godt. **Moderat hydrering er viktig for brød uten forming.**

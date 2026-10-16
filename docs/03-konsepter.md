@@ -44,7 +44,7 @@ Et isolert kammer med svak varme (kompressorkjøling i den opprinnelige versjone
 
 ```text
 ┌───────────────────────────────────┐
-│  Melbeholder      Vann/saltlake   │ ← påfylles ukentlig (N3)
+│  Melbeholder      Vann · salt     │ ← påfylles ukentlig (N3)
 ├────────── lokk ───────────────────┤
 │  girmotor → krok   ToF   innløp   │
 ├───────────────────────────────────┤

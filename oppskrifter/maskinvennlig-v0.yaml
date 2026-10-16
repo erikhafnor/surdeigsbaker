@@ -24,7 +24,8 @@ ingredienser:
   mel_siktet: 500        # inkl. 40 g i levain
   mel_sammalt: 110       # inkl. 10 g i levain
   vann: 470              # inkl. 50 g i levain og vannet i saltlaken. Gir ca. 77 % hydrering.
-  salt: 12               # ca. 2 %, dosert som 20 % saltlake (60 g lake = 12 g salt + 48 g vann)
+  salt: 12               # ca. 2 %, dosert som 20 % saltlake (60 g lake = 12 g salt + 48 g vann).
+                         # v0: du blander saltlaken. v1: maskinen lager den selv av tørt salt og vann (E12).
   surdeig_start: 20      # ca. 1 ss fra kjøleskapet. Tilsettes av mennesket (N2/N3).
 
 maal:

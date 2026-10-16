@@ -89,7 +89,7 @@ Alt som trengs, ligger i [`hardware/v0/`](../hardware/v0/README.md): STL, STEP, 
 - [ ] Forbedret elte- og hevemodul basert på erfaringene fra v0: kroken, bollen, lastceller og bedre hevemåling (E14)
 - [ ] Lavere maskin (motoren ved siden av bollen?) og bedre varmestyring (**E13**)
 - [ ] Overlevering: bolle og hevekurv som er lette å ta ut og tømme for hånd (E10)
-- [ ] Dosering (for N3): snegle for mel, pumpe for vann og saltlake (E11 og E12)
+- [ ] Dosering (for N3): snegle for mel, doserer for tørt salt og pumpe for vann. Maskinen lager saltlaken selv (E11 og E12).
 - [ ] Tidsplanlegger som treffer et valgt tidspunkt for forming, basert på fermenteringsmodellen fra E02
 - [ ] Kretskort i KiCad 10 i stedet for hullkortet. Fortsatt bare 24 V (SELV). Se [verktøykjeden](10-verktoykjede.md).
 

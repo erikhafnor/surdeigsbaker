@@ -11,7 +11,7 @@ flowchart TB
   subgraph ING["Ingrediensmodul (N3)"]
     MEL["Melbeholder<br/>snegle og omrører"]
     VANN["Vanntank<br/>temperering og pumpe"]
-    LAKE["Saltlake<br/>pumpe"]
+    SALT["Saltbeholder<br/>doserer · lager saltlake"]
   end
   subgraph KAM["Hevekammer 4–30 °C"]
     BOLLE["Avtakbar bolle<br/>på lastceller"]
@@ -52,7 +52,8 @@ flowchart TB
 | Eltemotor | 100–200 W girmotor, ca. 80–150 o/min, ca. 5–10 N·m (anslag). I K1 brukes brødmaskinens motor. | Detekterer blokkering ut fra strømtrekk, termisk motorvern |
 | Lokk og bolle til stede | Endebrytere eller reed-brytere | Kroken stopper når lokket åpnes eller bollen er tatt ut |
 | Melsnegle (N3) | Steppermotor og snegle av rustfritt stål med omrører | Kjøres raskt til ca. 90 % av mengden, deretter i pulser styrt av vekta |
-| Vann og saltlake (N3) | Peristaltiske pumper | Doserer etter vekt, ikke volum |
+| Vann (N3) | Peristaltisk pumpe | Doserer etter vekt, ikke volum |
+| Salt (N3) | Liten snegle eller cellehjulsdoserer fra en tett beholder utenfor kammeret | Doseres etter vekt og blandes med vann til saltlake, i bollen eller i en saltkopp (E12) |
 
 ## 3. Effektbudsjett
 

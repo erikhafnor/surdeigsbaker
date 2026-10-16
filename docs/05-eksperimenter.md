@@ -19,7 +19,7 @@ Eksperimentene skal fjerne den største usikkerheten **før** vi bygger mekanikk
 | E09 | Kald bulkheving | 1 | 🟠 | Kan kald heving skje i bollen (i brukerens kjøleskap)? |
 | E10 | Overlevering for hånd | 1–3 | 🟠 | Er det lett å få deigen ut av bollen eller kurven og ned i gryta? |
 | E11 | Dosering av mel | 3 | 🟠 | Er en snegle nøyaktig nok? |
-| E12 | Dosering av vann og saltlake | 3 | 🟠 | Fungerer saltlake? Er nøyaktigheten god nok? |
+| E12 | Dosering av vann og salt | 3 | 🟠 | Kan maskinen lage saltlaken selv av tørt salt og vann? Er nøyaktigheten god nok? |
 | E13 | Termikk: varmeplate og kammer | 2 | 🔴 | Holder v0 deigen på 24–27 °C ±0,5 °C med 50 W, uten varme flekker i bunnen? |
 | E14 | Måling av heving i bollen | 3 | 🟠 | Kan bulkheving måles automatisk? |
 | E15 | Ubemannet drift og feilinjeksjon | 4 | 🔴 | Er maskinen trygg å la stå? |
@@ -85,9 +85,14 @@ Eksperimentene skal fjerne den største usikkerheten **før** vi bygger mekanikk
 - **Mål:** ±1 % på 550 g og ±2 g på små mengder til levain. Mål også tid og hvor ofte melet henger seg opp («bridging»).
 - **Metode:** Prototyp på en snegle. Test med siktet mel og sammalt mel ved ulik luftfuktighet. Doseringen stoppes av vekta (lastcelle).
 
-### E12 – Dosering av vann og saltlake 🟠
-- **Mål:** Vann ±1 %. Saltlaken skal ha en konsentrasjon som ikke krystalliserer i slangene ved 4–25 °C.
-- **Metode:** Peristaltisk pumpe og magnetventil styrt av vekta. Saltlake på 20 % (mettet er ca. 26 %, så vi holder god avstand). Vannmengden i saltlaken trekkes fra i oppskriften.
+### E12 – Dosering av vann og salt 🟠
+- **Bakgrunn:** Brukeren skal bare fylle på mel, salt og vann. Maskinen lager saltlaken selv ([`11-bruksscenarier.md`](11-bruksscenarier.md#slik-lager-maskinen-saltlaken)).
+- **Mål:** Vann ±1 %. Salt ±0,5 g av 12 g. Saltet skal være jevnt fordelt i deigen. Saltet i beholderen skal ikke klumpe seg på en uke i et vanlig kjøkken.
+- **Metode:**
+  - Vann: peristaltisk pumpe styrt av vekta.
+  - Salt: liten snegle eller cellehjulsdoserer, stoppet av vekta. Test fint bordsalt og fint havsalt ved 40, 60 og 75 % relativ luftfuktighet.
+  - Saltlake: (a) ferdig 20 % saltlake (referanse), (b) tørt salt og vann dosert rett i bollen, (c) saltlake laget i en saltkopp i maskinen. To brød per variant. Smak salt på tre steder i krummen og mål ledningsevne eller saltinnhold hvis mulig.
+- **Konsekvens:** Avgjør om v1 trenger saltkopp (c), eller om saltlake i bollen (b) holder.
 
 ### E13 – Termikk: varmeplate og kammer 🔴
 - **Bakgrunn:** Maskinen har bare varme ([ADR-007](beslutninger/ADR-007-ingen-kjoling.md)). I v0 står bollen på en aluminiumsplate med et silikonelement på 50 W ([ADR-008](beslutninger/ADR-008-v0-design.md)).
