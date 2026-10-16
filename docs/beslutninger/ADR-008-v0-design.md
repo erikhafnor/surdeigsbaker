@@ -1,6 +1,6 @@
 # ADR-008: Første maskindesign (v0) – benkemaskin med C-krok, varmeplate og 24 V
 
-- **Status:** vedtatt som utgangspunkt for bygging. Revideres etter E17 (eltetest) og det første brødet.
+- **Status:** erstattet av [ADR-010](ADR-010-v1-arkitektur.md). v0 bygges ikke, men designet beholdes som referanse.
 - **Dato:** 2026-10-16
 - **Port:** G2 (framskyndet, se under)
 

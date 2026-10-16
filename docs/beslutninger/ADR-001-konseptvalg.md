@@ -1,6 +1,6 @@
 # ADR-001: Konseptvalg for prototype v1
 
-- **Status:** åpen. Avgjøres ved port G3.
+- **Status:** avgjort i [ADR-010](ADR-010-v1-arkitektur.md) (brødmaskinform med elteblad i bunnen, vekt og dosering).
 - **Dato:** –
 - **Port:** G3
 
