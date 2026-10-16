@@ -1,0 +1,160 @@
+# Surdeigsbaker v1 – program and user interface (shared by the machine and the simulation)
+#
+# The bake program is the external component `bakeplan` (C++ with host tests in
+# firmware/v1/test/). It tells this file what the machine should do through on_* callbacks.
+# The callbacks call scripts that the hardware package (pakker/maskinvare.yaml) or the
+# simulation package (pakker/simulator.yaml) implement:
+#
+#   knead_set(speed)                    -1..1, sign = direction
+#   dose_set(ingredient, run, reverse)  ingredient = "vann", "mel" or "salt"
+#   flap_set(ingredient, open)          "mel" or "salt"
+#   heat_set(temperature)               NaN = heat off
+#   quiet_set(quiet)                    weighing: heater, fan and motor must be off
+#   notify(message)                     push message to the user
+#
+# Both packages must also define `time` with id `wall_clock`.
+# User-facing names and messages are Norwegian; ids and comments are English (ADR-003).
+
+bakeplan:
+  id: baker
+  on_knead:
+    - script.execute: {id: knead_set, speed: !lambda "return speed;"}
+  on_dose:
+    - script.execute: {id: dose_set, ingredient: !lambda "return ingredient;", run: !lambda "return run;", reverse: !lambda "return reverse;"}
+  on_flap:
+    - script.execute: {id: flap_set, ingredient: !lambda "return ingredient;", open: !lambda "return open;"}
+  on_setpoint:
+    - script.execute: {id: heat_set, temperature: !lambda "return temperature;"}
+  on_quiet:
+    - script.execute: {id: quiet_set, quiet: !lambda "return quiet;"}
+  on_status:
+    - text_sensor.template.publish: {id: status_text, state: !lambda "return status;"}
+  on_message:
+    - text_sensor.template.publish: {id: message_text, state: !lambda "return message;"}
+    - text_sensor.template.publish: {id: plan_text, state: !lambda "return id(baker).plan_summary();"}
+    - script.execute: {id: notify, message: !lambda "return message;"}
+  on_ready:
+    - script.execute: {id: notify, message: "Deigen er klar for forming. Form brødet og sett det i kjøleskapet."}
+
+script:
+  # Hours from now until the chosen "ready for shaping" time (tomorrow if it has passed).
+  - id: start_bake
+    then:
+      - bakeplan.start:
+          id: baker
+          cold_starter: !lambda "return id(cold_starter).state;"
+          hours: !lambda |-
+            auto now = id(wall_clock).now();
+            if (!now.is_valid()) return 11.0f;
+            int target = id(ready_at).hour * 60 + id(ready_at).minute;
+            int d = target - (now.hour * 60 + now.minute);
+            if (d < 30) d += 24 * 60;
+            return d / 60.0f;
+
+datetime:
+  - platform: template
+    id: ready_at
+    type: time
+    name: "Klar for forming kl."
+    icon: mdi:clock-check-outline
+    optimistic: true
+    restore_value: true
+    initial_value: "17:30"
+
+switch:
+  - platform: template
+    id: cold_starter
+    name: "Surdeigen er rett fra kjøleskapet"
+    icon: mdi:snowflake
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+
+button:
+  - platform: template
+    name: "Start"
+    icon: mdi:play
+    on_press:
+      - script.execute: start_bake
+  - platform: template
+    name: "Fortsett"
+    icon: mdi:play-pause
+    on_press:
+      - bakeplan.confirm: baker
+  - platform: template
+    name: "Deigen er formet"
+    icon: mdi:check
+    on_press:
+      - bakeplan.shaped: baker
+  - platform: template
+    name: "Avbryt"
+    icon: mdi:stop
+    on_press:
+      - bakeplan.abort: baker
+  - platform: template
+    name: "Lagre tom form"
+    icon: mdi:scale-balance
+    entity_category: config
+    on_press:
+      - bakeplan.store_empty_pan: baker
+
+text_sensor:
+  - platform: template
+    id: status_text
+    name: "Status"
+    icon: mdi:bread-slice-outline
+  - platform: template
+    id: message_text
+    name: "Melding"
+    icon: mdi:message-text-outline
+  - platform: template
+    id: plan_text
+    name: "Plan"
+    icon: mdi:calendar-clock
+
+sensor:
+  - platform: template
+    name: "Klar om"
+    unit_of_measurement: h
+    accuracy_decimals: 1
+    icon: mdi:timer-sand
+    update_interval: 30s
+    lambda: "return id(baker).eta_hours();"
+  - platform: template
+    name: "Heving"
+    unit_of_measurement: "%"
+    accuracy_decimals: 0
+    icon: mdi:arrow-expand-up
+    update_interval: 30s
+    lambda: "return id(baker).rise_pct();"
+  - platform: template
+    name: "Deighøyde"
+    unit_of_measurement: mm
+    accuracy_decimals: 0
+    update_interval: 30s
+    lambda: "return id(baker).dough_height_mm();"
+  - platform: template
+    name: "Surdeig i formen"
+    unit_of_measurement: g
+    accuracy_decimals: 0
+    icon: mdi:spoon-sugar
+    update_interval: 30s
+    lambda: "return id(baker).starter_g();"
+  - platform: template
+    name: "Vekt i formen"
+    unit_of_measurement: g
+    accuracy_decimals: 1
+    icon: mdi:scale
+    update_interval: 2s
+    lambda: "return id(baker).net_weight_g();"
+  - platform: template
+    name: "Surdeigens aktivitet"
+    accuracy_decimals: 2
+    icon: mdi:bacteria-outline
+    update_interval: 60s
+    lambda: "return id(baker).running() ? id(baker).activity() : id(baker).activity_history();"
+  - platform: template
+    name: "Ønsket deigtemperatur"
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+    update_interval: 30s
+    lambda: "return id(baker).setpoint_c();"

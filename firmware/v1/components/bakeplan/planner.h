@@ -27,7 +27,7 @@
 #include <cmath>
 #include <string>
 
-namespace bakeplan {
+namespace surdeig {
 
 constexpr int kMaxDilutions = 4;
 constexpr int kRateTablePoints = 15;
@@ -260,4 +260,4 @@ class Controller {
   float bulk_baseline_eq_h_ = 0.0f;  // bulk equivalent hours when the post-fold baseline was taken
 };
 
-}  // namespace bakeplan
+}  // namespace surdeig

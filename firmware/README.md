@@ -1,6 +1,8 @@
 # Fastvare og programvare
 
-**[`v0/`](v0/README.md): ESPHome-fastvaren for maskinen i [`hardware/v0/`](../hardware/v0/README.md).** Validert med `esphome config`, ikke testet på maskinvare ennå.
+**[`v1/`](v1/README.md): ESPHome-fastvaren for maskinen i [`hardware/v1/`](../hardware/v1/README.md)** ([ADR-010](../docs/beslutninger/ADR-010-v1-arkitektur.md)). Bakeprogrammet (tidsplan, dosering etter vekt, arbeidstrinn) er C++ med tester på PC og simulering av hele bakedager. Validert med `esphome config`, ikke testet på maskinvare ennå.
+
+[`v0/`](v0/README.md): fastvaren for v0. Beholdes som referanse, men v0 bygges ikke.
 
 Opprinnelig planlagt struktur (før ADR-008):
 

@@ -16,7 +16,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-using namespace bakeplan;
+using namespace surdeig;
 
 static int failures = 0;
 

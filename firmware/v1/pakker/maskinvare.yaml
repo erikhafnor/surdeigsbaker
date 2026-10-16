@@ -1,0 +1,464 @@
+# Surdeigsbaker v1 – hardware (ESP32-S3-DevKitC-1 on the carrier board)
+#
+# Pin map and wiring: hardware/v1/koblingsskjema.md. Implements the scripts that
+# pakker/logikk.yaml calls, plus the firmware safety layer for the heater and the motor.
+#
+# SAFETY: the door switch, the emergency stop and the KSD301 cut the relay coils in
+# hardware, independently of this firmware. The firmware is an extra layer, not the only one.
+
+time:
+  - platform: sntp
+    id: wall_clock
+    timezone: Europe/Oslo
+
+i2c:
+  - id: bus_a                 # tower and base: NAU7802, OLED, PCF8574
+    sda: GPIO8
+    scl: GPIO9
+    frequency: 100kHz
+    scan: true
+  - id: bus_b                 # ceiling module: VL53L0X, MLX90614, SHT40 (longer cable)
+    sda: GPIO17
+    scl: GPIO18
+    frequency: 50kHz
+    scan: true
+
+one_wire:
+  - platform: gpio
+    pin: GPIO14
+
+pcf8574:
+  - id: pcf
+    i2c_id: bus_a
+    address: 0x20
+
+bakeplan:
+  weight: scale_weight
+  distance: tof_mm
+  dough_temperature: t_dough
+  room_temperature: t_room
+  door: door_closed
+  emergency_stop: estop_ok
+  tof_to_bottom: ${tof_to_bottom}
+
+globals:
+  - id: quiet_now             # weighing: heater, fan and motor off
+    type: bool
+    initial_value: "false"
+  - id: motor_blocked_until   # set after an overcurrent
+    type: uint32_t
+    initial_value: "0"
+  - id: overcurrent_s
+    type: int
+    initial_value: "0"
+  - id: heat_on               # the program wants heat (a setpoint is active)
+    type: bool
+    initial_value: "false"
+
+# ---------------------------------------------------------------- outputs
+
+output:
+  - platform: ledc            # Pololu G2: PWM
+    id: g2_pwm
+    pin: GPIO4
+    frequency: 20000Hz
+    channel: 0
+  - platform: gpio
+    id: g2_dir
+    pin: GPIO5
+  - platform: gpio            # G2 SLP: low = driver asleep (10 kΩ pull-down on the board)
+    id: g2_slp
+    pin: GPIO6
+  - platform: ledc            # flour screw: STEP pulses, frequency = speed
+    id: flour_step
+    pin: GPIO10
+    frequency: ${flour_step_hz}Hz
+    channel: 2
+  - platform: gpio
+    id: flour_dir
+    pin: GPIO11
+  - platform: ledc            # salt screw
+    id: salt_step
+    pin: GPIO12
+    frequency: ${salt_step_hz}Hz
+    channel: 4
+  - platform: gpio            # TMC2209 EN (low = on)
+    id: steppers_en
+    pin:
+      number: GPIO13
+      inverted: true
+  - platform: gpio            # DRV8871: IN1 = water in, IN2 = backwards
+    id: pump_in1
+    pin: GPIO15
+  - platform: gpio
+    id: pump_in2
+    pin: GPIO16
+  - platform: slow_pwm        # heater mat via Q1
+    id: heater_pwm
+    pin: GPIO2
+    period: 2s
+  - platform: gpio            # Q2: lets K2 (heater relay) pull in
+    id: k2_enable
+    pin: GPIO21
+  - platform: gpio            # Q3: fan
+    id: fan_out
+    pin: GPIO47
+  - platform: ledc
+    id: servo_flour_pwm
+    pin: GPIO39
+    frequency: 50Hz
+    channel: 6
+  - platform: ledc
+    id: servo_salt_pwm
+    pin: GPIO40
+    frequency: 50Hz
+    channel: 7
+  - platform: gpio
+    id: buzzer
+    pin: {pcf8574: pcf, number: 3, mode: {output: true}}
+  - platform: gpio
+    id: led_green
+    pin: {pcf8574: pcf, number: 4, mode: {output: true}, inverted: true}
+  - platform: gpio
+    id: led_red
+    pin: {pcf8574: pcf, number: 5, mode: {output: true}, inverted: true}
+  # The PID writes here. The heater only gets the demand when nothing forbids it.
+  - platform: template
+    id: heater_gate
+    type: float
+    write_action:
+      - lambda: |-
+          float lvl = state;
+          const float hs = id(t_heatsink).state;
+          if (id(quiet_now) || !id(heat_on)) lvl = 0.0f;
+          if (std::isnan(hs) || hs > ${heatsink_max_c}) lvl = 0.0f;      // sensor missing or too hot
+          if (std::isnan(id(t_dough).state)) lvl = 0.0f;
+          id(heater_pwm).set_level(lvl);
+
+servo:
+  - id: servo_flour
+    output: servo_flour_pwm
+    auto_detach_time: 1s
+    transition_length: 300ms
+  - id: servo_salt
+    output: servo_salt_pwm
+    auto_detach_time: 1s
+    transition_length: 300ms
+
+climate:
+  - platform: pid
+    id: chamber
+    name: "Varme"
+    sensor: t_dough
+    default_target_temperature: 24°C
+    heat_output: heater_gate
+    visual:
+      min_temperature: 16°C
+      max_temperature: 30°C
+      temperature_step: 0.1
+    control_parameters:       # ⚠️ start values, run the PID autotune with dough in the pan (README)
+      kp: 0.35
+      ki: 0.0006
+      kd: 0.0
+
+# ---------------------------------------------------------------- sensors
+
+sensor:
+  - platform: nau7802
+    i2c_id: bus_a
+    id: scale_weight
+    name: "Vekt rå"
+    internal: true
+    gain: 128
+    ldo_voltage: 3.0V
+    samples_per_second: 10
+    update_interval: 100ms
+    filters:
+      - calibrate_linear:     # ⚠️ calibrate with a known weight (README, step "Kalibrer vekta")
+          - ${scale_raw_zero} -> 0
+          - ${scale_raw_ref} -> ${scale_ref_g}
+  - platform: vl53l0x
+    i2c_id: bus_b
+    id: tof_mm
+    name: "Avstand til deigen"
+    update_interval: 1s
+    long_range: false
+    timing_budget: 100ms
+    unit_of_measurement: mm
+    filters:
+      - multiply: 1000
+  - platform: dallas_temp
+    id: t_dough
+    address: ${ds18b20_dough}
+    name: "Deigtemperatur"
+    update_interval: 10s
+  - platform: dallas_temp
+    id: t_heatsink
+    address: ${ds18b20_heatsink}
+    name: "Kjøleribbe"
+    update_interval: 5s
+  - platform: dallas_temp
+    id: t_room
+    address: ${ds18b20_room}
+    name: "Romtemperatur"
+    update_interval: 60s
+  - platform: mlx90614
+    i2c_id: bus_b
+    update_interval: 30s
+    object:
+      name: "Deigoverflate"
+    ambient:
+      name: "Taket i kammeret"
+  - platform: sht4x
+    i2c_id: bus_b
+    update_interval: 30s
+    temperature:
+      name: "Kammerluft"
+    humidity:
+      name: "Luftfuktighet i kammeret"
+  - platform: adc             # G2 current sense (about 40 mV/A, check your board)
+    id: motor_cs
+    pin: GPIO1
+    attenuation: 2.5db
+    update_interval: 200ms
+    internal: true
+    filters:
+      - sliding_window_moving_average: {window_size: 5, send_every: 1}
+  - platform: template
+    id: motor_current
+    name: "Motorstrøm"
+    unit_of_measurement: A
+    accuracy_decimals: 1
+    update_interval: 1s
+    lambda: "return std::max(0.0f, (id(motor_cs).state - 0.05f) / ${motor_cs_v_per_a});"
+  - platform: pulse_counter   # Hall sensor of the kneading motor
+    id: blade_rpm
+    name: "Eltebladet"
+    pin:
+      number: GPIO7
+      mode: {input: true, pullup: true}
+    unit_of_measurement: rpm
+    update_interval: 2s
+    filters:
+      - multiply: ${blade_rpm_per_pulse_per_min}
+  - platform: rotary_encoder  # sets the ready time in steps of 15 min when idle
+    id: knob
+    pin_a: {number: GPIO41, mode: {input: true, pullup: true}}
+    pin_b: {number: GPIO42, mode: {input: true, pullup: true}}
+    internal: true
+    on_clockwise:
+      - script.execute: {id: shift_ready_at, minutes: 15}
+    on_anticlockwise:
+      - script.execute: {id: shift_ready_at, minutes: -15}
+
+binary_sensor:
+  - platform: gpio
+    id: door_closed
+    name: "Døra er lukket"
+    pin: {pcf8574: pcf, number: 1, mode: {input: true}}
+    filters:
+      - delayed_on: 200ms     # bounce when the door closes
+  - platform: gpio
+    id: estop_ok
+    name: "Nødstopp ute"
+    pin: {pcf8574: pcf, number: 2, mode: {input: true}}
+  - platform: gpio
+    id: knob_button
+    pin: {pcf8574: pcf, number: 0, mode: {input: true}, inverted: true}
+    internal: true
+    on_multi_click:
+      - timing:               # long press (3 s): abort
+          - ON for at least 3s
+        then:
+          - bakeplan.abort: baker
+      - timing:
+          - ON for at most 1s
+          - OFF for at least 0.3s
+        then:
+          - lambda: |-
+              if (id(baker).waiting_for_confirm()) {
+                id(baker).confirm();
+              } else if (id(baker).state_name() == "Klar for forming") {
+                id(baker).shaped();
+              } else if (!id(baker).running()) {
+                id(start_bake).execute();
+              }
+
+# ---------------------------------------------------------------- scripts called by the program
+
+script:
+  - id: knead_set
+    parameters: {speed: float}
+    mode: restart
+    then:
+      - lambda: |-
+          float s = speed;
+          if (id(quiet_now) || millis() < id(motor_blocked_until) || !id(door_closed).state) s = 0.0f;
+          if (s == 0.0f) {
+            id(g2_pwm).set_level(0.0f);
+            id(g2_slp).turn_off();
+          } else {
+            if (s < 0) id(g2_dir).turn_on(); else id(g2_dir).turn_off();
+            id(g2_slp).turn_on();
+            id(g2_pwm).set_level(std::min(1.0f, std::fabs(s)));
+          }
+  - id: dose_set
+    parameters: {ingredient: string, run: bool, reverse: bool}
+    mode: queued
+    max_runs: 10
+    then:
+      - lambda: |-
+          if (ingredient == "vann") {
+            if (run && !reverse) { id(pump_in2).turn_off(); id(pump_in1).turn_on(); }
+            else if (run && reverse) { id(pump_in1).turn_off(); id(pump_in2).turn_on(); }
+            else { id(pump_in1).turn_off(); id(pump_in2).turn_off(); }
+          } else if (ingredient == "mel") {
+            if (run) {
+              if (reverse) id(flour_dir).turn_on(); else id(flour_dir).turn_off();
+              id(steppers_en).turn_on();
+              id(flour_step).set_level(0.5f);
+            } else {
+              id(flour_step).set_level(0.0f);
+            }
+          } else if (ingredient == "salt") {
+            if (run && !reverse) {
+              id(steppers_en).turn_on();
+              id(salt_step).set_level(0.5f);
+            } else {
+              id(salt_step).set_level(0.0f);   // the salt screw does not reverse (DIR is wired fixed)
+            }
+          }
+          if (!run) id(steppers_off).execute();
+  - id: steppers_off          # TMC2209s off 2 s after the last move (they run warm when held)
+    mode: restart
+    then:
+      - delay: 2s
+      - lambda: |-
+          id(steppers_en).turn_off();
+  - id: flap_set
+    parameters: {ingredient: string, open: bool}
+    mode: queued
+    max_runs: 10
+    then:
+      - lambda: |-
+          auto *sv = ingredient == "mel" ? id(servo_flour) : id(servo_salt);
+          sv->write(open ? ${flap_open} : ${flap_closed});
+  - id: heat_set
+    parameters: {temperature: float}
+    mode: restart
+    then:
+      - lambda: |-
+          auto call = id(chamber).make_call();
+          if (std::isnan(temperature)) {
+            id(heat_on) = false;
+            call.set_mode(climate::CLIMATE_MODE_OFF);
+          } else {
+            id(heat_on) = true;
+            call.set_mode(climate::CLIMATE_MODE_HEAT);
+            call.set_target_temperature(temperature);
+          }
+          call.perform();
+  - id: quiet_set
+    parameters: {quiet: bool}
+    mode: restart
+    then:
+      - lambda: |-
+          id(quiet_now) = quiet;
+          if (quiet) {
+            id(heater_pwm).set_level(0.0f);
+            id(fan_out).turn_off();
+          }
+  - id: notify
+    parameters: {message: string}
+    mode: queued
+    max_runs: 5
+    then:
+      - if:
+          condition:
+            wifi.connected:
+          then:
+            - http_request.post:
+                url: !secret ntfy_url
+                request_headers:
+                  Title: "Surdeigsbaker"
+                body: !lambda "return message;"
+      - repeat:
+          count: 2
+          then:
+            - output.turn_on: buzzer
+            - delay: 150ms
+            - output.turn_off: buzzer
+            - delay: 150ms
+  - id: shift_ready_at
+    parameters: {minutes: int}
+    then:
+      - lambda: |-
+          if (id(baker).running()) return;
+          int m = (id(ready_at).hour * 60 + id(ready_at).minute + minutes + 24 * 60) % (24 * 60);
+          auto call = id(ready_at).make_call();
+          call.set_time(m / 60, m % 60, 0);
+          call.perform();
+
+# ---------------------------------------------------------------- safety layer and lights
+
+interval:
+  - interval: 1s
+    then:
+      - lambda: |-
+          const float hs = id(t_heatsink).state;
+          // K2 (heater relay) only when heat is wanted and the heatsink sensor is fine.
+          const bool k2 = id(heat_on) && !std::isnan(hs) && hs < ${heatsink_cutoff_c} && id(estop_ok).state;
+          if (k2) id(k2_enable).turn_on(); else id(k2_enable).turn_off();
+          if (!std::isnan(hs) && hs >= ${heatsink_cutoff_c}) {
+            id(heater_pwm).set_level(0.0f);
+            id(notify).execute("Varmen er slått av: kjøleribba er for varm. Sjekk vifta.");
+          }
+          // The fan circulates while heat is on (not while weighing).
+          if (id(heat_on) && !id(quiet_now)) id(fan_out).turn_on(); else id(fan_out).turn_off();
+          // Motor overcurrent: more than ${motor_max_a} A for 2 s → motor off for 10 s.
+          if (id(motor_current).state > ${motor_max_a}) {
+            if (++id(overcurrent_s) >= 2 && millis() >= id(motor_blocked_until)) {
+              id(motor_blocked_until) = millis() + 10000;
+              id(g2_pwm).set_level(0.0f);
+              id(g2_slp).turn_off();
+              id(notify).execute("Motoren gikk tungt og ble stoppet i 10 s. Er deigen for stiv?");
+            }
+          } else {
+            id(overcurrent_s) = 0;
+          }
+          // Lights: green = a bake is running, red = something needs you.
+          if (id(baker).running()) id(led_green).turn_on(); else id(led_green).turn_off();
+          if (id(baker).waiting_for_confirm() || !id(estop_ok).state) id(led_red).turn_on(); else id(led_red).turn_off();
+
+# ---------------------------------------------------------------- display
+
+font:
+  - file: "gfonts://Roboto"
+    id: font_small
+    size: 11
+  - file: "gfonts://Roboto"
+    id: font_big
+    size: 18
+
+display:
+  - platform: ssd1306_i2c
+    i2c_id: bus_a
+    model: "SH1106_128X64"
+    address: 0x3C
+    update_interval: 1s
+    lambda: |-
+      it.printf(0, 0, id(font_small), "%s", id(status_text).state.c_str());
+      if (id(baker).running()) {
+        const float eta = id(baker).eta_hours();
+        if (!std::isnan(eta)) {
+          const int m = int(eta * 60.0f + 0.5f);
+          it.printf(0, 16, id(font_big), "%d:%02d", m / 60, m % 60);
+        }
+        it.printf(64, 20, id(font_small), "%.1f°C", id(t_dough).state);
+        const float r = id(baker).rise_pct();
+        if (!std::isnan(r)) it.printf(0, 40, id(font_small), "Heving %+.0f %%", r);
+      } else {
+        it.printf(0, 16, id(font_big), "Klar %02d:%02d", id(ready_at).hour, id(ready_at).minute);
+        it.printf(0, 40, id(font_small), "Vri: tid  Trykk: start");
+      }
+      it.printf(0, 53, id(font_small), "%.0f g", id(baker).net_weight_g());

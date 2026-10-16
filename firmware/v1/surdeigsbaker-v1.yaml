@@ -1,0 +1,88 @@
+# Surdeigsbaker v1 – ESPHome firmware
+#
+# Doses flour, water and salt by weight, builds the levain from the starter you put in the
+# pan, kneads, folds, keeps the dough warm and plans backwards so the dough is ready for
+# shaping at the time you choose (ADR-010). Cold retard and baking are done by you (ADR-006,
+# ADR-007).
+#
+# Read firmware/v1/README.md before the first upload. Wiring: hardware/v1/koblingsskjema.md.
+# The bake program is the external component in components/bakeplan (host tests in test/).
+#
+# SAFETY: the door switch, the emergency stop and the KSD301 cut motor and heater power
+# in hardware, independently of this firmware.
+
+substitutions:
+  device_name: surdeigsbaker
+  friendly: Surdeigsbaker
+  # ⚠️ Measure and set these before the first bake (README, "Idriftsetting").
+  tof_to_bottom: "186"                 # ToF reading (mm) with the empty pan in place
+  scale_raw_zero: "0"                  # NAU7802 raw value with nothing on the platform ...
+  scale_raw_ref: "1000000"             # ... and with the reference weight
+  scale_ref_g: "1000"                  # the reference weight (g)
+  ds18b20_dough: "0x0000000000000000"  # read the addresses from the log at first boot
+  ds18b20_heatsink: "0x0000000000000000"
+  ds18b20_room: "0x0000000000000000"
+  flour_step_hz: "8000"                # 1/8 microsteps: 300 rpm motor = 60 rpm screw (5:1)
+  salt_step_hz: "3200"                 # 120 rpm salt screw
+  flap_open: "1.0"                     # servo positions (-1 .. 1), adjust so the flaps close tight
+  flap_closed: "-1.0"
+  motor_cs_v_per_a: "0.040"            # Pololu G2 24v13 current sense (check your board)
+  motor_max_a: "6.0"
+  blade_rpm_per_pulse_per_min: "0.0167"  # ⚠️ 60 s / (pulses per motor turn × gear × belt)
+  heatsink_max_c: "38"                 # PWM stops above this
+  heatsink_cutoff_c: "45"              # K2 drops above this
+
+esphome:
+  name: ${device_name}
+  friendly_name: ${friendly}
+  min_version: 2026.9.0
+
+esp32:
+  board: esp32-s3-devkitc-1
+  framework:
+    type: esp-idf
+
+logger:
+  level: INFO
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  reboot_timeout: 0s          # a bake must not be interrupted by a WiFi outage
+  ap:
+    ssid: "Surdeigsbaker oppsett"
+    password: !secret ap_password
+
+captive_portal:
+
+api:                          # Home Assistant (optional)
+  encryption:
+    key: !secret api_key
+  reboot_timeout: 0s
+
+ota:
+  - platform: esphome
+    encryption:
+      key: !secret api_key
+
+web_server:
+  port: 80
+  version: 3
+  ota: false
+  auth:
+    type: digest
+    username: !secret web_user
+    password: !secret web_password
+
+http_request:
+  timeout: 10s
+
+external_components:
+  - source:
+      type: local
+      path: components
+    components: [bakeplan]
+
+packages:
+  logikk: !include pakker/logikk.yaml
+  maskinvare: !include pakker/maskinvare.yaml

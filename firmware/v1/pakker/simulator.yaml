@@ -1,0 +1,58 @@
+# Surdeigsbaker v1 – simulated machine for the ESPHome host platform.
+#
+# The bakeplan component runs its built-in machine model (sim.h): scale, dosing, flaps,
+# dough temperature and rise. The scripts below only log what the real hardware would do.
+
+bakeplan:
+  simulate:
+    time_scale: 2000      # one simulated hour takes 1.8 s
+    activity: 1.1         # the "true" starter is 10 % faster than the model
+
+time:
+  - platform: host
+    id: wall_clock
+    timezone: Europe/Oslo
+
+script:
+  - id: knead_set
+    parameters: {speed: float}
+    mode: queued
+    max_runs: 50
+    then:
+      - lambda: |-
+          ESP_LOGD("sim", "motor %.2f", speed);
+  - id: dose_set
+    parameters: {ingredient: string, run: bool, reverse: bool}
+    mode: queued
+    max_runs: 50
+    then:
+      - lambda: |-
+          ESP_LOGD("sim", "doser %s %s%s", ingredient.c_str(), run ? "på" : "av", reverse ? " (bakover)" : "");
+  - id: flap_set
+    parameters: {ingredient: string, open: bool}
+    mode: queued
+    max_runs: 10
+    then:
+      - lambda: |-
+          ESP_LOGD("sim", "klaff %s %s", ingredient.c_str(), open ? "åpen" : "lukket");
+  - id: heat_set
+    parameters: {temperature: float}
+    mode: queued
+    max_runs: 10
+    then:
+      - lambda: |-
+          ESP_LOGD("sim", "varme %.1f °C", temperature);
+  - id: quiet_set
+    parameters: {quiet: bool}
+    mode: queued
+    max_runs: 10
+    then:
+      - lambda: |-
+          ESP_LOGD("sim", "veiing %s", quiet ? "på" : "av");
+  - id: notify
+    parameters: {message: string}
+    mode: queued
+    max_runs: 10
+    then:
+      - lambda: |-
+          ESP_LOGI("sim", "VARSEL: %s", message.c_str());

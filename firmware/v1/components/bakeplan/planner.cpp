@@ -4,7 +4,7 @@
 #include <cmath>
 #include <cstdio>
 
-namespace bakeplan {
+namespace surdeig {
 
 namespace {
 
@@ -517,4 +517,4 @@ void Controller::tick(float now_h, const Measurement &m) {
   update_setpoint(now_h);
 }
 
-}  // namespace bakeplan
+}  // namespace surdeig

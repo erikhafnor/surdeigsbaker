@@ -1,0 +1,37 @@
+# Surdeigsbaker v1 – simulation on a PC (ESPHome host platform)
+#
+# Runs the real bake program against a model of the machine, about 2000 times faster than
+# real time. A whole day (07:00 → ready for shaping) takes about 25 seconds:
+#
+#   esphome run firmware/v1/surdeigsbaker-v1-sim.yaml      # on your own PC
+#
+# The bake starts by itself one second after boot, ready in 11 hours with 20 g cold
+# starter. See firmware/v1/README.md.
+
+esphome:
+  name: surdeigsbaker-sim
+  friendly_name: Surdeigsbaker (simulering)
+  on_boot:
+    priority: -100
+    then:
+      - delay: 1s
+      - bakeplan.store_empty_pan: baker
+      - bakeplan.start:
+          id: baker
+          hours: 11.0
+          cold_starter: true
+
+host:
+
+logger:
+  level: INFO
+
+external_components:
+  - source:
+      type: local
+      path: components
+    components: [bakeplan]
+
+packages:
+  logikk: !include pakker/logikk.yaml
+  simulator: !include pakker/simulator.yaml
