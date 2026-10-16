@@ -1,9 +1,11 @@
 # 03 – Konseptalternativer
 
-Maskinen leverer **stekeklar deig**, og stekingen skjer i vanlig ovn ([ADR-006](beslutninger/ADR-006-steking-i-vanlig-ovn.md)). Da er de viktigste valgene i arkitekturen:
+> **Oppdatert 2026-10-16:** Maskinen har **ingen kjøling** ([ADR-007](beslutninger/ADR-007-ingen-kjoling.md)). Den slutter når deigen er klar for forming, og du bruker ditt eget kjøleskap til den kalde etterhevingen. **v0 er designet som K2 uten kjøling, lastceller og dosering** ([ADR-008](beslutninger/ADR-008-v0-design.md), [`hardware/v0/`](../hardware/v0/README.md)). Teksten under er skrevet før dette. Det som gjelder kjøling, er ikke lenger aktuelt.
+
+Maskinen leverer deig som er **klar for forming**, og stekingen skjer i vanlig ovn ([ADR-006](beslutninger/ADR-006-steking-i-vanlig-ovn.md)). Da er de viktigste valgene i arkitekturen:
 
 - **Hvordan elter og bearbeider maskinen deigen?** Brødmaskinpadle, krok eller kjøkkenmaskin.
-- **Hvordan kjøles og varmes kammeret?** Kompressor eller Peltier.
+- **Hvordan varmes deigen?** Varmeplate under bollen eller varm luft i kammeret. (Ingen kjøling etter ADR-007.)
 - **Hvordan får mennesket deigen ut?** Avtakbar bolle eller hevekurv.
 
 Under er fire konsepter. Endelig valg tas ved port G3 med Pugh-matrisen nederst, oppdatert med resultater fra eksperimentene. Valget dokumenteres som ADR-001 i [`beslutninger/`](beslutninger/).
@@ -36,9 +38,9 @@ Drivverket og formen fra en brukt brødmaskin bygges inn i et **ombygd lite vink
   - Lite plass til en hevekurv, og vanskelig å dosere ovenfra (N3).
 - **Rolle i planen:** Gangbart skjelett i fase 2. Kan bli en egen, enkel DIY-variant («Surdeigsbaker Mini»).
 
-## K2 – Eltebolle i hevekammer ⭐ foreløpig favoritt
+## K2 – Eltebolle i hevekammer ⭐ valgt for v0 (uten kjøling)
 
-Et isolert kammer med kompressorkjøling og svak varme. I kammeret står en **avtakbar bolle i rustfritt stål** på lastceller, og en **eltekrok som drives ovenfra** av en girmotor i lokket. Lokket har også ToF-sensor og innløp for dosering. Kammeret har plass til en hevekurv ved siden av eller i stedet for bollen.
+Et isolert kammer med svak varme (kompressorkjøling i den opprinnelige versjonen, fjernet i ADR-007). I kammeret står en **avtakbar bolle i rustfritt stål** på lastceller, og en **eltekrok som drives ovenfra** av en girmotor i lokket. Lokket har også ToF-sensor og innløp for dosering. Kammeret har plass til en hevekurv ved siden av eller i stedet for bollen.
 
 ```text
 ┌───────────────────────────────────┐
@@ -62,11 +64,11 @@ Et isolert kammer med kompressorkjøling og svak varme. I kammeret står en **av
 - **−**
   - Mer mekanisk arbeid: lokk med motor og en kobling som må kunne løftes av.
   - Motorvarme og kondens i kammeret må håndteres.
-- **Kritiske eksperimenter:** E05 (bretting med krok), E06 (uten forming), E09 (kald bulkheving), E10 (overlevering) og E13 (kjøling).
+- **Kritiske eksperimenter:** E05 (bretting med krok), E06 (uten forming), E10 (overlevering), E13 (varme) og **E17 (eltetest)**.
 
 ## K3 – Kjøkkenmaskin og smart hevekabinett
 
-Den kjøkkenmaskinen du har, brukes til elting. Det som bygges, er bare et **smart hevekabinett** med varme, kjøling, hevemåling, tidsplan og varsling. Mennesket flytter bollen mellom kjøkkenmaskinen og kabinettet og gjør bretting og forming.
+Den kjøkkenmaskinen du har, brukes til elting. Det som bygges, er bare et **smart hevekabinett** med varme, hevemåling, tidsplan og varsling. Mennesket flytter bollen mellom kjøkkenmaskinen og kabinettet og gjør bretting og forming.
 
 - **+**
   - Lavest teknisk risiko.
@@ -87,7 +89,7 @@ Den siste hevingen skjer i din egen jerngryte, med bakepapir, inne i maskinens k
   - Kaldstart kan gi mindre ovnsspretthet (E08).
   - Kammeret må romme en tung støpejernsgryte, og det er mye masse å kjøle ned.
   - Kald emaljert gryte inn i varm ovn må unngås, fordi emaljen kan sprekke av temperatursjokk.
-- **Rolle:** Variant å teste i E08. Ikke prioritert.
+- **Rolle:** Utgår etter ADR-007, fordi maskinen ikke lenger har kaldt kammer. Kaldstart i gryte kan fortsatt testes i E08 med brukerens kjøleskap.
 
 ## Foreløpig Pugh-matrise
 
@@ -109,6 +111,10 @@ Matrisen må leses riktig. K3 skårer høyest fordi den er enkel, men den når b
 
 ## Anbefaling: en trapp der hvert trinn er nyttig
 
-1. **Fase 1, K3 (N1):** Bygg hevekabinettet: et ombygd vinkjøleskap med varme, sensorer og tidsplan. Det er eksperimentkammeret i fase 1, og allerede et nyttig apparat.
-2. **Fase 2, K1 (N2):** Sett drivverket og formen fra en brødmaskin inn i kabinettet. Det gir det første maskinlagde surdeigsbrødet.
-3. **Fase 3–4, K2 (N3):** Bygg den egentlige eltemodulen med bolle, krok, vekt og dosering i et kammer som er bygd for formålet, og integrer den til prototype v1.
+Den opprinnelige trappen var:
+
+1. **Fase 1, K3 (N1):** Hevekabinett med varme, sensorer og tidsplan som eksperimentkammer.
+2. **Fase 2, K1 (N2):** Drivverket og formen fra en brødmaskin i kabinettet.
+3. **Fase 3–4, K2 (N3):** Den egentlige eltemodulen med bolle, krok, vekt og dosering.
+
+**Etter ADR-007 og ADR-008** er K2 uten kjøling enkel nok til å bygges direkte som **v0 (N2)**. Trinn 1 og 2 blir valgfrie. Eksperimentene i fase 1 kan gjøres for hånd eller i v0. Dosering (N3) kommer som en v1-modul.

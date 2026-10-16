@@ -5,12 +5,16 @@
 # Formatet er inspirert av trinnlister med inngangs- og utgangsbetingelser
 # (jf. Anova-ovnens API). Det er ikke frosset, og endringer er forventet.
 #
-# Maskinen slutter ved STEKEKLAR deig. Stekingen gjøres av mennesket i vanlig ovn
-# (ADR-006) og er beskrevet under `manuelle_trinn` nederst.
+# Maskinen slutter når deigen er KLAR FOR FORMING (ADR-007). Forming, kald etterheving
+# i brukerens kjøleskap og steking i vanlig ovn (ADR-006) gjøres av mennesket og er
+# beskrevet under `manuelle_trinn` nederst.
+#
+# Fastvaren i firmware/v0/ leser ikke denne fila ennå. Verdiene er lagt inn som
+# innstillinger der (blanding, fermentolyse, elting, bretting, bulk).
 #
 # Alle mengder er plassholdere til eksperiment E01 har gjort skjeemål om til gram.
 
-format: surdeigsbaker-oppskrift/0.2
+format: surdeigsbaker-oppskrift/0.3
 navn: Maskinvennlig v0
 basert_paa: referanse-v7
 status: utkast
@@ -24,10 +28,10 @@ ingredienser:
   surdeig_start: 20      # ca. 1 ss fra kjøleskapet. Tilsettes av mennesket (N2/N3).
 
 maal:
-  stekeklar_kl: null     # f.eks. "07:00". Tidsplanleggeren regner baklengs.
+  klar_for_forming_kl: null   # f.eks. "20:00". Tidsplanleggeren regner baklengs (kommer, se docs/01).
   deigtemperatur: 26     # ønsket deigtemperatur (DDT), °C
-  overlevering: A        # A = «tipp og stek» (uten forming), B = «med forming». Avgjøres av E06.
-  varsler_tillatt: "06:00-23:00"   # tidsrom maskinen kan be om manuelle grep (forming)
+  overlevering: B        # B = «med forming» (standard i v0), A = «tipp og stek». Avgjøres av E06.
+  varsler_tillatt: "07:00-23:00"   # tidsrom maskinen kan be om manuelle grep
 
 trinn:
   - id: levain
@@ -61,43 +65,27 @@ trinn:
         - modell: bulk_slutt
       maks_tid: 5h
 
-  - id: forming                      # bare variant B
-    naar: {overlevering: B}
-    hold: {temperatur: 6}            # kjøl ned mens vi venter på mennesket
-    varsle: "Bulkhevingen er ferdig. Form deigen, legg den i hevekurven og sett kurven inn igjen."
-    ferdig_naar: {kurv_satt_inn: true}
-    maks_tid: 3h
-    ved_tidsavbrudd: fortsett_som_variant_A
-
-  - id: kald_heving                  # E09. Variant A: i bollen (bulk). Variant B: i kurven.
-    hold: {temperatur: 5}
-    ferdig_naar: {min_tid: 8h}
-
-  - id: kaldhold                     # E16. Buffer mot tidsplanen.
-    hold: {temperatur: 5}
-    varsle_foer_slutt:
-      tid: 50min                     # justeres etter hvor lang tid ovnen bruker på forvarming
-      tekst: "Forvarm ovnen nå: jerngryte med lokk på nederste rille, 260 °C."
-    ferdig_naar: {tidsplan: stekeklar_kl}
-    maks_tid: 24h                    # lengre enn dette varsles som avvik
-
-  - id: stekeklar
-    hold: {temperatur: 5}            # holdes kald til bollen eller kurven tas ut
-    varsle: "Deigen er stekeklar. Tipp den i den varme gryta, snitt og stek."
-    ferdig_naar: {bolle_eller_kurv_tatt_ut: true}
+  - id: klar_for_forming             # maskinen er ferdig (ADR-007)
+    hold: {temperatur: av}           # ingen kjøling: varmen slås av og deigen venter ved romtemperatur
+    varsle: "Deigen er klar for forming. Form den, legg den i kurven og sett den i kjøleskapet."
+    paaminnelse_etter: 60min         # E16 bestemmer hvor lenge deigen kan vente
+    ferdig_naar: {bruker_kvitterer: true}
 
 # Det mennesket gjør etter overleveringen (vises i appen og i brukerveiledningen).
 # Profilen er fra referanseoppskriften og optimaliseres i E08.
 manuelle_trinn:
+  - "Variant B: Vend deigen ut på benken, forform, la den hvile 20 min og gi den endelig form. Legg den i en melet hevekurv."
+  - "Variant A: Sett lokk eller plast på bollen."
+  - "Sett kurven (eller bollen) i kjøleskapet ved 4–6 °C i 8–24 t."
   - "Forvarm ovnen med jerngryta og lokket på nederste rille til 260 °C. Vent minst 10 min etter at ovnen har nådd temperaturen."
   - "Strø litt helkorn i gryta, tipp den kalde deigen i og snitt (2–3 mm i luftig deig)."
   - "Stek 20 min ved 250 °C med lokk, deretter 25 min ved 200 °C uten lokk."
   - "Kjernetemperatur ≥ 96 °C. La brødet avkjøles på rist i 1–2 t."
 
-# Sikkerhetsgrenser som oppskriften ALDRI kan overstyre. De håndheves av
-# sikkerhetsvakten uavhengig av oppskriften. Verdiene står her bare som informasjon.
-#   kammer_maks: 35 °C (programvare). Termosikringen i maskinvaren ligger over dette
-#                og under det isolasjon og plast tåler.
-#   kammer_min: 2 °C (deigen skal ikke fryse)
-#   maks_total_tid: 48 h
-#   feil_med_deig_i_kammeret: varme av, motor av, kjøling PÅ, varsle
+# Sikkerhetsgrenser som oppskriften ALDRI kan overstyre. De håndheves av maskinvaren
+# og fastvaren uavhengig av oppskriften. Verdiene står her bare som informasjon (v0).
+#   deig_maks: 32 °C (fastvare, bolleveggen)
+#   varmeplate_maks: 38 °C (fastvare, kan settes til maks 45 °C)
+#   KSD301: 60 °C, manuell reset · termosikring: 77 °C (maskinvare)
+#   motor: maks 4 A i 2 s (fastvare), sikring 5 A (maskinvare)
+#   feil: varme av, motor av, varsle

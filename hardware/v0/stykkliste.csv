@@ -1,0 +1,63 @@
+kategori,id,del,spesifikasjon,antall,enhet,ca_pris_per_enhet_nok,ca_sum_nok,sokeord,kjopested_forslag,merknad
+Ramme,R1,"Aluminiumsprofil 2020, spor 6","Kappet: 12 × 300, 4 × 320 (ramme) + 2 × 340, 4 × 300 (lokk). Til sammen 6,76 m.",1,sett,700,700,2020 aluminium profile slot 6 cut to length,"Motedis, Dold Mechatronik, AliExpress","Bestill ferdig kappet. Endene må være rette (±0,3 mm)."
+Ramme,R2,Hjørnevinkel 2020 med skrue og T-mutter,"Aluminium, for spor 6",40,stk,5,200,2020 corner bracket aluminium slot 6,"AliExpress, Motedis","36 trengs, 4 i reserve."
+Ramme,R3,ACM-plate (aluminiumskompositt) 3 mm,"8 plater fra hardware/v0/dxf/, ca. 0,9 m²",1,sett,1200,1200,ACM aluminiumskomposittplate 3 mm laserkutting/CNC,Skiltmaker eller CNC-tjeneste,Send DXF-filene. Pris inkl. kapping og hull. Alternativ: kapp selv og bor etter 1:1-utskrift.
+Ramme,R4,XPS-isolasjon 20 mm,2 × 300 × 187 og 2 × 260 × 187 mm (kammervegger) + lokk,1,plate,150,150,XPS isolasjonsplate 20 mm,Byggevarehus,Kappes med kniv.
+Ramme,R5,Stramlås (toggle latch) for lokket,"Liten, ca. 40–60 mm, rustfri, med M4/M5-hull",2,stk,45,90,toggle latch stainless small / spennlås,"Clas Ohlson, Biltema, AliExpress",Påkrevd: kantputene presser lokket opp med ca. 120 N. Bores ved montering (se README).
+Ramme,R6,Gummipute til føttene,"Selvklebende, ⌀ 24 mm",4,stk,6,24,gummiføtter selvklebende 24 mm,"Clas Ohlson, Biltema",
+Ramme,R7,Kabelgjennomføring,"Gummi, for ⌀ 13 mm hull",1,stk,10,10,kabelgjennomføring gummi 13 mm,"Clas Ohlson, Biltema",
+Ramme,R8,Spiralslange / kabelstrømpe,"⌀ 10–12 mm, 1 m",1,stk,40,40,spiral wrap 10 mm / kabelstrømpe,"Clas Ohlson, Kjell",Til lokkabelen ved hengselen.
+Bolle og varme,B1,Rustfri bolle med flat bunn,"Kant ca. ⌀ 240, bunn ca. ⌀ 150, høyde ca. 125 mm (ca. 3,5 l). Flat bunn uten fot.",1,stk,200,200,rustfri bolle flat bunn 24 cm,"Kjøkkenbutikk, IKEA, Clas Ohlson",MÅL DIN BOLLE og oppdater bolle: i hardware/spec/v0.yaml før du printer bollestøttene og bøyer kroken.
+Bolle og varme,B2,Aluminiumsplate 3 mm (varmeplate),"⌀ 180 × 3 mm, 6082 eller 5754, 2 × M3-hull (DXF)",1,stk,150,150,aluminium rondell 180 mm 3 mm,"Metallbutikk, CNC-tjeneste",Kan kappes sammen med ACM-platene. Kan også sages med stikksag.
+Bolle og varme,B3,Silikonvarmeelement,"⌀ 150 mm, 24 V, 50 W, selvklebende",1,stk,150,150,silicone heater pad round 150mm 24V 50W,AliExpress,"Velg en uten innebygd termostat. Sjekk at motstanden er ca. 11,5 Ω."
+Bolle og varme,B4,Bimetall-termostat KSD301,"60 °C, NC (bryter ved 60 °C), manuell reset, 10 A",2,stk,30,60,KSD301 60C normally closed manual reset,AliExpress,1 i reserve. Monteres mot varmeplaten.
+Bolle og varme,B5,Termosikring 77 °C,"Aksial, 10 A, 250 V",5,stk,6,30,thermal fuse 77C 10A,"AliExpress, Elfa Distrelec","Må krympes, ikke loddes. 4 i reserve."
+Bolle og varme,B6,Korkplate 3 mm,Minst 200 × 200 mm,1,stk,60,60,korkplate 3 mm,"Clas Ohlson, hobbybutikk",Isolasjon mellom element og plateholder.
+Bolle og varme,B7,Silikonsnor ⌀ 3 mm (matgodkjent),"O-ringsnor, 1 m",1,stk,60,60,silikon o-ringsnor 3 mm food grade,"AliExpress, pakningsleverandør",Friksjon mellom bollestøttene og bollen.
+Drivverk,D1,Planetgirmotor 24 V DC,"Børstet, ⌀ 56–57 mm, 60–100 o/min, ≥ 4 N·m nominelt, aksel ⌀ 8 mm med D-flate, 3–4 festehull i flensen",1,stk,800,800,57mm planetary gear motor 24V 80rpm,AliExpress,"MÅL kroppslengde, flenshull og pilot og oppdater motor: i spec-fila. Motorklemmen bærer kroppen, flensen hviler på motorplaten."
+Drivverk,D2,Klokobling (jaw/spider),"⌀ 30 × 40 mm, boring 8 mm (motor) og 10 mm (krok), settskruer",1,stk,80,80,jaw coupling D30 L40 8mm 10mm,AliExpress,Slip en flate på krokstanga der settskruen skal ta.
+Drivverk,D3,"Kulelager 6000-2RS, rustfritt","10 × 26 × 8 mm, tettet, matgodkjent fett",2,stk,80,160,S6000-2RS stainless bearing food grade,"Lagerforhandler, AliExpress",Lagrene sitter over bollen. Bruk tettede lager med matgodkjent fett.
+Drivverk,D4,Rustfri rundstang ⌀ 10 mm,"AISI 316 (eller 304), 1 m",1,stk,200,200,rustfritt rundstål 10 mm 316,Metallbutikk,Kroken trenger 350 mm. Resten er til et nytt forsøk.
+Drivverk,D5,Trykkfjær ⌀ 10 × 35 mm,"Ca. 5 N/mm, rustfri, ytre ⌀ 9,5–10 mm",6,stk,10,60,compression spring 10mm OD 35mm stainless,AliExpress (sortiment),3 trengs. Velg stivhet slik at hver pute klemmer med 30–40 N.
+Elektronikk,E1,Strømforsyning 24 V,"Bordmodell, 24 V / 6,25 A (150 W), CE-merket, kortslutningsvern, plugg 5,5 × 2,5 mm",1,stk,550,550,24V 6.25A 150W desktop power supply CE,"Elfa Distrelec, Kjell, AliExpress",Kjøp en merket forsyning fra en seriøs forhandler. Det er den eneste delen med 230 V.
+Elektronikk,E2,DC-panelkontakt,"5,5 × 2,5 mm, metall, ≥ 6 A, for 11 mm hull",1,stk,30,30,DC panel jack 5.5x2.5 metal 11mm,"Elfa Distrelec, AliExpress",Må passe pluggen på strømforsyningen.
+Elektronikk,E3,ESP32-S3-DevKitC-1,N8R2 eller N16R8,1,stk,150,150,ESP32-S3-DevKitC-1,"Elfa Distrelec, Kjell, AliExpress",
+Elektronikk,E4,Motordriver BTS7960 (IBT-2),43 A H-bro,1,stk,100,100,BTS7960 IBT-2 motor driver,"AliExpress, Kjell","Logikk-VCC kobles til 3,3 V."
+Elektronikk,E5,MOSFET-modul D4184,"To AOD4184, 15 A, 3,3 V-styring",2,stk,15,30,D4184 MOSFET module,AliExpress,1 i reserve.
+Elektronikk,E6,Strømmåler INA226,I²C-modul,1,stk,40,40,INA226 module CJMCU-226,AliExpress,Bytt shunt til 10 mΩ (E7).
+Elektronikk,E7,Shuntmotstand 10 mΩ,"2512, ≥ 1 W, 1 %",5,stk,5,25,R010 2512 shunt resistor,"Elfa Distrelec, AliExpress",
+Elektronikk,E8,Buck-omformer 24 → 5 V,"LM2596S (inn ≤ 40 V), ≥ 2 A, eller fast 5 V-modul",1,stk,40,40,LM2596S buck module,"AliExpress, Kjell","Still til 5,0 V før ESP32 kobles til."
+Elektronikk,E9,"Relé 24 V for bil, 4-pinners","Spole 24 V, kontakt 20–30 A",2,stk,60,120,relé 24V 4-pol bil,"Biltema, Clas Ohlson","K1 motor, K2 varme."
+Elektronikk,E10,Relésokkel 4-pinners,Med ledninger,2,stk,35,70,relésokkel 4-pol,Biltema,
+Elektronikk,E11,Sikringsboks for bladsikringer,"4–6 kurser, 12/24 V",1,stk,120,120,sikringsboks bladsikring 6-veis,"Biltema, Clas Ohlson",
+Elektronikk,E12,Bladsikringer,"1 A, 2 A, 3 A, 5 A (2 av hver)",8,stk,6,48,bladsikring 1A 2A 3A 5A,Biltema,
+Elektronikk,E13,Nødstopp 22 mm,"Soppknapp, vri for å løse ut, 1 NC-kontaktblokk",1,stk,80,80,nødstopp 22mm 1NC,"Elfa Distrelec, AliExpress","Hullet i kontrollpanelet er ⌀ 22,5 mm."
+Elektronikk,E14,Trykknapp 16 mm,"Momentan, 1 NO, metall",2,stk,40,80,16mm momentary push button metal,"AliExpress, Kjell","Hullet er ⌀ 16,2 mm."
+Elektronikk,E15,Mikrobryter KW11,"20 × 10 × 6,4 mm, kort arm eller uten arm, 5 A",3,stk,10,30,KW11 micro switch,"AliExpress, Kjell",Lokkbryter. 2 i reserve.
+Elektronikk,E16,"OLED 0,96"" SSD1306","128 × 64, I²C, 4 pinner",1,stk,50,50,SSD1306 0.96 I2C OLED 4 pin,"AliExpress, Kjell",MÅL hullavstanden og oppdater oled_hull i spec-fila.
+Elektronikk,E17,RGB-LED APA106,"5 mm gjennomhull, adresserbar (F5)",5,stk,8,40,APA106 F5 5mm RGB LED,AliExpress,Statuslys. 4 i reserve.
+Elektronikk,E18,"Piezosummer, passiv","12 mm, 3–5 V",1,stk,15,15,passive piezo buzzer 12mm,"AliExpress, Kjell","Valgfri, men anbefalt."
+Elektronikk,E19,DS18B20 vanntett føler,"Rustfri hylse ⌀ 6 × 30 mm, 1 m kabel",2,stk,40,80,DS18B20 waterproof probe 6mm,"AliExpress, Kjell",Bollevegg og varmeplate.
+Elektronikk,E20,ToF-avstandssensor VL53L0X,Modul (GY-VL53L0XV2 e.l.),1,stk,50,50,VL53L0X module,"AliExpress, Kjell",MÅL kretskortet og oppdater sensorhus.tof_kort i spec-fila.
+Elektronikk,E21,IR-termometer MLX90614,3 V-versjon (ESF-BAA) eller GY-906-modul,1,stk,150,150,MLX90614 GY-906,"AliExpress, Elfa Distrelec",Måler overflatetemperaturen på deigen.
+Elektronikk,E22,Temperatur/fukt SHT40,I²C-modul,1,stk,70,70,SHT40 module,"AliExpress, Elfa Distrelec",Romtemperatur.
+Elektronikk,E23,Optisk gaffelsensor,"Endestopp-modul (TCST2103 e.l.), 3,3–5 V",1,stk,30,30,optical endstop TCST2103,AliExpress,Hjemmesensor for kroken.
+Elektronikk,E24,Hullkort,"Ca. 70 × 90 mm, med kvinnelige stiftlister for ESP32 og skrueterminaler",1,sett,80,80,"perfboard 70x90, female header, screw terminal 5mm","Kjell, AliExpress",Hovedkort. Erstattes av kretskort i v1.
+Elektronikk,E25,Passive komponenter,"Motstander 1 %: 75 kΩ ×2, 10 kΩ ×2, 4,7 kΩ ×2, 330 Ω, 100 Ω. Kondensatorer: 100 nF ×4, 1000 µF/35 V. Dioder: 1N4007 ×2, 1N4148. TVS: P6KE33A.",1,sett,100,100,"resistor kit 1%, P6KE33A, 1000uF 35V","Elfa Distrelec, Kjell",
+Kabler,K1,"Silikonledning 0,75 mm² (AWG 18)","Rød og svart, 3 m av hver",2,rull,60,120,"silikonledning 0,75 mm2","Kjell, AliExpress",Motor og 24 V.
+Kabler,K2,"Silikonledning 0,25 mm² (AWG 24)","6 farger, 2 m av hver",1,sett,120,120,silicone wire 24AWG kit,"AliExpress, Kjell",Signaler og lokkabelen.
+Kabler,K3,Wago 221 koblingsklemmer,"221-413 og 221-415, sortiment",1,sett,150,150,Wago 221 sortiment,"Clas Ohlson, Elektroimportøren",
+Kabler,K4,JST-XH-kontakter,"2,54 mm, 2–6 pinner, med krympehylser",1,sett,120,120,JST XH connector kit,"AliExpress, Kjell",Lokkabelen skal kunne kobles fra.
+Kabler,K5,Endehylser og krympestrømpe,Sortiment,1,sett,120,120,"endehylser sortiment, krympestrømpe","Clas Ohlson, Biltema",
+Kabler,K6,Avstandsstykker M3 i nylon,Sortiment,1,sett,100,100,M3 nylon standoff kit,"AliExpress, Kjell",Moduler på elektronikkplaten.
+Skruer,S1,"M5 × 10 knapphode (ISO 7380), A2","Paneler, kabelklemmer, hjørnevinkler",150,stk,1.5,225,M5x10 ISO 7380 A2,"Bolt- og skruebutikk, AliExpress",
+Skruer,S2,M5 T-mutter for spor 6,Innslagsmutter (drop-in) eller hammermutter,150,stk,1.5,225,M5 T-nut slot 6 2020,"Motedis, AliExpress",
+Skruer,S3,"M5 sylinderhode (ISO 4762), A2","12 mm ×12, 16 mm ×12, 25 mm ×10, 35 mm ×10",44,stk,2.5,110,M5 ISO 4762 A2,Bolt- og skruebutikk,"Hengsler, motorplate, lagerhus, sensorhus, kantpress, motorklemme."
+Skruer,S4,"M5 × 16 senkhode (ISO 10642), A2",Føttene,4,stk,2,8,M5x16 ISO 10642,Bolt- og skruebutikk,
+Skruer,S5,M5 mutter med nylonlås og M5 skiver,"10 muttere, 40 skiver",1,sett,40,40,"M5 nylock, M5 skive",Bolt- og skruebutikk,
+Skruer,S6,M6 × 45 sylinderhode + M6 nylonmutter + 4 skiver,Hengselbolter,2,sett,15,30,M6x45 ISO 4762,Bolt- og skruebutikk,
+Skruer,S7,M3-sortiment,"M3 × 8, 12, 16 og 20 + muttere og skiver",1,sett,120,120,M3 screw assortment A2,"AliExpress, Clas Ohlson",
+Skruer,S8,M3 varmeinnsatser,"M3 × 5,7 mm, messing",20,stk,2,40,M3 heat set insert 5.7,AliExpress,Lagerhus og plateholdere.
+Skruer,S9,M2-skruer og muttere,"M2 × 8 ×4 (OLED), M2 × 12 ×2 (mikrobryter)",1,sett,40,40,M2 screw assortment,AliExpress,
+Filament,F1,PETG,"1,75 mm, 1 kg",2,spole,250,500,PETG filament 1kg,3D-printbutikk,"Ca. 1,1 kg trengs (se sjekkrapporten)."
+Filament,F2,TPU 95A,"1,75 mm, 250–500 g",1,spole,200,200,TPU 95A filament,3D-printbutikk,Bare til 3 små puter. Kan erstattes med kjøpte silikonføtter.

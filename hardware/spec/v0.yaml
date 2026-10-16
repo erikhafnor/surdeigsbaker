@@ -1,0 +1,144 @@
+# Surdeigsbaker v0 – masterparametre (alle mål i mm)
+#
+# All geometri i hardware/cad/ leses herfra. Endre en verdi og kjør
+#   python hardware/cad/bygg.py
+# for å lage nye STL-, STEP- og DXF-filer, bilder og sjekkrapport.
+#
+# Verdier merket ⚠️ er typiske mål for innkjøpte deler. MÅL DINE EGNE DELER
+# (bolle, motor, lager, OLED og bryter) og oppdater før du printer.
+#
+# Koordinater: origo midt i fotavtrykket, z = 0 under rammen.
+# +y peker bakover (mot hengselen), -y mot fronten.
+
+versjon: v0.1
+
+skriver:            # byggevolum delene sjekkes mot (Prusa MK4: 250 × 210 × 220)
+  x: 250
+  y: 210
+  z: 220
+
+skrue:
+  m2_klaring: 2.4
+  m3_klaring: 3.4
+  m3_mutter: 6.4      # nøkkelvidde + klaring for M3-mutter
+  m3_innsats: 4.0     # hull for varmeinnsats M3 × 5,7
+  m4_klaring: 4.5
+  m5_klaring: 5.5
+  m5_hode: 9.5        # forsenkning for M5 sylinderhode
+  m6_klaring: 6.5
+
+ramme:              # 2020-aluminiumsprofil, utvendige mål
+  profil: 20
+  bredde: 340         # x
+  dybde: 340          # y
+  hoyde: 320          # z, uten lokk
+  midtramme_z: 90     # underkant av midtre ramme (bærer gulvplaten)
+  gulvplate_t: 3
+
+lokk:
+  hoyde: 20           # lokkrammen (2020)
+  panel_t: 3          # toppanel
+  foring_t: 3         # foring under lokket (mot kammeret)
+  tverrbjelke_x: 30   # senter av de to tverrbjelkene (±x)
+  hengsel_x: 110      # senter av hengslene (±x)
+  hengsel_akse_y: 190
+  hengsel_akse_z: 320
+  hengselbolt_d: 6
+
+isolasjon_t: 20       # XPS-plater innvendig i kammeret og i lokket
+
+bolle:              # ⚠️ rustfri bolle med flat bunn – mål din
+  kant_d: 240
+  bunn_d: 150
+  hoyde: 125
+  gods: 0.8
+
+varmeplate:
+  d: 180
+  t: 3
+  topp_z: 130         # bollen står direkte på platen
+  kork_t: 3           # isolasjon mellom varmeelement og holder
+  element_d: 150      # silikonvarmeelement 24 V
+  element_w: 50
+
+krok:               # bøyd rustfri rundstang (AISI 304/316)
+  stang_d: 10
+  boyeradius: 20
+  topp_z: 342         # toppen av stanga (inne i koblingen)
+  c_topp: 105         # over bollebunnen: der kroken bøyer ut
+  c_bunn: 14          # over bollebunnen: nederste del av kroken
+  klaring_vegg: 14
+  indre_r: 20         # der bunnbiten slutter, målt fra senter
+
+lagerhus:           # printet hus med 2 × 6000-2RS (10 × 26 × 8)
+  lager_ytre_d: 26
+  lager_b: 8
+  topp_z: 317         # rett under foringen
+  hoyde: 30
+  bolt_x: 30          # festes i tverrbjelkenes spor
+
+kobling:            # kløtsjkobling (jaw/spider), ⌀30 × 40
+  d: 30
+  lengde: 40
+  bunn_z: 322
+
+motor:              # ⚠️ 24 V børstet planetgirmotor – mål din
+  kropp_d: 57
+  lengde: 160
+  aksel_d: 8
+  aksel_lengde: 25
+  pilot_d: 22         # sentreringskrage på motorflaten (0 hvis ingen)
+  flate_z: 363        # motorflaten hviler på motorplaten
+  motorplate_t: 20
+  flens_hullsirkel: 0 # ⚠️ hullsirkel for motorens egne flenskruer. 0 = ingen hull (klemmen holder motoren)
+  flens_hull_antall: 4
+  flens_hull_d: 4.5   # klaring for M4. Skruene settes nedenfra før motorplaten festes på lokket.
+
+kantpress:          # fjærbelastede puter som klemmer bollekanten når lokket lukkes
+  radius: 120
+  vinkler: [270, 30, 150]      # grader, 270 = front. Ingen pute bak: den ville hekte seg når lokket åpnes.
+  fjaer_d: 11.0       # boring for ⚠️ trykkfjær ⌀10 × 35 mm, ca. 5 N/mm
+  fjaer_l: 35
+  vandring: 12
+  fri_utstikk: 3      # fri tupp stikker 3 mm under bollekanten → ca. 8 mm fjærsammentrykk
+
+sensorhus:          # VL53L0X (ToF) og MLX90614 (IR) under lokket
+  pos: [-70, 0]
+  tof_kort: [25, 13]  # ⚠️ mål på kretskortet til ToF-modulen
+  ir_d: 9.5           # MLX90614 i TO-39-hus (eller modul med samme hull)
+
+# Dosering (levainkopp, vannpumpe) er flyttet til v1-modulen, se hardware/v0/README.md.
+
+kontrollpanel:      # i fronten av sokkelen
+  utsparing: [150, 60]
+  e_stopp_d: 22.5
+  knapp_d: 16.2
+  led_d: 5.2
+  oled_vindu: [26, 15]
+  oled_hull: [23.5, 23.8]   # ⚠️ 0,96" SSD1306-modul
+  oled_hull_d: 2.2
+
+bakpanel:
+  utsparing: [120, 50]
+  dc_hull_d: 11.0     # ⚠️ panelkontakt 5,5 × 2,1/2,5 mm
+  usb_slisse: [13, 7]
+
+elektronikkplate:
+  b: 240
+  d: 180
+  t: 4
+  z: 26
+
+elektrisk:          # 24 V SELV – all 230 V er inne i en ferdig sertifisert strømforsyning
+  spenning_v: 24
+  psu_w: 150          # ⚠️ 24 V / 6,25 A bordadapter, CE-merket
+  motor_w: 100        # nominell effekt for eltemotoren
+  varme_w: 50
+  elektronikk_w: 6
+
+mikrobryter:        # ⚠️ KW11 (20 × 10 × 6,4 mm), hull 2,3 mm med 9,5 mm avstand
+  l: 20
+  b: 6.4
+  h: 10
+  hull_avstand: 9.5
+  hull_d: 2.3

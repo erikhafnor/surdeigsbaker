@@ -16,14 +16,15 @@ Eksperimentene skal fjerne den største usikkerheten **før** vi bygger mekanikk
 | E06 | Uten forming | 1 | 🔴 | «Tipp og stek» eller «med forming» som standard? |
 | E07 | Sømsiden opp i stedet for snitting | 1 | 🟠 | Trenger vi snitting i v1? |
 | E08 | Steking av kald deig i vanlig ovn | 1 | 🟢 | Beste stekeprosedyre for mennesket. Er K4 (kaldstart) aktuell? |
-| E09 | Kald bulkheving | 1 | 🔴 | Kan kald heving skje i bollen? |
+| E09 | Kald bulkheving | 1 | 🟠 | Kan kald heving skje i bollen (i brukerens kjøleskap)? |
 | E10 | Overlevering for hånd | 1–3 | 🟠 | Er det lett å få deigen ut av bollen eller kurven og ned i gryta? |
 | E11 | Dosering av mel | 3 | 🟠 | Er en snegle nøyaktig nok? |
 | E12 | Dosering av vann og saltlake | 3 | 🟠 | Fungerer saltlake? Er nøyaktigheten god nok? |
-| E13 | Termikk: kjøling og svak varme | 1–3 | 🔴 | Klarer kammeret 1 kg deig til ≤ 6 °C, stille og uten kondensproblemer? |
+| E13 | Termikk: varmeplate og kammer | 2 | 🔴 | Holder v0 deigen på 24–27 °C ±0,5 °C med 50 W, uten varme flekker i bunnen? |
 | E14 | Måling av heving i bollen | 3 | 🟠 | Kan bulkheving måles automatisk? |
 | E15 | Ubemannet drift og feilinjeksjon | 4 | 🔴 | Er maskinen trygg å la stå? |
-| E16 | Kaldhold | 1 | 🔴 | Hvor lenge kan deigen vente kald etter kald heving uten kvalitetstap? |
+| E16 | Ventevindu etter bulk | 1–2 | 🔴 | Hvor lenge kan deigen vente ved romtemperatur etter bulk før forming, uten kvalitetstap? |
+| E17 | Eltetest i v0 | 2 | 🔴 | Elter C-kroken i v0 deigen godt nok, uten at deigen bare går rundt med kroken? |
 
 ## Detaljer
 
@@ -65,14 +66,14 @@ Eksperimentene skal fjerne den største usikkerheten **før** vi bygger mekanikk
 
 ### E08 – Steking av kald deig i vanlig ovn 🟢
 - **Bakgrunn:** Stekingen skjer i vanlig ovn ([ADR-006](beslutninger/ADR-006-steking-i-vanlig-ovn.md)). Eksperimentet optimaliserer det mennesket gjør etter overleveringen. Det er ikke et designvalg for maskinen.
-- **Spørsmål:** Trengs det tid på benken etter kaldholdet før steking? Gir kaldstart i kald gryte (K4) akseptabelt resultat?
+- **Spørsmål:** Trengs det tid på benken etter kjøleskapet før steking? Gir kaldstart i kald gryte (K4) akseptabelt resultat?
 - **Metode:** Kald deig rett i forvarmet gryte (referansen), etter 30 min på benken, og med kaldstart i kald ovn. To brød per variant.
 - **Konsekvens:** Gir standard stekeprosedyre for brukerveiledningen og varselteksten («forvarm ovnen nå»). Avgjør om K4 skal vurderes videre.
 
 ### E09 – Kald bulkheving 🔴
 - **Hypotese:** Kald heving av hele deigen i bollen (bulk retard ved 4–8 °C) gir like god smak som kald heving i kurven etter forming. Kald deig er dessuten lettere å tippe i gryta og snitte.
 - **Metode:** (a) v7.0 med kald etterheving i kurv, (b) kald bulkheving 12 t etterfulgt av kort varm heving, (c) uten kald heving. Lag også et smakspanel og mål pH.
-- **Konsekvens:** Avgjør hvordan kald heving skal skje: i bulk i bollen (variant A, «tipp og stek») eller etter forming i kurv (variant B).
+- **Konsekvens:** Avgjør hvordan kald heving skal skje: i bulk i bollen (variant A, «tipp og stek») eller etter forming i kurv (variant B). Begge skjer i brukerens kjøleskap ([ADR-007](beslutninger/ADR-007-ingen-kjoling.md)).
 
 ### E10 – Overlevering for hånd 🟠
 - **Hypotese:** Kald deig (4–8 °C) kan tippes fra en avtakbar bolle eller kurv og ned i en varm gryte på ≤ 30 s, med ≤ 10 g igjen og uten at deigen mister mye luft.
@@ -88,30 +89,36 @@ Eksperimentene skal fjerne den største usikkerheten **før** vi bygger mekanikk
 - **Mål:** Vann ±1 %. Saltlaken skal ha en konsentrasjon som ikke krystalliserer i slangene ved 4–25 °C.
 - **Metode:** Peristaltisk pumpe og magnetventil styrt av vekta. Saltlake på 20 % (mettet er ca. 26 %, så vi holder god avstand). Vannmengden i saltlaken trekkes fra i oppskriften.
 
-### E13 – Termikk: oppvarming og kjøling 🔴
+### E13 – Termikk: varmeplate og kammer 🔴
+- **Bakgrunn:** Maskinen har bare varme ([ADR-007](beslutninger/ADR-007-ingen-kjoling.md)). I v0 står bollen på en aluminiumsplate med et silikonelement på 50 W ([ADR-008](beslutninger/ADR-008-v0-design.md)).
 - **Mål:**
-  - Kammeret skal kjøle 1 kg deig fra 25 °C til ≤ 6 °C på ≤ 3 t, og holde 4–6 °C ±0,5 °C i ≥ 24 t.
-  - Det skal varme fra 6 til 24 °C på ≤ 1 t uten kondens på deigen.
-  - Det skal være stille om natten (≤ ca. 40 dB).
-- **Metode:**
-  - Sammenlign kjølekurvene for et kompressoroppsett (ombygd vinkjøleskap) og et Peltier-oppsett, med en 1 kg vannbalong eller deig.
-  - Mål strømforbruk, støy og kondens.
-  - Mål hvor mye eltemotoren varmer kammeret.
-  - Grove beregninger finnes i [arkitekturen](07-arkitektur.md#4-termikk-grove-tall).
+  - 1 kg deig (eller vann) varmes fra 20 til 26 °C på ≤ 1 t ved 20 °C i rommet.
+  - Temperaturen holdes ±0,5 °C i ≥ 5 t.
+  - Bunnen av deigen blir aldri over 32 °C (platen er begrenset til 38 °C).
+- **Metode:** Bollen med 1 l vann og senere med deig. Logg bolleveggen, platen, deigoverflaten (IR) og en kjernetemperatur med et ekstra stikktermometer. Kjør PID-autotune. Prøv romtemperatur 18 og 22 °C, med og uten XPS i kammeret.
+- **Konsekvens:** Gir PID-verdier og maks platetemperatur for fastvaren, og viser om 50 W er nok.
 
 ### E14 – Måling av heving i bollen 🟠
 - **Hypotese:** En ToF-sensor eller et kamera over bollen kan måle bulkheving med ±5 prosentpoeng sammenlignet med måleglasset.
 - **Metode:** Kjør målingene parallelt med måleglasset (aliquot jar) under E05 og E09.
 
 ### E15 – Ubemannet drift og feilinjeksjon 🔴
-- **Metode:** Først 10 tørrkjøringer uten deig, deretter 5 kjøringer med vann og til slutt 3 med deig. Feilinjeksjon: koble fra en temperaturføler, simuler et fastlåst SSR (termosikringen skal løse ut), strømbrudd midt i et program, tapt nettverk og fastkjørt motor.
-- **Bestått når:** Alle feil gir en trygg tilstand innenfor definert tid: varmen av, motoren av, varsel, og **kjølingen på hvis det finnes deig** i kammeret, slik at deigen ikke overgjærer. Se [`06-sikkerhet.md`](06-sikkerhet.md).
+- **Metode:** Først 10 tørrkjøringer uten deig, deretter 5 kjøringer med vann og til slutt 3 med deig. Feilinjeksjon: koble fra en temperaturføler, simuler en fastlåst MOSFET (KSD301 og termosikringen skal løse ut), strømbrudd midt i et program, tapt nettverk, fastkjørt motor og lokket åpnet mens kroken går.
+- **Bestått når:** Alle feil gir en trygg tilstand innenfor definert tid: varmen av, motoren av og varsel. Se [`06-sikkerhet.md`](06-sikkerhet.md).
 
-### E16 – Kaldhold 🔴
-- **Hypotese:** Deig som har hatt kald heving, kan holdes ved 4–6 °C i minst 12 t ekstra med ≤ 10 % tap på brødkortet.
-- **Metode:** Lag én deig (variant A eller B), del den i tre og stek etter 0, 12 og 24 t ekstra kaldhold. Gjenta med en ny deig. Mål pH og smak (blindtest).
-- **Konsekvens:** Bestemmer hvor stort «stekevindu» maskinen kan love. Akseptansekriterium 3 bygger på resultatet.
+### E16 – Ventevindu etter bulk 🔴
+- **Bakgrunn:** Uten kjøling i maskinen ([ADR-007](beslutninger/ADR-007-ingen-kjoling.md)) venter deigen ved romtemperatur fra «klar for forming» til du former den. Det gamle E16 (kaldhold i maskinen) er fjernet.
+- **Hypotese:** Deigen kan vente minst 60 min ved 20–22 °C etter at bulkhevingen er ferdig, med ≤ 10 % tap på brødkortet.
+- **Metode:** Lag én deig, del den i tre etter bulk og form etter 0, 60 og 120 min. Kald etterheving og steking som referansen. Gjenta med en ny deig.
+- **Konsekvens:** Bestemmer hvor presis tidsplanleggeren må være, og når maskinen skal sende en påminnelse. Akseptansekriterium 3 bygger på resultatet.
+
+### E17 – Eltetest i v0 🔴
+- **Bakgrunn:** v0 elter med en C-krok i senter av en kjegleformet bolle ([ADR-008](beslutninger/ADR-008-v0-design.md)). Det er den største tekniske usikkerheten i designet.
+- **Hypotese:** Kroken gir en glatt og elastisk deig (bestått vindusprøve) på ≤ 12 min, uten at deigen bare går rundt med kroken, og uten at bollen vrir seg.
+- **Metode:** Testdeig uten surdeig: 500 g hvetemel, 380 g vann og 10 g salt. Elt med 30, 50 og 70 % fart. Film ovenfra, logg motorstrømmen og ta vindusprøve hvert 3. minutt. Gjenta med 77 % hydrering som i den maskinvennlige oppskriften. Se [`hardware/v0/README.md`](../hardware/v0/README.md#76-e17-eltetest-gjør-dette-tidlig).
+- **Bestått når:** Vindusprøven er bestått på ≤ 12 min, motorstrømmen er under 3 A, og bollen står stille.
+- **Hvis ikke:** Prøv i rekkefølge: høyere fart, kortere intervall mellom retningsskift, spiralkrok, krok ut fra senter. Det siste krever ny CAD.
 
 ## Utstyr til eksperimentene i fase 0–1
 
-Se [`09-budsjett-og-innkjop.md`](09-budsjett-og-innkjop.md). Det meste kan gjøres med en kjøkkenmaskin, en jerngryte, en vanlig ovn, en hevekasse (bygges i fase 1) og et ESP32-basert måleoppsett.
+Se [`09-budsjett-og-innkjop.md`](09-budsjett-og-innkjop.md). Det meste kan gjøres med en kjøkkenmaskin, en jerngryte, en vanlig ovn, kjøleskapet og et ESP32-basert måleoppsett. Når v0 er bygget, kan den brukes til E02–E06, E13, E14, E16 og E17.

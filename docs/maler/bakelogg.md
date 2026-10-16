@@ -12,8 +12,8 @@
 | Eksperiment-ID | f.eks. E05-b (eller «–») |
 | Automasjonsnivå | N0–N5 |
 | Overlevering | A «tipp og stek» / B «med forming» |
-| Stekeklar: planlagt / faktisk | kl. … / kl. … (avvik: … min) |
-| Kaldhold etter stekeklar tid | … t |
+| Klar for forming: planlagt / faktisk | kl. … / kl. … (avvik: … min) |
+| Ventetid før forming / tid i kjøleskap | … min / … t |
 
 ## Ingredienser (veid)
 

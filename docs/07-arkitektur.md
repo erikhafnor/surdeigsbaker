@@ -1,6 +1,8 @@
 # 07 – Systemarkitektur (utkast)
 
-Maskinen leverer **stekeklar deig**, og stekingen skjer i vanlig ovn ([ADR-006](beslutninger/ADR-006-steking-i-vanlig-ovn.md)). Arkitekturen tar utgangspunkt i konsept K2, «eltebolle i hevekammer» ([`03-konsepter.md`](03-konsepter.md)). Delsystemene er definert slik at de også passer trinnene på veien: K3 (hevekabinett) og K1 (brødmaskin i kjøleskap). Alt her er et **utkast** som skal modnes i fase 1–3.
+> **Oppdatert 2026-10-16:** Maskinen har **ingen kjøling** ([ADR-007](beslutninger/ADR-007-ingen-kjoling.md)), og **v0 er designet** ([ADR-008](beslutninger/ADR-008-v0-design.md)). Arkitekturen som faktisk bygges nå, står i [`hardware/v0/README.md`](../hardware/v0/README.md) (mekanikk), [`hardware/v0/koblingsskjema.md`](../hardware/v0/koblingsskjema.md) (24 V, sikkerhetskjede og pinnekart) og [`firmware/v0/`](../firmware/v0/README.md) (ESPHome). Kort fortalt: bare 24 V fra en CE-merket strømforsyning, ESP32-S3 med ESPHome, varmeplate under en avtakbar rustfri bolle, C-krok drevet fra lokket, lokkbryter og nødstopp som bryter reléer. Avsnittene under om kjøling, kaldhold og 230 V er skrevet før dette og gjelder ikke v0.
+
+Maskinen leverer deig som er **klar for forming**, og stekingen skjer i vanlig ovn ([ADR-006](beslutninger/ADR-006-steking-i-vanlig-ovn.md)). Arkitekturen tar utgangspunkt i konsept K2, «eltebolle i hevekammer» ([`03-konsepter.md`](03-konsepter.md)). Delsystemene er definert slik at de også passer trinnene på veien: K3 (hevekabinett) og K1 (brødmaskin i kjøleskap). Alt her er et **utkast** som skal modnes i fase 1–3.
 
 ## 1. Moduler
 
@@ -24,7 +26,7 @@ flowchart TB
     MCU["Mikrokontroller: PID,<br/>motorer, dosering"]
     SAFE["Sikkerhetsvakt<br/>(uavhengig)"]
   end
-  VARSEL["Varsler: «form nå»,<br/>«forvarm ovnen», «stekeklar»"]
+  VARSEL["Varsler: «tilsett saltlake»,<br/>«klar for forming», feil"]
   OVN["Din vanlige ovn<br/>(valgfri smartovn-integrasjon)"]
   ING --> BOLLE
   HOST <--> MCU
@@ -58,11 +60,11 @@ Uten ovn blir effekten lav, og maskinen kan stå på en hvilken som helst stikko
 
 | Fase | Forbruker | Effekt |
 |---|---|---|
-| Elting og bretting | Eltemotor | 100–400 W (kort tid) |
-| Levain og bulk (24–27 °C) | Svak varme | ≤ 100 W, vanligvis mye mindre |
-| Kald heving og kaldhold | Kompressor ca. 50 W **eller** Peltier 40–80 W | |
-| Hele tiden | Elektronikk og vifter | ca. 10–20 W |
-| **Sperre i fastvaren** | Varme og kjøling går aldri samtidig. Motoren og kompressoren startes ikke samtidig (startstrøm). | **Maks ≤ 600 W** |
+| Elting og bretting | Eltemotor (v0: 24 V, ca. 100 W) | ≤ 100 W (kort tid) |
+| Levain og bulk (24–27 °C) | Varmeplate (v0: 50 W) | ≤ 50 W, vanligvis mye mindre |
+| ~~Kald heving og kaldhold~~ | Utgår (ADR-007) | – |
+| Hele tiden | Elektronikk | ca. 5 W |
+| **Sperre i fastvaren** | Varmen er av mens motoren går. | **v0: ≤ 150 W fra 24 V-strømforsyningen** |
 
 ## 4. Termikk: grove tall
 
@@ -101,9 +103,9 @@ Utviklingsverktøyene (CAD, KiCad, ESPHome-CI, simulatorer) og sperrene for AI-a
 ```mermaid
 flowchart TB
   UI["Brukergrensesnitt<br/>knapp/display · web · varsel · (Home Assistant)"]
-  PLAN["Tidsplanlegger<br/>«stekeklar kl. 07:00» → starttid,<br/>tillatte tidsrom for varsler"]
+  PLAN["Tidsplanlegger<br/>«klar for forming kl. 20:00» → starttid og temperatur,<br/>tillatte tidsrom for varsler"]
   MOTOR["Oppskriftsmotor<br/>tilstandsmaskin, leser oppskrift.yaml"]
-  REG["Prosessregulatorer<br/>PID varme/kjøling · motorprofiler · dosering"]
+  REG["Prosessregulatorer<br/>PID varme · motorprofiler · dosering"]
   HAL["Maskinvarelag (HAL)<br/>sensorer · aktuatorer"]
   LOG["Logg<br/>alle målinger + bake-ID"]
   SAFE["Sikkerhetsvakt (egen MCU)<br/>watchdog · overtemp · frakobling"]
@@ -123,20 +125,15 @@ stateDiagram-v2
   Levain --> Fermentolyse: heving ≥ mål eller modell
   Fermentolyse --> Elting
   Elting --> Bulk
-  Bulk --> VentForming: variant B, varsel «form nå»
-  VentForming --> KaldHeving: kurv satt inn
-  Bulk --> KaldHeving: variant A
-  KaldHeving --> Kaldhold: min_tid nådd
-  Kaldhold --> Stekeklar: tidsplan, varsel «forvarm ovnen» 45–60 min før
-  Stekeklar --> Klar: bolle/kurv tatt ut (vekt ≈ 0)
+  Bulk --> KlarForForming: heving ≥ mål eller maks tid, varsel «klar for forming»
+  KlarForForming --> Klar: kvittert av bruker (deigen er tatt ut)
   Levain --> Feil
+  Elting --> Feil
   Bulk --> Feil
-  KaldHeving --> Feil
-  Kaldhold --> Feil
   Feil --> Klar: kvittert av bruker
   note right of Feil
     Trygg tilstand: varme av, motor av,
-    kjøling PÅ hvis deig finnes, varsel sendt
+    varsel sendt (ingen kjøling, ADR-007)
   end note
 ```
 
@@ -147,10 +144,9 @@ Hver baking får en **bake-ID**. Alle målinger logges med bake-ID-en, slik at l
 | Varsel | Når | Kanal |
 |---|---|---|
 | «Tilsett 1 ss surdeig» (N2/N3) | Ved start, hvis bollen ikke har levain | Display og mobil |
-| «Form deigen nå» (variant B) | Slutten av bulkhevingen, innenfor tillatt tidsrom | Mobil |
-| «Forvarm ovnen nå» | 45–60 min før stekeklar tid (kan justeres etter ovnen din) | Mobil, eventuelt Home Assistant |
-| «Deigen er stekeklar» | Ved stekeklar tid. Kaldholdet fortsetter til bollen eller kurven tas ut. | Mobil |
-| Feil eller avvik | Umiddelbart (kjøling, motor, temperatur, strømbrudd) | Mobil og lys/lyd på maskinen |
+| «Tilsett saltlaken» (v0) | Etter fermentolysen | Display, summer og mobil |
+| «Deigen er klar for forming» | Slutten av bulkhevingen, helst innenfor tillatt tidsrom. Påminnelse etter 1 t. | Display, LED, summer og mobil (ntfy eller Home Assistant) |
+| Feil eller avvik | Umiddelbart (motor, temperatur, nødstopp, strømbrudd) | Mobil og lys/lyd på maskinen |
 
 ### Valgfritt senere: integrasjon med smartovn
 
@@ -162,9 +158,9 @@ Mange nyere ovner kan fjernstyres (via produsentens app eller Home Assistant). M
 
 ## 7. Åpne arkitekturspørsmål
 
-- Kjøling i K2: kald luft fra en kompressorenhet, en kappe rundt bollen med væskesløyfe, eller Peltier?
-- Hvordan kobles kroken og lokket, slik at bollen kan tas ut enkelt og kroken kan vaskes?
-- Skal hevekurven stå i kammeret samtidig med bollen (variant B), eller erstatte den?
-- Hvordan håndteres og tørkes kondensen?
-- Sikkerhetsvakt: egen liten MCU, eller en ren maskinvarekrets (komparator og watchdog-IC)?
-- Brukergrensesnitt: fysisk knapp og display, bare web/app, eller begge?
+- ~~Kjøling i K2~~ Avgjort: ingen kjøling (ADR-007).
+- ~~Hvordan kobles kroken og lokket?~~ v0: kroken henger i lokket med klokobling og tas av for vask. Lokket vippes opp etter at kroken er parkert (ADR-008).
+- ~~Hevekurv i kammeret?~~ Avgjort: kurven står i brukerens kjøleskap.
+- Sikkerhetsvakt: I v0 gjøres lag 2 med lokkbryter, nødstopp og reléer, uten egen MCU. Trengs en egen watchdog i v1?
+- Brukergrensesnitt: v0 har to knapper, OLED, LED og nettside. Trengs en app?
+- Hvordan blir maskinen lavere enn 45 cm (v0 er 54 cm)?

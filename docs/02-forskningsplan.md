@@ -17,7 +17,7 @@ Forstudien (oktober 2026) har allerede gitt en del svar. De står under hvert om
 - **HS1:** Kan en maskin på kjøkkenbenken lage en surdeigsdeig som, stekt som referansen i vanlig ovn, får ≥ 80 % av referansebrødets poengsum med høyst to korte manuelle grep (eventuell forming og tipping i gryta)?
 - **HS2:** Hvilke trinn i referanseprosessen kan fjernes eller forenkles uten vesentlig kvalitetstap?
 - **HS3:** Hva er den enkleste robuste arkitekturen (eltemekanisme, kjøling og overlevering) som oppfyller kravspesifikasjonen?
-- **HS5:** Hvor presist kan maskinen treffe «stekeklar kl. X», og hvor lenge kan deigen kaldholdes uten tap?
+- **HS5:** Hvor presist kan maskinen treffe «klar for forming kl. X», og hvor lenge kan deigen vente ved romtemperatur uten tap (E16)?
 - **HS4:** Hvordan kan maskinen avgjøre *når* et trinn er ferdig, slik at den ikke bare følger klokka?
 
 ## Forskningsområder (FO)
@@ -126,7 +126,7 @@ Forstudien (oktober 2026) har allerede gitt en del svar. De står under hvert om
 | Litteraturstudie | FO1, FO3, FO5 | Kunnskapsnotat per område |
 | Produktanalyse og teardown | FO2, FO4 | Tabell over kjente løsninger og teardown-notat med bilder |
 | Patentsøk | FO2 | Liste over relevante patenter og ideer (og et første blikk på fri bruksrett, hvis prosjektet kan bli kommersielt) |
-| Eksperimenter (E01–E15) | FO1, FO3–FO5 | Eksperimentrapporter og data i `data/` |
+| Eksperimenter (E01–E17) | FO1, FO3–FO5 | Eksperimentrapporter og data i `data/` |
 | Nettsamfunn og fagfolk | Alle | Innspill. Mulige fagmiljøer: Nofima (korn- og bakeforskning), lokale håndverksbakerier og makerspace eller verksted ved universitetet |
 | Prototyping | FO4–FO6 | Fungerende delsystemer |
 

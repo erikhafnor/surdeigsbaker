@@ -6,7 +6,9 @@
 
 ## Kontekst
 
-Se [`03-konsepter.md`](../03-konsepter.md). Maskinen leverer stekeklar deig, og stekingen skjer i vanlig ovn ([ADR-006](ADR-006-steking-i-vanlig-ovn.md)). Den foreløpige favoritten for v1 er **K2 (eltebolle i hevekammer)**. **K3 (smart hevekabinett)** og **K1 (brødmaskin i kjøleskap)** er trinn på veien.
+Se [`03-konsepter.md`](../03-konsepter.md). Maskinen leverer deig som er klar for forming. Stekingen skjer i vanlig ovn ([ADR-006](ADR-006-steking-i-vanlig-ovn.md)), og den kalde etterhevingen i brukerens kjøleskap ([ADR-007](ADR-007-ingen-kjoling.md)).
+
+**Oppdatert 2026-10-16:** v0 er designet som K2 uten kjøling ([ADR-008](ADR-008-v0-design.md)). Denne ADR-en gjelder nå valget for **v1**, og tas med data fra v0. **K3 (smart hevekabinett)** og **K1 (brødmaskin)** er ikke lenger nødvendige trinn på veien.
 
 ## Data som trengs før beslutningen
 
@@ -17,8 +19,9 @@ Se [`03-konsepter.md`](../03-konsepter.md). Maskinen leverer stekeklar deig, og 
 | E07 | Trengs snitting? | – |
 | E09 | Kald bulkheving eller kald etterheving? | – |
 | E10 | Er overleveringen enkel for mennesket (bolle eller kurv)? | – |
-| E13 | Klarer kjølingen 1 kg deig til ≤ 6 °C? | – |
-| E16 | Hvor lenge kan deigen kaldholdes? | – |
+| E13 | Holder varmeplaten deigen på 24–27 °C ±0,5 °C? | – |
+| E16 | Hvor lenge kan deigen vente ved romtemperatur etter bulk? | – |
+| E17 | Elter C-kroken i v0 godt nok? | – |
 
 ## Beslutning
 

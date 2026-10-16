@@ -2,7 +2,7 @@
 
 Her brytes referanseoppskriften ([`oppskrifter/referanse-v7.md`](../oppskrifter/referanse-v7.md)) ned i **maskinfunksjoner**. For hver funksjon vurderer vi hvor vanskelig den er å automatisere og hvilke løsninger som finnes. Til slutt foreslår vi en *maskinvennlig prosess*, som er en hypotese som eksperimentene skal teste.
 
-**Avgrensning ([ADR-006](beslutninger/ADR-006-steking-i-vanlig-ovn.md)):** Maskinen slutter ved ovnsdøra. Steking og avkjøling (trinn 11–15) gjøres av mennesket i vanlig ovn.
+**Avgrensning ([ADR-006](beslutninger/ADR-006-steking-i-vanlig-ovn.md) og [ADR-007](beslutninger/ADR-007-ingen-kjoling.md)):** Maskinen slutter når deigen er **klar for forming** (trinn 1–6). Forming, kald etterheving i eget kjøleskap og steking i vanlig ovn (trinn 7–15) gjøres av mennesket.
 
 ## Prosessflyt
 
@@ -16,15 +16,13 @@ flowchart LR
     C --> D["4 Salt og levain"]:::mid
     D --> E["5 Elting<br/>10 min"]:::easy
     E --> F["6 Bulkheving<br/>2–3 t, bretting"]:::mid
-    F --> H["9–10 Etterheving og<br/>kald heving / kaldhold"]:::mid
   end
-  F -. "variant «med forming»" .-> G["7–8 Forming<br/>(2–5 min)"]:::human
-  G -.-> H
-  subgraph U["Du og vanlig ovn"]
-    I["11 Forvarm ovn og gryte<br/>(maskinen varsler)"]:::human --> J["12 Tipp i gryta og snitt"]:::human
+  F -->|"varsel: klar for forming"| G
+  subgraph U["Du, kjøleskapet og ovnen"]
+    G["7–8 Forming<br/>(2–5 min)"]:::human --> H["9–10 Kald etterheving<br/>i kjøleskapet, 8–24 t"]:::human
+    H --> I["11 Forvarm ovn og gryte"]:::human --> J["12 Tipp i gryta og snitt"]:::human
     J --> K["13–14 Steking<br/>250 → 200 °C"]:::human --> L["15 Avkjøling"]:::human
   end
-  H -->|"stekeklar til planlagt tid"| J
   classDef easy fill:#d4edda,stroke:#2e7d32,color:#000
   classDef mid fill:#fff3cd,stroke:#b8860b,color:#000
   classDef hard fill:#f8d7da,stroke:#b71c1c,color:#000
@@ -42,8 +40,8 @@ flowchart LR
 | 5 | Elting | Motor med krok eller padle | ca. 10 min, lav hastighet, ca. 1 kg deig | Lav | Brødmaskinpadle, spiralkrok, motor fra kjøkkenmaskin | – |
 | 6 | Bulkheving med strekk og brett | Holde temperatur, bearbeide deigen med jevne mellomrom, måle heving | 24–27 °C, bretting hver 30. min, +20–25 % volum | Middels | Korte og langsomme krokomdreininger, ToF-sensor eller kamera for heving | **Ja:** Bretting kan kanskje erstattes av mer elting eller korte omrøringer (E05) |
 | 7–8 | Forforming og endelig forming | Gi overflatespenning og stram form | – | **Svært høy** for maskin, **2–5 min** for menneske | Ingen forming der gryta er formen, eller at mennesket former når maskinen varsler | **Ja:** Variant «uten forming» (E06), eller manuell forming |
-| 9–10 | Etterheving, kald heving og kaldhold | Holde temperatur med både varme og kjøling, holde deigen kald til stekeklar tid | Rom: 2 t. Kaldt: 4–6 °C i opptil 24 t, kaldhold ≥ 12 t | Middels | Kompressor (ombygd vinkjøleskap) eller Peltier, isolert kammer | **Ja:** Kald bulkheving i bollen (E09) |
-| 11 | Forvarme ovn og gryte | **Utenfor maskinen.** Maskinen *varsler* i god tid. | Varsel 45–60 min før stekeklar tid | Lav | Varsel på mobil, valgfri integrasjon med smartovn | – |
+| 9–10 | Etterheving og kald heving | **Utenfor maskinen** ([ADR-007](beslutninger/ADR-007-ingen-kjoling.md)). Mennesket setter kurven (eller bollen) i sitt eget kjøleskap. | Kjøleskap 4–6 °C, 8–24 t | – | Brukerens kjøleskap | **Ja:** Ingen kjøling i maskinen |
+| 11 | Forvarme ovn og gryte | **Utenfor maskinen.** Mennesket forvarmer når deigen tas ut av kjøleskapet. | Som referansen | Lav | – | – |
 | 12 | Overlevering og snitting | **Mennesket** tipper kald deig fra bolle eller kurv i varm gryte og snitter | Uten å punktere deigen | Lav for menneske | Avtakbar bolle eller hevekurv med slippbelegg. Kald deig er lett å snitte. | Kanskje sømsiden opp (E07) |
 | 13–15 | Steking og avkjøling | **Utenfor maskinen**, i vanlig ovn | Som referansen | – | – | – |
 | – | Rengjøring | – | Mindre enn 5 min per brød | **Høy** | Avtakbare deler som tåler oppvaskmaskin, slippbelegg | Designes inn fra start |
@@ -59,31 +57,29 @@ Eksperimentene i fase 1 skal bekrefte eller avkrefte denne hypotesen ([`05-ekspe
 | Levain | Separat glass, flytetest | I bollen. Mennesket tilsetter 1 ss surdeig. Ferdig etter modell (tid og temperatur), senere med sensor. | E02, E03 |
 | Autolyse | Mel og vann først, deretter salt og levain | Fermentolyse: alt unntatt salt, deretter saltlake | E04 |
 | Bretting | Hver 30. min for hånd | 3–4 korte og langsomme omrøringer med kroken | E05 |
-| Forming | Forforming, benkhvile og endelig forming | **A:** Ingen («tipp og stek»). **B:** Mennesket former når maskinen varsler. | E06 |
-| Etterheving | 2 t i kurv, så kjøleskap | **A:** Kald bulkheving i bollen. **B:** Etterheving og kald heving i kurv i maskinens kammer. | E09 |
-| Kaldhold | Opptil 24 t i kjøleskap | Maskinen holder 4–6 °C til du er klar, og varsler | E16 |
+| Forming | Forforming, benkhvile og endelig forming | **A:** Ingen («tipp og stek»). **B:** Mennesket former når maskinen varsler (standard i v0). | E06 |
+| Etterheving | 2 t i kurv, så kjøleskap | **A:** Bollen med lokk i kjøleskapet. **B:** Kurven i kjøleskapet. | E09 |
+| Venting etter bulk | – | Deigen venter ved romtemperatur til du former den. Maskinen slår av varmen. | E16 |
 | Overlevering | Fra kurv til varm gryte | Mennesket tipper kald deig fra bolle (A) eller kurv (B) i varm gryte | E10 |
 | Snitting | Kniv eller barberblad | Mennesket snitter, eller sømsiden opp | E07 |
 | Steking | 260 °C forvarming, 250 °C med lokk, 200 °C uten | **Uendret**, i vanlig ovn | (E08) |
 
 Hvis H0 holder med variant A, trenger maskinen verken forming eller avansert håndtering av deig. Variant B er en sikker reserveplan som gir referansekvalitet med to korte manuelle grep.
 
-## Tidsplanlegging bakover («stekeklar kl. 07:00»)
+## Tidsplanlegging bakover («klar for forming kl. 20:00»)
 
-Med styrt temperatur blir tiden for hvert trinn forutsigbar. Maskinen kan da regne baklengs fra ønsket tidspunkt:
+Med styrt temperatur blir tiden for hvert trinn forutsigbar. Maskinen kan da regne baklengs fra tidspunktet du vil forme deigen:
 
 ```text
-stekeklar 07:00  →  varsel «forvarm ovnen» ca. 06:00–06:15
+klar for forming 20:00  →  varsel, du former og setter kurven i kjøleskapet
      ↑
-[kald heving / kaldhold: buffer på 8–20 t, absorberer usikkerhet]
+[venting ved romtemperatur: bare noen ti-minutter er trygt (E16)]
      ↑
-(variant B: varsel «form deigen nå» ved slutten av bulk, ofte om kvelden)
-     ↑
-bulkheving (modell: f(temperatur, levain-andel))
+bulkheving (modell: f(temperatur, levain-andel))  ←  temperaturen justeres for å treffe tiden
      ↑
 elting / fermentolyse  ←  levain (modell: f(temperatur, forhold))  ←  start
 ```
 
-Den kalde hevingen fungerer som en **buffer**. Usikkerhet i surdeigens aktivitet (± 1–2 t) tas opp der, i stedet for å forskyve tidspunktet. Kaldholdet etterpå gjør at du ikke må steke på minuttet. Deigen kan vente kald i flere timer (E16). Fermenteringsmodellen lages fra dataene i E02.
+Uten kjøling i maskinen ([ADR-007](beslutninger/ADR-007-ingen-kjoling.md)) finnes det ingen kald buffer *før* forming. Usikkerheten i surdeigens aktivitet (± 1–2 t) må derfor tas opp med **temperaturen** under bulkhevingen: Går den for fort, senkes temperaturen (men aldri under romtemperaturen). Går den for sakte, økes den. Etter formingen er det **kjøleskapet ditt** som er bufferen (8–24 t), så du slipper å steke på minuttet.
 
-Variant B krever at mennesket er tilgjengelig når bulkhevingen er ferdig. Tidsplanleggeren skal derfor kunne legge formevarselet til et ønsket tidsrom (f.eks. 19–22) ved å justere starttid og temperatur.
+Tidsplanleggeren kommer når fermenteringsmodellen fra E02 finnes. Fastvaren i v0 starter når du trykker **Start**, og slutter når hevingen har nådd målet.

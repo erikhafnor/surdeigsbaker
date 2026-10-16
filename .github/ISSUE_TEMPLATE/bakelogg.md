@@ -10,7 +10,7 @@ labels: bakelogg
 **Bakt av:** menneske / maskin (versjon …)
 **Automasjonsnivå:** N0–N5
 **Overlevering:** A «tipp og stek» / B «med forming»
-**Stekeklar planlagt / faktisk:** kl. … / kl. …
+**Klar for forming planlagt / faktisk:** kl. … / kl. …
 
 ### Ingredienser (g, °C)
 | Mel siktet | Mel sammalt | Vann | Salt | Levain | Vanntemperatur | Romtemperatur |

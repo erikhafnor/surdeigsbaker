@@ -4,6 +4,8 @@ Planen går i seks faser. Hver fase avsluttes med en **port** (G0–G5): et sett
 
 Tidsanslagene forutsetter **hobbytempo, ca. 6–10 timer i uka**, og er grove. De justeres ved hver port.
 
+> **Oppdatert 2026-10-16:** Etter [ADR-007](beslutninger/ADR-007-ingen-kjoling.md) (ingen kjøling) og [ADR-008](beslutninger/ADR-008-v0-design.md) (første maskindesign) bygges **v0 nå** som fase 2. Den er en K2-maskin uten kjøling og dosering. Hevekabinettet (K3) og den hackede brødmaskinen (K1) er ikke lenger nødvendige trinn. Byggeveiledningen ligger i [`hardware/v0/`](../hardware/v0/README.md).
+
 ```mermaid
 gantt
     title Surdeigsbaker – grovt veikart (hobbytempo)
@@ -13,15 +15,16 @@ gantt
     Oppstart og forstudie               :f0, 2026-10-19, 6w
     E01 Referansebrød ×3                :e01, 2026-10-24, 4w
     section Fase 1
-    Hevekabinett K3 og måleoppsett      :f1a, 2026-11-09, 4w
-    M1 Hevekabinett i bruk (N1)         :milestone, m1, 2026-12-07, 0d
-    Prosesseksperimenter E02–E09, E16   :f1b, after f1a, 6w
-    section Fase 2
-    Skjelett K1 (brødmaskindrev i kabinett) :f2, 2026-12-28, 6w
-    M2 Første maskinlagde deig (N2)     :milestone, m2, 2027-02-08, 0d
+    Prosesseksperimenter E02–E09, E16 (for hånd og i v0) :f1b, 2026-11-09, 10w
+    section Fase 2 – v0
+    Kjøp og mål delene                  :v0a, 2026-10-19, 4w
+    Print                               :v0b, 2026-11-02, 3w
+    Montering og kabling                :v0c, 2026-11-23, 3w
+    E17 Eltetest                        :milestone, e17, 2026-12-14, 0d
+    M2 Første brød fra v0 (N2)          :milestone, m2, 2027-01-04, 0d
     section Fase 3
-    Konseptvalg (ADR-001)               :milestone, m3, 2027-02-01, 0d
-    Delsystemer K2 og E10–E14           :f3, 2027-02-01, 11w
+    Konseptvalg v1 (ADR-001)            :milestone, m3, 2027-02-01, 0d
+    Dosering, tidsplanlegger, kretskort :f3, 2027-02-01, 11w
     section Fase 4
     Integrasjon av prototype v1         :f4, 2027-04-12, 8w
     M4 Første brød fra prototype v1     :milestone, m4, 2027-05-31, 0d
@@ -51,44 +54,50 @@ gantt
 **Mål:** Bygge hevekabinettet, som er første nyttige maskin (N1). Finne ut hvilke håndgrep maskinen *ikke* trenger å gjøre, og lage en fermenteringsmodell.
 
 - [ ] Bygg måleoppsettet: ESP32 med temperaturfølere, ToF-sensor, lastcelle og logging til dashboard eller CSV. ESPHome-oppsettet valideres og kompileres i CI og testes i Wokwi før et menneske flasher det.
-- [ ] Bygg **hevekabinettet (K3)**: et ombygd lite vinkjøleskap med kompressor (styres eksternt, kjølekretsen åpnes ikke), svak varme med termosikring, hevemåling, tidsplan og varsler («form deigen nå», «forvarm ovnen nå»). Kabinettet er både eksperimentkammeret og første trinn av maskinen.
+- [ ] ~~Bygg hevekabinettet (K3)~~ **Valgfritt etter ADR-008.** v0 har varme, hevemåling og varsler, og kan brukes som eksperimentkammer når den er bygget.
 - [ ] Kjør E02 og E03 (surdeigskinetikk og «klar»-signal)
-- [ ] Kjør E04–E09 og E16 (forenklinger av prosessen og kaldhold) med kjøkkenmaskin, kabinett og vanlig ovn
+- [ ] Kjør E04–E09 og E16 (forenklinger av prosessen og ventevinduet etter bulk) med kjøkkenmaskin, kjøleskap og vanlig ovn
 - [ ] Lag fermenteringsmodell v1 og maskinvennlig oppskrift v1 ([`oppskrifter/maskinvennlig-v0.yaml`](../oppskrifter/maskinvennlig-v0.yaml))
 
-**Milepæl M1:** Hevekabinettet er i bruk til vanlig baking (N1).
+**Port G1:** H0 er bekreftet eller avkreftet. Det betyr at vi vet om overleveringen skal være «tipp og stek» eller «med forming». Modellen treffer innenfor ±1 t, og vi vet hvor lenge deigen kan vente ved romtemperatur etter bulk (E16).
 
-**Port G1:** H0 er bekreftet eller avkreftet. Det betyr at vi vet om overleveringen skal være «tipp og stek» eller «med forming», og om kald heving skal skje i bulk eller etter forming. Modellen treffer innenfor ±1 t, og vi vet hvor lenge deigen kan kaldholdes.
+## Fase 2 – Bygg v0 (K2 uten kjøling) (uke 1–12)
 
-## Fase 2 – Gangbart skjelett: brødmaskin i kabinettet (K1) (uke 10–16)
+**Mål:** En maskin på benken som blander, elter, bulkhever med bretting og varsler når deigen er klar for forming (N2). Hele kjeden fra fastvare til sikkerhet skal fungere på ekte maskinvare.
 
-**Mål:** Få maskinen til å elte og bulkheve selv (N2), og få hele programvarekjeden til å fungere på ekte maskinvare: oppskrift, styring, sikkerhet, logging og varsling.
+Alt som trengs, ligger i [`hardware/v0/`](../hardware/v0/README.md): STL, STEP, DXF, stykkliste, koblingsskjema og byggeveiledning. Fastvaren ligger i [`firmware/v0/`](../firmware/v0/README.md).
 
-- [ ] Kjøp en brukt brødmaskin (Finn.no). Demonter, dokumenter og mål motoren og drivverket (en «teardown»). Varmeelementet på ca. 500 W brukes ikke. Kabinettet har egen svak varme.
-- [ ] Monter drivverket og formen i hevekabinettet. Mål motorvarmen og ta hensyn til den i kjølingen.
-- [ ] Styring av motoren (relé/triac, overvåking av blokkering) og en **uavhengig termosikring** på varmeelementet i kabinettet
-- [ ] Implementer sikkerhetsvakten, oppskriftsmotoren (tilstandsmaskin) og loggingen, se [arkitektur](07-arkitektur.md)
-- [ ] Kjør den maskinvennlige oppskriften etter manuell veiing (N2), og stek i vanlig ovn
-- [ ] Gjør feilinjeksjon som en «mini-E15»
+- [ ] Kjøp bollen, motoren og modulene, og **mål dem**. Oppdater [`hardware/spec/v0.yaml`](../hardware/spec/v0.yaml) og bygg CAD på nytt.
+- [ ] Bestill profiler (kappet) og plater (kappet etter DXF)
+- [ ] Print delene ([`printliste.md`](../hardware/v0/printliste.md)). Lagerhuset først, som passformtest.
+- [ ] Bøy kroken etter bøyemalen og sjekk den mot bollen
+- [ ] Monter ramme, bunn, gulv, varmeplate, lokk og kabling
+- [ ] Idriftsetting trinn for trinn: uten strøm, uten last, fastvare, varme med vann, motor uten bolle
+- [ ] **E17: Eltetest** med testdeig. Den største tekniske risikoen i v0.
+- [ ] Test sikkerhetskjeden: lokkbryter, nødstopp, KSD301, termosikring og føler som mangler
+- [ ] Bak etter den maskinvennlige oppskriften og stek i vanlig ovn
 
-**Port G2 / milepæl M2:** 🍞 *Første brød av maskinlaget surdeigsdeig* (N2). Sikkerhetsarkitekturen er verifisert ved at termosikringen er testet og løser ut.
+**Port G2 / milepæl M2:** 🍞 *Første brød av deig laget i v0* (N2). Lokkbryteren, nødstoppen og varmevernet er testet og virker.
+
+**Valgfritt:** Brødmaskinvarianten (K1) kan fortsatt bygges som en enkel «Surdeigsbaker Mini», men den er ikke lenger på den kritiske veien.
 
 ## Fase 3 – Konseptvalg og delsystemer for K2 (uke 15–26)
 
 **Mål:** Velge konsept og få hvert delsystem til å oppfylle spesifikasjonen sin hver for seg.
 
-- [ ] **ADR-001: Konseptvalg** (Pugh-matrise oppdatert med data fra E05–E09 og E16, se [konsepter](03-konsepter.md))
-- [ ] Elte- og hevemodul: avtakbar bolle i rustfritt stål, krok med girmotor i lokket, lastceller og ToF (E14)
-- [ ] Kammer: isolasjon, kompressor eller Peltier, svak varme og håndtering av kondens (**E13**)
+- [ ] **ADR-001: Konseptvalg for v1** (Pugh-matrise oppdatert med data fra v0, E05–E09, E16 og E17, se [konsepter](03-konsepter.md))
+- [ ] Forbedret elte- og hevemodul basert på erfaringene fra v0: kroken, bollen, lastceller og bedre hevemåling (E14)
+- [ ] Lavere maskin (motoren ved siden av bollen?) og bedre varmestyring (**E13**)
 - [ ] Overlevering: bolle og hevekurv som er lette å ta ut og tømme for hånd (E10)
 - [ ] Dosering (for N3): snegle for mel, pumpe for vann og saltlake (E11 og E12)
-- [ ] Mekanisk konsept i CAD (build123d og FreeCAD) og elektrisk skjema (KiCad 10, med separat 230 V-kort og lavspenningskort), se [verktøykjeden](10-verktoykjede.md)
+- [ ] Tidsplanlegger som treffer et valgt tidspunkt for forming, basert på fermenteringsmodellen fra E02
+- [ ] Kretskort i KiCad 10 i stedet for hullkortet. Fortsatt bare 24 V (SELV). Se [verktøykjeden](10-verktoykjede.md).
 
 **Port G3:** Alle delsystemene har bestått testene sine. CAD-modellen av hele maskinen viser at den får plass innenfor rammene.
 
 ## Fase 4 – Integrasjon: prototype v1 (uke 25–34)
 
-**Mål:** Én maskin på benken som leverer stekeklar deig til planlagt tid.
+**Mål:** Én maskin på benken som leverer deig klar for forming til planlagt tid, og som doserer selv (N3).
 
 - [ ] Ramme og kabinett, montering og kabling
 - [ ] Trinnvis idriftsettelse: tørrkjøring, deretter vann, deretter deig
@@ -116,14 +125,16 @@ S = sannsynlighet, K = konsekvens (L = lav, M = middels, H = høy).
 | R1 | Deigen er vanskelig å få ut av bollen eller kurven, eller mister luft | M | M | E10, slippbelegg (PTFE er greit, siden det ikke er varme), kald deig, mel og hevekurv med klede | Fase 1, 3 |
 | R2 | Uformet brød («tipp og stek») blir for dårlig | M | M | E06. Varianten «med forming» er en sikker reserveplan (to korte grep). | Fase 1 |
 | R3 | Overoppheting, motorbrann eller elektrisk feil ved ubemannet drift | L | H | Termosikring på varmen, overvåking av motorblokkering, sikkerhetsvakt, jordfeilbryter. Ingen kjøring over natten før E15 er bestått. | Alle |
-| R4 | Kjølingen er for svak, gir kondens eller bråker | M | H | Kompressor (ombygd vinkjøleskap) framfor Peltier, E13, isolasjon og tett kammer, støymåling | Fase 1, 3 |
+| R4 | ~~Kjølingen er for svak, gir kondens eller bråker~~ | – | – | Utgår: ingen kjøling ([ADR-007](beslutninger/ADR-007-ingen-kjoling.md)) | – |
 | R5 | Meldoseringen er upålitelig (jf. Rotimatic) | H | M | N2 (forhåndsveide porsjoner) som reserveplan. Snegle med omrører. E11. | Fase 3 |
 | R6 | Rengjøringen er så tungvint at maskinen ikke blir brukt | M | H | Avtakbare deler som tåler oppvaskmaskin, designet inn fra start | Fase 3 |
-| R7 | Variasjon i surdeigen gjør tidsplanen upresis | M | M | Kald heving og kaldhold som buffer, sensorbasert «klar»-signal (E02, E03, E16) | Fase 1 |
+| R7 | Variasjon i surdeigen gjør tidsplanen upresis | **H** | M | Uten kald buffer før forming må temperaturen under bulk justere tiden. Sensorbasert «klar»-signal (E02, E03, E14). Kjøleskapet er bufferen etter forming. | Fase 1, 3 |
 | R8 | Prosjektet vokser ut av kontroll, eller motivasjonen forsvinner | H | H | Trapp med nyttige delmål (M1 hevekabinett, M2 deigmaskin), streng avgrensning av v1 og offentlig byggelogg | Alle |
-| R9 | Varsler kommer på upraktiske tidspunkter (forming kl. 02, forvarming før du er våken) | M | M | Tidsplanlegger med tillatte tidsrom og kaldhold som buffer | Fase 1, 4 |
-| R10 | Motorvarme og kondens skader elektronikken | M | M | Elektronikken i et eget rom utenfor kammeret, tette gjennomføringer, temperaturovervåking | Fase 2, 3 |
-| R11 | Materialer som ikke er godkjent for matkontakt (3D-print, smøremidler) | M | M | Materialregler i [`06-sikkerhet.md`](06-sikkerhet.md) | Fase 3 |
+| R9 | Varselet om forming kommer på et upraktisk tidspunkt (f.eks. kl. 02) | M | M | Tidsplanlegger med tillatte tidsrom. Start levain og deig til riktig tid. | Fase 3 |
+| R10 | Motorvarme eller fukt skader elektronikken | L | M | Elektronikken i sokkelen under gulvplata, motoren utenfor kammeret på lokket | Fase 2 |
+| R11 | Materialer som ikke er godkjent for matkontakt (3D-print, smøremidler) | M | M | Materialregler i [`06-sikkerhet.md`](06-sikkerhet.md). I v0 berører bare rustfritt stål og silikon deigen. Tettede lager med matgodkjent fett. | Fase 2 |
+| R12 | C-kroken i senter elter dårlig, eller deigen går bare rundt med kroken | M | H | **E17** som første test etter montering. Reserve: spiralkrok, krok ut fra senter, høyere fart. | Fase 2 |
+| R13 | v0 er for høy for plassen under overskapene (541 mm lukket, ca. 700 mm åpen) | H | L | Trekk maskinen fram før lokket åpnes. Lavere design i v1. | Fase 3 |
 
 ## Arbeidsform
 

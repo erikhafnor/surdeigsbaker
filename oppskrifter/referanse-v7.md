@@ -71,7 +71,7 @@ Dag 2  ca. 08–19  Forvarm gryte (ca. 45 min), stek 45 min, avkjøl 1–2 t
 ## Nøkkelobservasjoner for maskindesign
 
 - **Temperatur er hovedratten.** Oppskriften bruker «lunt» mange steder. Maskinen erstatter dette med faste settpunkter og kan da regne ut tidene.
-- **Kald etterheving er en buffer.** Opptil 24 t i kjøleskap gjør tidsplanen fleksibel. Maskinen kan bruke kjøling til å treffe «stekeklar kl. X», og holde deigen kald til du er klar.
+- **Kald etterheving er en buffer.** Opptil 24 t i kjøleskap gjør tidsplanen fleksibel. Maskinen har ingen kjøling ([ADR-007](../docs/beslutninger/ADR-007-ingen-kjoling.md)), men det trengs heller ikke: Den kalde etterhevingen skjer i ditt eget kjøleskap, og maskinen trenger bare å treffe tidspunktet for forming.
 - **De vanskeligste trinnene for en maskin er 7, 8 og 12** (forming, overføring og snitting). Trinn 12 gjør mennesket uansett ved ovnen. Forming kan enten droppes («tipp og stek») eller gjøres av mennesket på 2–5 min når maskinen varsler. Se E05–E07 og E10 i [eksperimentplanen](../docs/05-eksperimenter.md).
 - **Oppskriften er bevisst moderat i hydrering** («Her safer vi!»). Det er en fordel for maskinen, fordi fastere deig er lettere å håndtere, og fordi deig som ikke formes, holder formen bedre ved moderat hydrering.
 - **Flytetesten** er et ja/nei-kriterium som er vanskelig å måle automatisk, og den regnes som upålitelig: Surdeigen kan flyte lenge før den har doblet seg, og våte eller grove surdeiger kan synke selv om de er aktive (se [forskningsplanen](../docs/02-forskningsplan.md), FO3). Maskinen bruker heller heving og temperatur, og validerer det mot flytetesten (E03).

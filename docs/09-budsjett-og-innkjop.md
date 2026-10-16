@@ -4,15 +4,34 @@
 
 ## Sammendrag
 
+> **Oppdatert 2026-10-16:** v0 bygges nå ([ADR-008](beslutninger/ADR-008-v0-design.md)). Den fullstendige stykklisten med antall, spesifikasjon og søkeord ligger i [`hardware/v0/stykkliste.csv`](../hardware/v0/stykkliste.csv). Hevekabinettet (K3) og brødmaskinskjelettet (K1) er valgfrie, og kjøling trengs ikke ([ADR-007](beslutninger/ADR-007-ingen-kjoling.md)).
+
 | Fase | Innhold | Anslag (kr) |
 |---|---|---|
 | 0 | Måleverktøy for referansebrød | 1 450–3 850 (650–1 350 uten pH-meter) |
-| 1 | Måleoppsett og smart hevekabinett (K3) | 3 300–7 350 (inkl. valgfri CO₂-sensor) |
-| 2 | Gangbart skjelett: brødmaskindrev i kabinettet (K1) | 1 550–3 700 |
-| 3–4 | Prototype v1 (K2) | 5 600–14 000 |
-| **Totalt** | | **ca. 12 000–29 000** |
+| 1 | Måleoppsett for eksperimentene (uten hevekabinett) | 1 000–3 000 |
+| **2** | **v0 ([stykkliste](../hardware/v0/stykkliste.csv))** | **ca. 8 900 + frakt og ca. 30 % buffer = 10 000–12 000** |
+| 3–4 | Prototype v1: dosering, kretskort og forbedringer | 3 000–6 000 |
+| **Totalt** | | **ca. 15 000–25 000** |
 
-Fordi stekingen skjer i vanlig ovn ([ADR-006](beslutninger/ADR-006-steking-i-vanlig-ovn.md)), trengs verken stekemodul, gryte eller varmeelementer for høy temperatur.
+Fordi stekingen skjer i vanlig ovn ([ADR-006](beslutninger/ADR-006-steking-i-vanlig-ovn.md)) og den kalde hevingen i ditt eget kjøleskap ([ADR-007](beslutninger/ADR-007-ingen-kjoling.md)), trengs verken stekemodul, gryte, varmeelementer for høy temperatur eller kjøling.
+
+## Fase 2 – v0 (kjøp nå)
+
+Fra [`hardware/v0/stykkliste.csv`](../hardware/v0/stykkliste.csv):
+
+| Gruppe | Ca. pris (kr) |
+|---|---|
+| Ramme: 2020-profiler, ACM-plater kappet etter DXF, XPS, stramlåser | 2 400 |
+| Bolle og varme: rustfri bolle, aluminiumsplate, silikonelement 50 W, KSD301, termosikringer | 700 |
+| Drivverk: planetgirmotor 24 V, klokobling, rustfrie lager, krokstang, fjærer | 1 300 |
+| Elektronikk: 24 V-strømforsyning, ESP32-S3, BTS7960, INA226, reléer, sikringer, nødstopp, sensorer, OLED | 2 200 |
+| Kabler og kontakter | 700 |
+| Skruer og muttere | 850 |
+| Filament (PETG ca. 1,1 kg, litt TPU) | 700 |
+| **Sum** | **ca. 8 900** |
+
+Bestill bollen, motoren og varmeelementet først. De må måles før du printer (se [byggeveiledningen](../hardware/v0/README.md#2-mål-delene-dine-før-du-printer)).
 
 ## Fase 0 – måleverktøy (kjøp nå)
 
@@ -28,6 +47,8 @@ Fordi stekingen skjer i vanlig ovn ([ADR-006](beslutninger/ADR-006-steking-i-van
 Har allerede (antagelig): kjøkkenvekt (1 g), jerngryte, hevekurv, bakeskraper og kjøkkenmaskin.
 
 ## Fase 1 – måleoppsett og smart hevekabinett (K3)
+
+> Hevekabinettet (vinkjøleskap, varme, SSR) er **valgfritt** etter ADR-008. Måleoppsettet for E02 og E03 er fortsatt nyttig.
 
 | Vare | Til | Anslag (kr) |
 |---|---|---|
@@ -45,7 +66,9 @@ Har allerede (antagelig): kjøkkenvekt (1 g), jerngryte, hevekurv, bakeskraper o
 
 > **Sikkerhet:** Vinkjøleskapet skal ikke bygges om på 230 V-siden. Styr det eksternt med en sertifisert smartplugg eller et relé i egen godkjent boks, slik BrewPi-oppsett gjør. Selve kjølekretsen skal du ikke åpne.
 
-## Fase 2 – gangbart skjelett: brødmaskindrev i kabinettet (K1)
+## Valgfritt – brødmaskinskjelett (K1)
+
+> Ikke lenger på den kritiske veien (ADR-008). Beholdt som en mulig «Surdeigsbaker Mini».
 
 | Vare | Anslag (kr) |
 |---|---|
@@ -61,6 +84,8 @@ Har allerede (antagelig): kjøkkenvekt (1 g), jerngryte, hevekurv, bakeskraper o
 | Mekanisk tilpasning: brakett, gjennomføringer og tetninger i kabinettet | 200–500 |
 
 ## Fase 3–4 – prototype v1 (K2, grovt)
+
+> Skrevet før ADR-007 og ADR-008. Kjøling utgår, og mye av resten finnes allerede i v0. Ny pris anslås etter at v0 er testet.
 
 | Delsystem | Innhold | Anslag (kr) |
 |---|---|---|

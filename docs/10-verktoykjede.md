@@ -21,6 +21,8 @@
 | Simulator | **Wokwi CLI** 0.28.1 (`wokwi-cli mcp`), ESPHome `host`, QEMU | Påkrevd steg før flashing | – | [Fastvare og lab](forskning/verktoy/firmware-simulering-lab.md) |
 | Data | ESPHome → MQTT/HA → InfluxDB/CSV med bake-ID | ha-mcp `/readonly` eller Grafana MCP `--disable-write` | Agenten får aldri styre 230 V | [Fastvare og lab](forskning/verktoy/firmware-simulering-lab.md) |
 
+**I bruk nå (v0):** Mønsteret under er tatt i bruk for v0. [`hardware/spec/v0.yaml`](../hardware/spec/v0.yaml) er spesifikasjonen. [`hardware/cad/`](../hardware/cad/README.md) er build123d-koden, som også kjører egne kontroller (printvolum, klaringer, kollisjon når lokket åpnes) og skriver [`sjekkrapport.md`](../hardware/v0/sjekkrapport.md). [`firmware/v0/`](../firmware/v0/README.md) er ESPHome-kilden, validert med `esphome config`. Koblingsskjemaet er foreløpig Markdown. KiCad kommer med kretskortet i v1.
+
 **Mønsteret er det samme overalt:** Kilden er tekst i git. Agenten skriver og kontrollerer sitt eget arbeid. CI kjører sjekker som gir samme resultat hver gang. Mennesket godkjenner alt som kan skade.
 
 ```mermaid

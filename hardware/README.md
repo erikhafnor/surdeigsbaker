@@ -1,8 +1,14 @@
 # Maskinvare
 
-Mappen er tom inntil videre. Mekanikk og elektronikk kommer i fase 2–4 (se [veikartet](../docs/04-veikart.md)).
+**v0 er klar til bygging: [byggeveiledning](v0/README.md).**
 
-Planlagt struktur:
+| Mappe | Innhold |
+|---|---|
+| [`spec/`](spec/v0.yaml) | Parameterfila som alle mål leses fra |
+| [`cad/`](cad/README.md) | build123d-koden som lager STL, STEP, DXF, bilder og sjekkrapport |
+| [`v0/`](v0/README.md) | Det genererte designet, stykkliste, koblingsskjema og byggeveiledning |
+
+Opprinnelig planlagt struktur (før ADR-008). Elektronikken i v0 er bare 24 V, så det blir ikke noe eget 230 V-kort:
 
 ```text
 hardware/

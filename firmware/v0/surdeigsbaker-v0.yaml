@@ -1,0 +1,1039 @@
+# Surdeigsbaker v0 – ESPHome firmware
+#
+# Drives the kneading hook, the heater plate and the sensors of the machine in
+# hardware/v0/. The program runs from mixing to "Deigen er klar for forming"
+# (ready for shaping, ADR-007). Cold retard and baking are done by the user.
+#
+# Wiring: hardware/v0/koblingsskjema.md. Read firmware/v0/README.md before the
+# first upload. User-facing names and messages are Norwegian; ids and comments
+# are English (ADR-003).
+#
+# SAFETY: The lid switch and the emergency stop cut motor power in hardware,
+# independently of this firmware. The firmware is an extra layer, not the only one.
+#
+# Phases (global "phase"):
+#    0 idle            1 mixing           2 fermentolyse     3 waiting for salt
+#    4 kneading        5 bulk rise        6 ready for shaping
+#   10 levain         11 levain ready
+#   90 aborted        99 fault
+
+substitutions:
+  device_name: surdeigsbaker
+  friendly: Surdeigsbaker
+  # Bowl as a cone (mm). Same values as bolle: in hardware/spec/v0.yaml.
+  bowl_base_r: "75.0"
+  bowl_rim_r: "120.0"
+  bowl_height: "125.0"
+  # DS18B20 addresses. Read them from the log at first boot (see README).
+  ds18b20_bowl: "0x0000000000000000"
+  ds18b20_plate: "0x0000000000000000"
+  # Set to "true" if the slot sensor reads LOW while the flag is in the slot.
+  home_inverted: "false"
+
+esphome:
+  name: ${device_name}
+  friendly_name: ${friendly}
+  min_version: 2025.10.0
+  on_boot:
+    priority: -100
+    then:
+      - script.execute: on_startup
+
+esp32:
+  board: esp32-s3-devkitc-1
+  framework:
+    type: esp-idf
+
+logger:
+  level: INFO
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  reboot_timeout: 0s          # a bulk rise must not be interrupted by a WiFi outage
+  ap:
+    ssid: "Surdeigsbaker oppsett"
+    password: !secret ap_password
+
+captive_portal:
+
+api:                          # Home Assistant (optional)
+  encryption:
+    key: !secret api_key
+  reboot_timeout: 0s          # do not reboot when Home Assistant is absent
+
+ota:
+  - platform: esphome
+    encryption:
+      key: !secret api_key    # same key as api: (encrypted updates over WiFi)
+
+web_server:
+  port: 80
+  version: 3
+  ota: false                  # updates only via encrypted OTA
+  auth:
+    type: digest
+    username: !secret web_user
+    password: !secret web_password
+
+time:
+  - platform: sntp
+    id: sntp_time
+    timezone: Europe/Oslo
+
+http_request:
+  timeout: 10s
+
+i2c:
+  sda: GPIO8
+  scl: GPIO9
+  frequency: 50kHz            # long cable to the lid
+  scan: true
+
+one_wire:
+  - platform: gpio
+    pin: GPIO4
+
+# ---------------------------------------------------------------- globals
+
+globals:
+  - id: phase
+    type: int
+    restore_value: true       # lets us detect a power cut in the middle of a program
+    initial_value: "0"
+  - id: phase_start_ms
+    type: uint32_t
+    initial_value: "0"
+  - id: rise_start_ms
+    type: uint32_t
+    initial_value: "0"
+  - id: user_ok
+    type: bool
+    initial_value: "false"
+  - id: paused
+    type: bool
+    initial_value: "false"
+  - id: knead_left_ms
+    type: int
+    initial_value: "0"
+  - id: knead_elapsed_ms
+    type: int
+    initial_value: "0"
+  - id: speed_now
+    type: int
+    initial_value: "0"
+  - id: reverse_now
+    type: bool
+    initial_value: "false"
+  - id: height0
+    type: float
+    initial_value: "NAN"
+  - id: overcurrent_count
+    type: int
+    initial_value: "0"
+  - id: heater_level
+    type: float
+    initial_value: "0.0"
+  - id: fold_no
+    type: int
+    initial_value: "0"
+  - id: led_code
+    type: int
+    initial_value: "-1"
+
+# ---------------------------------------------------------------- outputs
+
+output:
+  - platform: ledc            # BTS7960 RPWM
+    id: motor_a
+    pin: GPIO5
+    frequency: 20000Hz
+  - platform: ledc            # BTS7960 LPWM
+    id: motor_b
+    pin: GPIO6
+    frequency: 20000Hz
+  - platform: ledc            # BTS7960 R_EN + L_EN
+    id: motor_en
+    pin: GPIO7
+    frequency: 20000Hz
+  - platform: slow_pwm        # D4184 -> heater element
+    id: heater_pwm
+    pin: GPIO15
+    period: 5s
+  - platform: template        # the PID output passes through the safety checks here
+    id: heater_out
+    type: float
+    write_action:
+      - lambda: |-
+          float p = state;
+          const float plate = id(plate_temp).state;
+          const float bowl = id(bowl_temp).state;
+          if (isnan(plate) || isnan(bowl)) p = 0.0f;           // sensor missing
+          else if (plate >= id(plate_max_temp).state) p = 0.0f;
+          else if (bowl >= 32.0f) p = 0.0f;                     // the dough must never exceed 32 °C
+          if (id(motor).state) p = 0.0f;                        // power budget: no heat while kneading
+          if (!id(estop_ok).state) p = 0.0f;
+          if (isnan(p) || p < 0.0f) p = 0.0f;
+          if (p > 1.0f) p = 1.0f;
+          id(heater_level) = p;
+          id(heater_pwm).set_level(p);
+  - platform: ledc            # passive piezo
+    id: buzzer_out
+    pin: GPIO17
+
+rtttl:
+  output: buzzer_out
+  gain: 60%
+
+fan:
+  - platform: hbridge
+    id: motor
+    name: "Krok (bare for test)"
+    pin_a: motor_a
+    pin_b: motor_b
+    enable_pin: motor_en
+    decay_mode: SLOW
+    speed_count: 100
+    restore_mode: ALWAYS_OFF
+
+light:
+  - platform: esp32_rmt_led_strip
+    id: status_led
+    name: "Statuslys"
+    pin: GPIO18
+    num_leds: 1
+    chipset: APA106
+    channel_colors: RGB
+    restore_mode: ALWAYS_OFF
+
+# ---------------------------------------------------------------- heating
+
+climate:
+  - platform: pid
+    id: dough_heat
+    name: "Deigtemperatur"
+    sensor: bowl_temp
+    default_target_temperature: 26°C
+    heat_output: heater_out
+    visual:
+      min_temperature: 20°C
+      max_temperature: 30°C
+      temperature_step: 0.5
+    control_parameters:       # starting values; run autotune with the bowl full of water (README)
+      kp: 0.30
+      ki: 0.0005
+      kd: 0.0
+      output_averaging_samples: 3
+    deadband_parameters:
+      threshold_high: 0.3°C
+      threshold_low: -0.3°C
+
+# ---------------------------------------------------------------- sensors
+
+sensor:
+  - platform: dallas_temp
+    id: bowl_temp
+    name: "Bollevegg"
+    address: ${ds18b20_bowl}
+    update_interval: 10s
+  - platform: dallas_temp
+    id: plate_temp
+    name: "Varmeplate"
+    address: ${ds18b20_plate}
+    update_interval: 5s
+    on_value:
+      - lambda: |-
+          if (isnan(x) || x >= id(plate_max_temp).state) {
+            id(heater_pwm).set_level(0.0f);
+            id(heater_level) = 0.0f;
+          }
+
+  - platform: mlx90614
+    ambient:
+      id: lid_temp
+      name: "Under lokket"
+    object:
+      id: dough_surface
+      name: "Deigoverflate (IR)"
+      emissivity: 0.95
+    update_interval: 30s
+
+  - platform: sht4x
+    temperature:
+      id: room_temp
+      name: "Romtemperatur"
+    humidity:
+      id: room_humidity
+      name: "Luftfuktighet rom"
+    update_interval: 60s
+
+  - platform: ina226
+    address: 0x40
+    shunt_resistance: 0.010 ohm   # replace the module's R100 with R010 (koblingsskjema.md)
+    max_current: 8.0A
+    update_interval: 250ms
+    current:
+      id: motor_current
+      name: "Motorstrøm"
+      filters:
+        - throttle_average: 2s    # publish every 2 s; the check below sees every sample
+      on_raw_value:
+        - lambda: |-
+            if (x > id(max_current_a).state) id(overcurrent_count)++;
+            else id(overcurrent_count) = 0;
+        - if:
+            condition:
+              lambda: "return id(overcurrent_count) >= 8;"   # 8 × 250 ms = 2 s
+            then:
+              - globals.set: {id: overcurrent_count, value: "0"}
+              - script.execute:
+                  id: fault
+                  text: "Motoren går tungt eller står fast. Sjekk deigen og kroken."
+    bus_voltage:
+      id: motor_voltage
+      name: "Motorspenning"
+      filters:
+        - throttle_average: 5s
+
+  - platform: vl53l0x
+    id: tof
+    name: "Avstand til deigen"
+    address: 0x29
+    timing_budget: 100ms
+    update_interval: 5s
+    unit_of_measurement: mm
+    accuracy_decimals: 0
+    filters:
+      - multiply: 1000.0        # m -> mm
+      - median:
+          window_size: 5
+          send_every: 1
+
+  - platform: template
+    id: dough_height
+    name: "Deighøyde"
+    unit_of_measurement: mm
+    accuracy_decimals: 0
+    update_interval: 10s
+    lambda: |-
+      // Valid only while the hook is parked; otherwise the ToF may see the hook.
+      if (!id(home).state || id(motor).state) return {};
+      const float d = id(tof).state;
+      if (isnan(d)) return {};
+      const float h = id(empty_distance).state - d;
+      if (h < 5.0f || h > ${bowl_height}) return {};
+      return h;
+
+  - platform: template
+    id: rise
+    name: "Heving"
+    unit_of_measurement: "%"
+    accuracy_decimals: 0
+    update_interval: 10s
+    lambda: |-
+      // Dough volume in a conical bowl, relative to the start of the rise.
+      const float h = id(dough_height).state;
+      const float h0 = id(height0);
+      if (isnan(h) || isnan(h0) || h0 < 5.0f) return {};
+      auto vol = [](float hh) {
+        const float r0 = ${bowl_base_r};
+        const float k = (${bowl_rim_r} - ${bowl_base_r}) / ${bowl_height};
+        const float r = r0 + k * hh;
+        return 3.14159265f * hh * (r0 * r0 + r0 * r + r * r) / 3.0f;
+      };
+      return (vol(h) / vol(h0) - 1.0f) * 100.0f;
+
+  - platform: template
+    name: "Varmeeffekt"
+    unit_of_measurement: "%"
+    accuracy_decimals: 0
+    update_interval: 10s
+    lambda: "return id(heater_level) * 100.0f;"
+
+  - platform: template
+    id: time_in_phase
+    name: "Tid i fasen"
+    unit_of_measurement: min
+    accuracy_decimals: 0
+    update_interval: 30s
+    lambda: "return (millis() - id(phase_start_ms)) / 60000.0f;"
+
+  - platform: wifi_signal
+    name: "WiFi-signal"
+    update_interval: 120s
+
+  - platform: uptime
+    name: "Oppetid"
+
+binary_sensor:
+  - platform: gpio            # 24V_MOT: lid closed, emergency stop released and K1 pulled in
+    id: motor_power_ok
+    name: "Lokket er lukket"
+    pin: GPIO12
+    filters:
+      - delayed_on: 200ms
+    on_release:
+      - if:
+          condition:
+            lambda: "return id(motor).state || id(knead).is_running() || id(park).is_running();"
+          then:
+            - fan.turn_off: motor
+            - globals.set: {id: speed_now, value: "0"}
+            - globals.set: {id: paused, value: "true"}
+            - script.execute:
+                id: notify
+                text: "Lokket ble åpnet mens kroken gikk. Lukk lokket og trykk Start for å fortsette."
+
+  - platform: gpio            # 24V_NØD (emergency stop circuit)
+    id: estop_ok
+    name: "Nødstopp ute"
+    pin: GPIO13
+    filters:
+      - delayed_on: 200ms
+    on_release:
+      - fan.turn_off: motor
+      - script.execute:
+          id: fault
+          text: "Nødstoppen er trykket inn. Vri den ut og trykk Start for å kvittere."
+
+  - platform: gpio
+    id: home
+    name: "Kroken er parkert"
+    pin:
+      number: GPIO14
+      inverted: ${home_inverted}
+
+  - platform: gpio
+    id: button_a
+    name: "Knapp Start"
+    internal: true
+    pin:
+      number: GPIO10
+      mode: INPUT_PULLUP
+      inverted: true
+    filters:
+      - delayed_on_off: 30ms
+    on_multi_click:
+      - timing:
+          - ON for at most 1s
+          - OFF for at least 0.3s
+        then:
+          - script.execute: on_start_short
+      - timing:
+          - ON for at least 2s
+        then:
+          - script.execute: start_levain
+
+  - platform: gpio
+    id: button_b
+    name: "Knapp Pause"
+    internal: true
+    pin:
+      number: GPIO11
+      mode: INPUT_PULLUP
+      inverted: true
+    filters:
+      - delayed_on_off: 30ms
+    on_multi_click:
+      - timing:
+          - ON for at most 1s
+          - OFF for at least 0.3s
+        then:
+          - script.execute: on_pause_short
+      - timing:
+          - ON for at least 3s
+        then:
+          - script.execute: abort
+
+text_sensor:
+  - platform: template
+    id: status
+    name: "Status"
+  - platform: template
+    id: message
+    name: "Siste melding"
+
+# ---------------------------------------------------------------- settings (web page / Home Assistant)
+
+number:
+  - {platform: template, id: mix_min, name: "Blanding (min)", min_value: 1, max_value: 10, step: 1, initial_value: 3, optimistic: true, restore_value: true, entity_category: config}
+  - {platform: template, id: mix_speed, name: "Blanding fart (%)", min_value: 15, max_value: 80, step: 5, initial_value: 30, optimistic: true, restore_value: true, entity_category: config}
+  - {platform: template, id: rest_min, name: "Fermentolyse (min)", min_value: 0, max_value: 120, step: 5, initial_value: 40, optimistic: true, restore_value: true, entity_category: config}
+  - {platform: template, id: knead_min, name: "Elting (min)", min_value: 1, max_value: 20, step: 1, initial_value: 10, optimistic: true, restore_value: true, entity_category: config}
+  - {platform: template, id: knead_speed, name: "Elting fart (%)", min_value: 15, max_value: 100, step: 5, initial_value: 50, optimistic: true, restore_value: true, entity_category: config}
+  - {platform: template, id: fold_count, name: "Bretting antall", min_value: 0, max_value: 6, step: 1, initial_value: 4, optimistic: true, restore_value: true, entity_category: config}
+  - {platform: template, id: fold_interval_min, name: "Bretting hver (min)", min_value: 15, max_value: 60, step: 5, initial_value: 30, optimistic: true, restore_value: true, entity_category: config}
+  - {platform: template, id: fold_s, name: "Bretting varighet (s)", min_value: 5, max_value: 60, step: 5, initial_value: 15, optimistic: true, restore_value: true, entity_category: config}
+  - {platform: template, id: fold_speed, name: "Bretting fart (%)", min_value: 15, max_value: 50, step: 5, initial_value: 20, optimistic: true, restore_value: true, entity_category: config}
+  - {platform: template, id: bulk_temp, name: "Bulkheving temperatur", unit_of_measurement: "°C", min_value: 22, max_value: 28, step: 0.5, initial_value: 26, optimistic: true, restore_value: true, entity_category: config}
+  - {platform: template, id: rise_target, name: "Bulkheving mål (%)", min_value: 10, max_value: 100, step: 5, initial_value: 25, optimistic: true, restore_value: true, entity_category: config}
+  - {platform: template, id: bulk_max_h, name: "Bulkheving maks (t)", min_value: 1, max_value: 10, step: 0.5, initial_value: 5, optimistic: true, restore_value: true, entity_category: config}
+  - {platform: template, id: levain_temp, name: "Levain temperatur", unit_of_measurement: "°C", min_value: 22, max_value: 28, step: 0.5, initial_value: 26, optimistic: true, restore_value: true, entity_category: config}
+  - {platform: template, id: levain_target, name: "Levain mål (%)", min_value: 50, max_value: 200, step: 10, initial_value: 100, optimistic: true, restore_value: true, entity_category: config}
+  - {platform: template, id: levain_max_h, name: "Levain maks (t)", min_value: 2, max_value: 14, step: 0.5, initial_value: 12, optimistic: true, restore_value: true, entity_category: config}
+  - {platform: template, id: plate_max_temp, name: "Maks platetemperatur", unit_of_measurement: "°C", min_value: 30, max_value: 45, step: 1, initial_value: 38, optimistic: true, restore_value: true, entity_category: config}
+  - {platform: template, id: max_current_a, name: "Maks motorstrøm", unit_of_measurement: A, min_value: 1, max_value: 5, step: 0.1, initial_value: 4.0, optimistic: true, restore_value: true, entity_category: config}
+  - {platform: template, id: empty_distance, name: "Avstand til tom bolle", unit_of_measurement: mm, min_value: 100, max_value: 300, step: 1, initial_value: 180, optimistic: true, restore_value: true, entity_category: config}
+
+switch:
+  - platform: template
+    id: wait_for_salt
+    name: "Vent på saltlake etter fermentolyse"
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    entity_category: config
+  - platform: template
+    id: ntfy_on
+    name: "Varsle på mobil (ntfy)"
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+    entity_category: config
+  - platform: template
+    id: sound_on
+    name: "Lyd"
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    entity_category: config
+
+button:
+  - platform: template
+    name: "Start deig"
+    on_press:
+      - script.execute: start_dough
+  - platform: template
+    name: "Start levain"
+    on_press:
+      - script.execute: start_levain
+  - platform: template
+    name: "Fortsett"
+    on_press:
+      - script.execute: on_start_short
+  - platform: template
+    name: "Pause og parker kroken"
+    on_press:
+      - script.execute: on_pause_short
+  - platform: template
+    name: "Avbryt program"
+    on_press:
+      - script.execute: abort
+  - platform: template
+    name: "Kalibrer: tom bolle"
+    entity_category: config
+    on_press:
+      - if:
+          condition:
+            lambda: "return !isnan(id(tof).state) && id(home).state;"
+          then:
+            - number.set:
+                id: empty_distance
+                value: !lambda "return id(tof).state;"
+            - script.execute: {id: notify, text: "Avstanden til tom bolle er lagret."}
+          else:
+            - script.execute: {id: notify, text: "Kalibrering feilet: parker kroken og sjekk ToF-sensoren."}
+  - platform: template
+    name: "Autotune varme"
+    entity_category: config
+    on_press:
+      - climate.pid.autotune: dough_heat
+
+# ---------------------------------------------------------------- display
+
+font:
+  - file: "gfonts://Roboto"
+    id: font_large
+    size: 14
+    glyphsets: [GF_Latin_Kernel]
+    glyphs: ["æøåÆØÅ°–"]
+  - file: "gfonts://Roboto"
+    id: font_small
+    size: 11
+    glyphsets: [GF_Latin_Kernel]
+    glyphs: ["æøåÆØÅ°–"]
+
+display:
+  - platform: ssd1306_i2c
+    model: "SSD1306 128x64"
+    address: 0x3C
+    update_interval: 1s
+    lambda: |-
+      it.printf(0, 0, id(font_large), "%s", id(status).state.c_str());
+      const float b = id(bowl_temp).state;
+      if (id(dough_heat).mode == climate::CLIMATE_MODE_HEAT)
+        it.printf(0, 18, id(font_small), "Deig %.1f °C (mål %.1f)", b, id(dough_heat).target_temperature);
+      else
+        it.printf(0, 18, id(font_small), "Deig %.1f °C (varme av)", b);
+      const float r = id(rise).state;
+      const int f = id(phase);
+      const int minutes = (millis() - id(phase_start_ms)) / 60000;
+      if (!isnan(r) && (f == 5 || f == 6 || f == 10 || f == 11))
+        it.printf(0, 31, id(font_small), "Heving %+.0f %%  %d min", r, minutes);
+      else if (f != 0)
+        it.printf(0, 31, id(font_small), "%d min i fasen", minutes);
+      it.printf(0, 44, id(font_small), "Plate %.0f  Rom %.0f °C", id(plate_temp).state, id(room_temp).state);
+      if (id(paused)) it.print(0, 55, id(font_small), "PAUSE - trykk Start");
+      else if (!id(estop_ok).state) it.print(0, 55, id(font_small), "NØDSTOPP");
+      else if (!id(motor_power_ok).state) it.print(0, 55, id(font_small), "Lokket er åpent");
+
+# ---------------------------------------------------------------- status LED
+
+interval:
+  - interval: 1s
+    then:
+      - lambda: |-
+          // 0 green = idle, 1 blue = working, 2 amber = waiting for you, 3 red = fault
+          int code = 0;
+          const int f = id(phase);
+          if (f == 99 || f == 90 || !id(estop_ok).state) code = 3;
+          else if (id(paused) || f == 3 || f == 6 || f == 11) code = 2;
+          else if (f != 0) code = 1;
+          if (code == id(led_code)) return;
+          id(led_code) = code;
+          auto c = id(status_led).turn_on();
+          c.set_brightness(0.5f);
+          c.set_transition_length(0);
+          switch (code) {
+            case 0: c.set_rgb(0.0f, 1.0f, 0.0f); break;
+            case 1: c.set_rgb(0.0f, 0.2f, 1.0f); break;
+            case 2: c.set_rgb(1.0f, 0.6f, 0.0f); break;
+            default: c.set_rgb(1.0f, 0.0f, 0.0f); break;
+          }
+          c.perform();
+
+# ---------------------------------------------------------------- scripts
+
+script:
+  # ---- helpers
+
+  - id: set_phase
+    mode: queued
+    parameters:
+      f: int
+    then:
+      - lambda: |-
+          id(phase) = f;
+          id(phase_start_ms) = millis();
+          const char *t = "?";
+          switch (f) {
+            case 0: t = "Klar"; break;
+            case 1: t = "Blanding"; break;
+            case 2: t = "Fermentolyse"; break;
+            case 3: t = "Tilsett saltlake"; break;
+            case 4: t = "Elting"; break;
+            case 5: t = "Bulkheving"; break;
+            case 6: t = "Klar for forming"; break;
+            case 10: t = "Levain"; break;
+            case 11: t = "Levain klar"; break;
+            case 90: t = "Avbrutt"; break;
+            case 99: t = "Feil"; break;
+          }
+          id(status).publish_state(t);
+          ESP_LOGI("program", "Phase %d: %s", f, t);
+
+  - id: notify
+    mode: queued
+    max_runs: 5
+    parameters:
+      text: string
+    then:
+      - lambda: |-
+          id(message).publish_state(text);
+          ESP_LOGI("notify", "%s", text.c_str());
+      - if:
+          condition:
+            switch.is_on: sound_on
+          then:
+            - rtttl.play: "varsel:d=8,o=6,b=180:c,e,g"
+      - if:
+          condition:
+            api.connected:
+          then:
+            - homeassistant.event:
+                event: esphome.surdeigsbaker_varsel
+                data:
+                  melding: !lambda "return text;"
+      - if:
+          condition:
+            and:
+              - switch.is_on: ntfy_on
+              - wifi.connected:
+          then:
+            - http_request.post:
+                url: !secret ntfy_url
+                request_headers:
+                  Title: "Surdeigsbaker"
+                  Tags: "bread"
+                body: !lambda "return text;"
+
+  - id: motor_stop
+    then:
+      - fan.turn_off: motor
+      - globals.set: {id: speed_now, value: "0"}
+
+  # ---- the hook
+
+  # Runs the hook for `seconds` at `pct` % speed. Time only counts while the
+  # motor is actually allowed to run (lid closed, e-stop released, not paused).
+  # With `reverse` the hook runs 90 s forward and 10 s backward.
+  - id: knead
+    mode: restart
+    parameters:
+      seconds: int
+      pct: int
+      reverse: bool
+    then:
+      - globals.set: {id: knead_left_ms, value: !lambda "return seconds * 1000;"}
+      - globals.set: {id: knead_elapsed_ms, value: "0"}
+      - globals.set: {id: speed_now, value: "0"}
+      - while:
+          condition:
+            lambda: "return id(knead_left_ms) > 0;"
+          then:
+            - lambda: |-
+                const bool allowed = id(motor_power_ok).state && id(estop_ok).state &&
+                                     !id(paused) && id(phase) != 99;
+                if (!allowed) {
+                  // while paused, the park script may use the motor
+                  if (id(motor).state && !id(park).is_running()) id(motor).turn_off().perform();
+                  id(speed_now) = 0;
+                  return;
+                }
+                const bool rev = reverse && (id(knead_elapsed_ms) % 100000) >= 90000;
+                if (rev != id(reverse_now) && id(speed_now) > 0) {
+                  // stop for one tick before changing direction
+                  id(motor).turn_off().perform();
+                  id(speed_now) = 0;
+                  id(reverse_now) = rev;
+                  return;
+                }
+                id(reverse_now) = rev;
+                const int previous = id(speed_now);
+                id(speed_now) = std::min(pct, std::max(15, previous + 15));   // soft start
+                if (id(speed_now) != previous || !id(motor).state) {
+                  id(heater_pwm).set_level(0.0f);   // no heat while the motor runs
+                  id(heater_level) = 0.0f;
+                  auto c = id(motor).turn_on();
+                  c.set_speed(id(speed_now));
+                  c.set_direction(rev ? fan::FanDirection::REVERSE : fan::FanDirection::FORWARD);
+                  c.perform();
+                }
+                id(knead_elapsed_ms) += 250;
+                id(knead_left_ms) -= 250;
+            - delay: 250ms
+      - script.execute: motor_stop
+
+  # Turns the hook slowly until the flag sits in the slot sensor. The C then
+  # points towards the hinge and the lid can be opened without hitting the bowl.
+  - id: park
+    mode: single
+    then:
+      - while:
+          condition:
+            binary_sensor.is_off: home
+          then:
+            - wait_until:
+                condition:
+                  and:
+                    - binary_sensor.is_on: motor_power_ok
+                    - binary_sensor.is_on: estop_ok
+            - fan.turn_on:
+                id: motor
+                speed: 20
+                direction: FORWARD
+            - wait_until:
+                condition:
+                  or:
+                    - binary_sensor.is_on: home
+                    - binary_sensor.is_off: motor_power_ok
+                timeout: 20s
+            - fan.hbridge.brake: motor
+            - delay: 300ms
+            - script.execute: motor_stop
+            # Lid opened while parking: try again once it is closed. Otherwise it is a fault.
+            - if:
+                condition:
+                  and:
+                    - binary_sensor.is_off: home
+                    - binary_sensor.is_on: motor_power_ok
+                then:
+                  - script.execute:
+                      id: fault
+                      text: "Fant ikke parkeringsposisjonen. Sjekk gaffelsensoren og flagget før du åpner lokket."
+
+  - id: measure_start_height
+    then:
+      - delay: 60s              # let the dough and the ToF filter settle
+      - lambda: |-
+          id(height0) = id(dough_height).state;
+          ESP_LOGI("program", "Start height: %.0f mm", id(height0));
+      - if:
+          condition:
+            lambda: "return isnan(id(height0));"
+          then:
+            - script.execute:
+                id: notify
+                text: "Klarte ikke å måle deighøyden. Hevingen styres bare av tid."
+
+  # ---- buttons
+
+  - id: on_start_short
+    then:
+      - lambda: |-
+          const int f = id(phase);
+          if (id(paused)) {
+            if (id(motor_power_ok).state && id(estop_ok).state) {
+              id(paused) = false;
+              ESP_LOGI("program", "Resuming after pause");
+            }
+            return;
+          }
+          if (f == 0) { id(start_dough).execute(); return; }
+          if (f == 3) { id(user_ok) = true; return; }
+          if (f == 6 || f == 11 || f == 90 || f == 99) {
+            if (!id(estop_ok).state) return;
+            id(user_ok) = true;
+            if (f != 11) id(set_phase).execute(0);
+          }
+
+  - id: on_pause_short
+    then:
+      - if:
+          condition:
+            lambda: "return id(phase) == 0 || id(phase) >= 90;"
+          then:
+            - script.execute: park
+          else:
+            - globals.set: {id: paused, value: "true"}
+            - script.execute: park
+            - script.execute:
+                id: notify
+                text: "Pause. Kroken parkeres. Trykk Start for å fortsette."
+
+  - id: abort
+    then:
+      - script.stop: program_dough
+      - script.stop: program_levain
+      - script.stop: knead
+      - script.stop: park
+      - script.execute: motor_stop
+      - climate.control: {id: dough_heat, mode: "OFF"}
+      - globals.set: {id: paused, value: "false"}
+      - script.execute: {id: set_phase, f: 0}
+      - script.execute: {id: notify, text: "Programmet er avbrutt. Varmen er av."}
+
+  - id: fault
+    mode: single
+    parameters:
+      text: string
+    then:
+      - script.stop: program_dough
+      - script.stop: program_levain
+      - script.stop: knead
+      - script.stop: park
+      - script.execute: motor_stop
+      - climate.control: {id: dough_heat, mode: "OFF"}
+      - globals.set: {id: paused, value: "false"}
+      - script.execute: {id: set_phase, f: 99}
+      - script.execute: {id: notify, text: !lambda "return text;"}
+
+  # ---- startup
+
+  - id: on_startup
+    then:
+      - script.execute: motor_stop
+      - climate.control: {id: dough_heat, mode: "OFF"}
+      - if:
+          condition:
+            lambda: "return id(phase) != 0 && id(phase) != 90 && id(phase) != 99;"
+          then:
+            - script.execute: {id: set_phase, f: 90}
+            - wait_until:
+                condition:
+                  wifi.connected:
+                timeout: 60s
+            - script.execute:
+                id: notify
+                text: "Maskinen startet på nytt midt i et program (strømbrudd?). Varmen er av. Sjekk deigen."
+          else:
+            - script.execute: {id: set_phase, f: !lambda "return id(phase);"}
+
+  # ---- programs
+
+  - id: start_dough
+    then:
+      - if:
+          condition:
+            lambda: "return id(phase) != 0;"
+          then:
+            - script.execute: {id: notify, text: "Et program kjører allerede. Avbryt det først."}
+          else:
+            - if:
+                condition:
+                  and:
+                    - binary_sensor.is_on: motor_power_ok
+                    - binary_sensor.is_on: estop_ok
+                then:
+                  - script.execute: program_dough
+                else:
+                  - script.execute: {id: notify, text: "Lukk og lås lokket, og sjekk at nødstoppen er ute."}
+
+  - id: start_levain
+    then:
+      - if:
+          condition:
+            and:
+              - lambda: "return id(phase) == 0;"
+              - binary_sensor.is_on: motor_power_ok
+              - binary_sensor.is_on: estop_ok
+          then:
+            - script.execute: program_levain
+          else:
+            - script.execute: {id: notify, text: "Kan ikke starte levain: et program kjører, lokket er åpent eller nødstoppen er inne."}
+
+  # Main program: mixing -> fermentolyse -> (brine) -> kneading -> bulk rise -> ready for shaping
+  - id: program_dough
+    mode: single
+    then:
+      - globals.set: {id: paused, value: "false"}
+      - climate.control:
+          id: dough_heat
+          mode: HEAT
+          target_temperature: !lambda "return id(bulk_temp).state;"
+
+      # 1 Mixing
+      - script.execute: {id: set_phase, f: 1}
+      - script.execute:
+          id: knead
+          seconds: !lambda "return (int) (id(mix_min).state * 60);"
+          pct: !lambda "return (int) id(mix_speed).state;"
+          reverse: false
+      - script.wait: knead
+      - script.execute: park
+      - script.wait: park
+
+      # 2 Fermentolyse (rest)
+      - script.execute: {id: set_phase, f: 2}
+      - delay: !lambda "return (uint32_t) (id(rest_min).state * 60000);"
+
+      # 3 Brine (optional)
+      - if:
+          condition:
+            switch.is_on: wait_for_salt
+          then:
+            - globals.set: {id: user_ok, value: "false"}
+            - script.execute: {id: set_phase, f: 3}
+            - script.execute: {id: notify, text: "Fermentolysen er ferdig. Hell i saltlaken, lukk lokket og trykk Start."}
+            - wait_until:
+                condition:
+                  lambda: "return id(user_ok);"
+                timeout: 60min
+            - if:
+                condition:
+                  lambda: "return !id(user_ok);"
+                then:
+                  - script.execute: {id: notify, text: "Fikk ikke svar på 60 min. Elter videre."}
+
+      # 4 Kneading
+      - script.execute: {id: set_phase, f: 4}
+      - script.execute:
+          id: knead
+          seconds: !lambda "return (int) (id(knead_min).state * 60);"
+          pct: !lambda "return (int) id(knead_speed).state;"
+          reverse: true
+      - script.wait: knead
+      - script.execute: park
+      - script.wait: park
+
+      # 5 Bulk rise with folds
+      - script.execute: {id: set_phase, f: 5}
+      - globals.set: {id: rise_start_ms, value: !lambda "return millis();"}
+      - script.execute: measure_start_height
+      - script.wait: measure_start_height
+      - globals.set: {id: fold_no, value: "0"}
+      - while:
+          condition:
+            lambda: "return id(fold_no) < (int) id(fold_count).state;"
+          then:
+            - delay: !lambda "return (uint32_t) (id(fold_interval_min).state * 60000);"
+            - lambda: |-
+                id(fold_no)++;
+                ESP_LOGI("program", "Fold %d", id(fold_no));
+            - script.execute:
+                id: knead
+                seconds: !lambda "return (int) id(fold_s).state;"
+                pct: !lambda "return (int) id(fold_speed).state;"
+                reverse: false
+            - script.wait: knead
+            - script.execute: park
+            - script.wait: park
+      - wait_until:
+          condition:
+            lambda: |-
+              const float r = id(rise).state;
+              const bool target = !isnan(r) && r >= id(rise_target).state;
+              const bool timeout = (millis() - id(rise_start_ms)) >= (uint32_t) (id(bulk_max_h).state * 3600000.0f);
+              return target || timeout;
+
+      # 6 Ready for shaping
+      - climate.control: {id: dough_heat, mode: "OFF"}
+      - globals.set: {id: user_ok, value: "false"}
+      - script.execute: {id: set_phase, f: 6}
+      - script.execute:
+          id: notify
+          text: !lambda |-
+            const float r = id(rise).state;
+            if (isnan(r))
+              return std::string("Deigen er klar for forming. Form den, legg den i kurven og sett den i kjøleskapet.");
+            char buf[140];
+            snprintf(buf, sizeof(buf),
+                     "Deigen er klar for forming (heving %+.0f %%). Form den, legg den i kurven og sett den i kjøleskapet.", r);
+            return std::string(buf);
+      - wait_until:
+          condition:
+            lambda: "return id(user_ok);"
+          timeout: 60min
+      - if:
+          condition:
+            lambda: "return !id(user_ok);"
+          then:
+            - script.execute: {id: notify, text: "Påminnelse: deigen har ventet en time ved romtemperatur."}
+
+  # Levain in the bowl: hold the temperature and notify when it has risen enough
+  - id: program_levain
+    mode: single
+    then:
+      - globals.set: {id: paused, value: "false"}
+      - script.execute: {id: set_phase, f: 10}
+      - climate.control:
+          id: dough_heat
+          mode: HEAT
+          target_temperature: !lambda "return id(levain_temp).state;"
+      - script.execute: {id: knead, seconds: 60, pct: 25, reverse: false}
+      - script.wait: knead
+      - script.execute: park
+      - script.wait: park
+      - globals.set: {id: rise_start_ms, value: !lambda "return millis();"}
+      - script.execute: measure_start_height
+      - script.wait: measure_start_height
+      - wait_until:
+          condition:
+            lambda: |-
+              const float r = id(rise).state;
+              const bool target = !isnan(r) && r >= id(levain_target).state;
+              const bool timeout = (millis() - id(rise_start_ms)) >= (uint32_t) (id(levain_max_h).state * 3600000.0f);
+              return target || timeout;
+      - globals.set: {id: user_ok, value: "false"}
+      - script.execute: {id: set_phase, f: 11}
+      - script.execute: {id: notify, text: "Levainen er klar. Tilsett resten av ingrediensene og trykk Start."}
+      - wait_until:
+          condition:
+            lambda: "return id(user_ok);"
+          timeout: 2h
+      - climate.control: {id: dough_heat, mode: "OFF"}
+      - script.execute: {id: set_phase, f: 0}
+      - if:
+          condition:
+            lambda: "return id(user_ok);"
+          then:
+            - script.execute: start_dough
+          else:
+            - script.execute: {id: notify, text: "Levainen har ventet i 2 timer. Varmen er slått av."}

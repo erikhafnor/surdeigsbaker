@@ -1,0 +1,6 @@
+# Python 3.11–3.13. Install in a virtual environment:
+#   python -m venv .venv && . .venv/bin/activate && pip install -r hardware/cad/requirements.txt
+build123d>=0.11.1,<0.12   # pinned minor version (ADR-005): the API changes between minors
+pyyaml>=6
+numpy>=1.26
+matplotlib>=3.8

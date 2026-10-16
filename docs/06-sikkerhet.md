@@ -1,15 +1,27 @@
 # 06 – Sikkerhet, matkontakt og regelverk
 
-> ⚠️ **Dette er ikke juridisk eller elfaglig rådgivning.** Maskinen kobles til 230 V. Den har en eltemotor på 100–400 W, kjøling (kompressor eller Peltier) og et svakt varmeelement (≤ 100 W), og den skal gå ubemannet i mange timer. Les dokumentet før du kobler noe til strømnettet, og få en fagperson til å se på løsningen når du er usikker. Punkter merket ⚠️ er ikke bekreftet i primærkilder ennå.
+> ⚠️ **Dette er ikke juridisk eller elfaglig rådgivning.** v0 drives av en ferdig, CE-merket 24 V-strømforsyning, så det er **ingen 230 V inne i maskinen** ([ADR-008](beslutninger/ADR-008-v0-design.md)). Den har en eltemotor på ca. 100 W og et svakt varmeelement (50 W), men ingen kjøling ([ADR-007](beslutninger/ADR-007-ingen-kjoling.md)). Den skal kunne gå ubemannet i mange timer. Les dokumentet før du kobler noe til strømnettet, og få en fagperson til å se på løsningen når du er usikker. Punkter merket ⚠️ er ikke bekreftet i primærkilder ennå.
 
 Stekingen gjøres i vanlig ovn ([ADR-006](beslutninger/ADR-006-steking-i-vanlig-ovn.md)), så maskinen har ingen høytemperatursone. Det fjerner den største brannrisikoen. Komfyrbranner er den største enkeltårsaken til boligbranner i Norge (43 % av utrykningene til boligbrann i 2016, ifølge DSB). Restrisikoen er likevel reell:
 
 - Et varmeelement som henger seg på inne i et godt isolert kammer, kan bli svært varmt.
 - En motor som blokkeres, kan overopphetes.
 - Feil på nettspenningssiden kan gi støt eller brann.
-- Kjølingen kan svikte i det stille, slik at deigen blir ødelagt.
+- Deigen kan overgjære hvis du ikke får med deg varselet om forming (maskinen har ingen kjøling).
 
-Sikkerheten bygges derfor inn **fra første prototype**, også i hevekabinettet og skjelettet.
+Sikkerheten bygges derfor inn **fra første prototype**.
+
+## 0. Slik er sikkerheten løst i v0
+
+Detaljer i [`hardware/v0/koblingsskjema.md`](../hardware/v0/koblingsskjema.md).
+
+| Lag | I v0 |
+|---|---|
+| **Lag 1: ren maskinvare** | KSD301 (60 °C, manuell reset) og termosikring (77 °C) i serie med varmeelementet. Sikring per kurs (1, 2, 3 og 5 A). Strømforsyningen har eget kortslutnings- og overlastvern. |
+| **Lag 2: frakobling uten programvare** | **Lokkbryteren** forsyner spolen til motorreléet K1: Lokket åpnes, og motoren mister strømmen. **Nødstoppen** forsyner spolene til både K1 (motor) og K2 (varme). Det er ingen egen sikkerhets-MCU i v0. Med bare 24 V, 150 W og vern i maskinvaren vurderes det som tilstrekkelig for prototypen. |
+| **Lag 3: fastvare** | Platen begrenses til 38 °C og bollen til 32 °C. Varmen slås av når en føler mangler og mens motoren går. Overstrøm i motoren gir stopp. Pause når lokket åpnes. Varmen er av etter omstart. |
+
+Punktene om 230 V i sjekklisten under gjelder bare hvis 230 V føres inn i maskinen. **v0 gjør ikke det.** Hold det slik.
 
 ## 1. Sikkerhetsarkitektur: tre uavhengige lag
 
@@ -37,20 +49,20 @@ Hvert lag skal alene kunne gjøre maskinen trygg dersom lagene over svikter. **L
 ### Varme og brann
 
 - [ ] **Termosikring som ikke kan tilbakestilles** og **termostat med manuell tilbakestilling**, begge i serie med *hvert* varmeelement og montert nær elementet. Elementet er svakt, men et element som henger seg på i et isolert kammer, er det farligste scenariet. Utløserverdien skal ligge godt under det isolasjon, plast og deig tåler (f.eks. 60–70 °C ⚠️, fastsettes i fase 1).
-- [ ] **SSR svikter ofte ved at det står lukket.** Sett derfor et mekanisk relé eller en kontaktor i serie, styrt av sikkerhetsvakten (lag 2). Kontaktoren skal bryte begge poler.
+- [ ] **SSR svikter ofte ved at det står lukket.** Sett derfor et mekanisk relé eller en kontaktor i serie, styrt av sikkerhetsvakten (lag 2). Kontaktoren skal bryte begge poler. *(v0: MOSFET for varmen, med relé K2 i serie som slipper ved nødstopp. En fastlåst MOSFET stoppes av KSD301.)*
 - [ ] **Varmen er av ved enhver omstart, ethvert spenningsfall og enhver programvarefeil.** Standardtilstanden er alltid «av».
 - [ ] **Sensorovervåking:** åpen krets, kortslutning og urimelig temperaturstigning (både for raskt og for sakte, slik termisk runaway-beskyttelse virker på 3D-skrivere). Hver fase har en makstid.
 - [ ] **Overtemperaturføler i elektronikkrommet**, og på varmsiden av en eventuell Peltier.
 - [ ] **Røykvarsler** like ved, helst tilkoblet slik at den kan slå av maskinen og varsle.
-- [ ] **Plassering:** Følg kravene til luft rundt kompressoren eller kjøleribben (som for et vinkjøleskap). Hold lufteåpningene frie.
+- [ ] **Plassering:** Hold lufteåpningene i bunnen av maskinen frie.
 - [ ] **Ingen ubemannet drift før E15 er bestått** ([eksperimentplanen](05-eksperimenter.md)).
 
 ### Mekanisk
 
-- [ ] **Lokk- og dekselbrytere** (interlock): Kroken skal stoppe når lokket åpnes eller bollen tas ut
+- [ ] **Lokk- og dekselbrytere** (interlock): Kroken skal stoppe når lokket åpnes eller bollen tas ut *(v0: lokkbryter → motorrelé K1)*
 - [ ] **Overvåking av fastkjørt motor** (overstrøm og blokkering) og termisk motorvern
-- [ ] **Overvåking av kjølingen:** Avvik i kammertemperaturen gir varsel. Svikter kjølingen mens det står deig i kammeret, varsles brukeren med en gang (lærdom fra Suvie).
-- [ ] **Lokal stoppknapp** som bryter motorer og varme, uavhengig av programvaren
+- [ ] ~~Overvåking av kjølingen~~ Utgår: ingen kjøling ([ADR-007](beslutninger/ADR-007-ingen-kjoling.md)). Avvik i deigtemperaturen gir fortsatt varsel.
+- [ ] **Lokal stoppknapp** som bryter motorer og varme, uavhengig av programvaren *(v0: nødstopp → K1 og K2)*
 
 ### Fjernstyring
 
@@ -81,10 +93,10 @@ Regelverk: EU-forordning 1935/2004 (rammeforordningen), 2023/2006 (god produksjo
 
 - **Rått mel er en råvare med smitterisiko** (f.eks. E. coli). Det er stekingen som gjør brødet trygt. Mel- og deigbanen behandles som en «rå sone».
 - **Mager deig over natten er normalt.** Gjæringen senker pH og holder sykdomsbakterier tilbake, men dreper dem ikke. Ingredienser som melk, egg eller ost krever kjøling eller sperre mot utsatt start ⚠️.
-- **Kaldhold:** Deigen holdes ved ≤ 6 °C fram til steking. Ved strømbrudd eller feil på kjølingen varsles brukeren. Mager deig som overgjærer, er et kvalitetsproblem, ikke et helseproblem, men den bør da kastes eller stekes snarest.
+- **Etter bulk:** Deigen venter ved romtemperatur til du former den. Maskinen varsler og minner deg på etter 1 t. Den kalde etterhevingen skjer i ditt eget kjøleskap ([ADR-007](beslutninger/ADR-007-ingen-kjoling.md)). Mager deig som overgjærer, er et kvalitetsproblem, ikke et helseproblem, men den bør da stekes snarest eller kastes.
 - **Etter steking** (utenfor maskinen): La brødet avkjøles på rist. Sporer fra *Bacillus* overlever stekingen og kan gi «trådtrekk» (rope) i varm og fuktig krumme.
-- **Kondens** i kjølekammeret tørkes ut og ventileres mellom kjøringene, så det ikke vokser mugg.
-- **Melbeholderen skal være tett og tørr**, utenfor det fuktige kjølekammeret. Mugg vokser over vannaktivitet ca. 0,70–0,75, og mel trekker raskt fukt over ca. 70 % relativ luftfuktighet.
+- **Kammeret** tørkes ut og luftes mellom kjøringene, så det ikke vokser mugg.
+- **Melbeholderen** (v1) **skal være tett og tørr**, utenfor det fuktige kammeret. Mugg vokser over vannaktivitet ca. 0,70–0,75, og mel trekker raskt fukt over ca. 70 % relativ luftfuktighet.
 - **Rengjøring:** Alt som er i kontakt med mat skal være avtakbart og glatt, uten sprekker og helst tåle oppvaskmaskin. Rester av surdeig mugner.
 
 ## 4. Regelverk: egen bruk, deling og salg
@@ -93,7 +105,7 @@ Regelverk: EU-forordning 1935/2004 (rammeforordningen), 2023/2006 (god produksjo
 |---|---|
 | **Bygget for egen bruk** | Trolig ikke «å gjøre tilgjengelig på markedet». Du er likevel ansvarlig for at utstyret er i forsvarlig stand (FEL). Forsikringen kan avkortes ved feil. **Spør DSB** om tilfellet ditt. |
 | **Publisere tegninger og kode åpent** | Trolig ingen produktplikt (analogt med Cyber Resilience Act, der det å legge åpen kildekode på et repo ikke regnes som å gjøre noe tilgjengelig) ⚠️. Ikke påstå CE-samsvar, og ha tydelige advarsler. |
-| **Gi bort eller selge ferdige maskiner eller byggesett** | Du blir trolig **produsent**. Det betyr risikovurdering, testing mot EN 60335-1 og trolig 60335-2-14 (kjøkkenmaskiner) og 60335-2-24 (kjøleapparater) ⚠️. 60335-2-9, som omfatter brødmaskiner, er mindre relevant når maskinen ikke steker, teknisk dokumentasjon, samsvarserklæring, CE-merking og bruksanvisning. Byggesett omfattes også av EMC-direktivet. Har maskinen Wi-Fi eller Bluetooth, gjelder radioutstyrsdirektivet (RED) og dets cybersikkerhetskrav (EN 18031, gjeldende fra august 2025). Produktansvarsloven gir objektivt ansvar. |
+| **Gi bort eller selge ferdige maskiner eller byggesett** | Du blir trolig **produsent**. Det betyr risikovurdering, testing mot EN 60335-1 og trolig 60335-2-14 (kjøkkenmaskiner) ⚠️. 60335-2-24 (kjøleapparater) er ikke lenger relevant uten kjøling. 60335-2-9, som omfatter brødmaskiner, er mindre relevant når maskinen ikke steker, teknisk dokumentasjon, samsvarserklæring, CE-merking og bruksanvisning. Byggesett omfattes også av EMC-direktivet. Har maskinen Wi-Fi eller Bluetooth, gjelder radioutstyrsdirektivet (RED) og dets cybersikkerhetskrav (EN 18031, gjeldende fra august 2025). Produktansvarsloven gir objektivt ansvar. |
 
 Relevante regler:
 - FEU (forskrift om elektrisk utstyr, 2017 nr. 1598)

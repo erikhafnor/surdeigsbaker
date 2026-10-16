@@ -1,8 +1,8 @@
 # Fastvare og programvare
 
-Mappen er tom inntil videre.
+**[`v0/`](v0/README.md): ESPHome-fastvaren for maskinen i [`hardware/v0/`](../hardware/v0/README.md).** Validert med `esphome config`, ikke testet på maskinvare ennå.
 
-Planlagt struktur:
+Opprinnelig planlagt struktur (før ADR-008):
 
 ```text
 firmware/
