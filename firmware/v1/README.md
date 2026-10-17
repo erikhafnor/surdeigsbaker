@@ -132,7 +132,7 @@ Dette kommer i tillegg til vernet i maskinvaren ([koblingsskjemaet](../../hardwa
 
 ## Kjente begrensninger
 
-- Modellen og standardverdiene er ikke validert mot ekte bakinger. 5–10 loggførte bakinger trengs (E15, [eksperimentene](../../docs/05-eksperimenter.md)).
+- Modellen og standardverdiene er ikke validert mot ekte bakinger. Det trengs 5–10 loggførte bakinger (E02 i [eksperimentene](../../docs/05-eksperimenter.md)).
 - Levainen måles ikke, fordi laget er for tynt for ToF-sensoren. Den følger modellen, og læringen skjer i bulkhevingen.
 - Kameraet ([ADR-009](../../docs/beslutninger/ADR-009-kamera.md)) er ikke en del av styringen ennå. Pi-en sender bilder for analyse utenfor maskinen.
 - `tmc2209` over UART kommer i ESPHome 2026.11. Til da kjøres stepperne med STEP-pulser fra LEDC.

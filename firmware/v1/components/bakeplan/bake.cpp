@@ -14,6 +14,18 @@ static std::string n1(float v) {
   return buf;
 }
 
+// Ratio with up to two decimals and no trailing zeros ("1,25", "2,5", "5").
+static std::string ratio(float v) {
+  char buf[24];
+  std::snprintf(buf, sizeof(buf), "%.2f", v);
+  std::string s(buf);
+  while (!s.empty() && s.back() == '0') s.pop_back();
+  if (!s.empty() && s.back() == '.') s.pop_back();
+  for (char &c : s)
+    if (c == '.') c = ',';
+  return s;
+}
+
 // ---------------------------------------------------------------- pan
 
 float PanGeometry::area_mm2(float h) const {
@@ -130,7 +142,7 @@ std::string Bake::plan_summary() const {
   const Plan &p = ctl_.plan();
   if (!p.feasible) return "";
   char buf[200];
-  const std::string r = n1((p.dilution - 1.0f) / 2.0f);
+  const std::string r = ratio((p.dilution - 1.0f) / 2.0f);
   std::snprintf(buf, sizeof(buf), "Levain 1:%s:%s (%.0f g mel, %.0f g vann), %s °C, levain %s t, deig %s t til +%.0f %%",
                 r.c_str(), r.c_str(), p.levain_flour_g, p.levain_water_g, n1(p.temp_c).c_str(), n1(p.levain_h).c_str(),
                 n1(p.bulk_h).c_str(), p.rise_target_pct);

@@ -196,7 +196,7 @@ void Sequence::next(float now_s) {
   phase_start_s_ = now_s;
   if (idx_ < steps_.size()) {
     if (steps_[idx_].kind == StepKind::Dose && steps_[idx_].ing == Ingredient::Salt) adjust_salt_step(steps_[idx_]);
-    status_ = steps_[idx_].label;
+    if (steps_[idx_].label[0]) status_ = steps_[idx_].label;  // event steps keep the previous text
   } else {
     status_ = "Ferdig";
   }
