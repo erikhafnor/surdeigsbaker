@@ -1,6 +1,6 @@
 # 03 – Konseptalternativer
 
-> **Oppdatert 2026-10-16:** Maskinen har **ingen kjøling** ([ADR-007](beslutninger/ADR-007-ingen-kjoling.md)). Den slutter når deigen er klar for forming, og du bruker ditt eget kjøleskap til den kalde etterhevingen. **v0 er designet som K2 uten kjøling, lastceller og dosering** ([ADR-008](beslutninger/ADR-008-v0-design.md), [`hardware/v0/`](../hardware/v0/README.md)). Teksten under er skrevet før dette. Det som gjelder kjøling, er ikke lenger aktuelt.
+> **Oppdatert 2026-10-17:** Maskinen har **ingen kjøling** ([ADR-007](beslutninger/ADR-007-ingen-kjoling.md)). Den slutter når deigen er klar for forming, og du bruker ditt eget kjøleskap til den kalde etterhevingen. **Prototype v1 er valgt i [ADR-010](beslutninger/ADR-010-v1-arkitektur.md):** en blanding av K2 og K1. Fra K2 kommer det isolerte kammeret med svak varme, dosering og vekt. Fra K1 kommer brødmaskinformen med elteblad i bunnen, men drevet av en egen girmotor. Det første designet, v0 (K2 med krok fra lokket), bygges ikke. Teksten under er skrevet før dette. Det som gjelder kjøling, er ikke lenger aktuelt.
 
 Maskinen leverer deig som er **klar for forming**, og stekingen skjer i vanlig ovn ([ADR-006](beslutninger/ADR-006-steking-i-vanlig-ovn.md)). Da er de viktigste valgene i arkitekturen:
 
@@ -8,7 +8,7 @@ Maskinen leverer deig som er **klar for forming**, og stekingen skjer i vanlig o
 - **Hvordan varmes deigen?** Varmeplate under bollen eller varm luft i kammeret. (Ingen kjøling etter ADR-007.)
 - **Hvordan får mennesket deigen ut?** Avtakbar bolle eller hevekurv.
 
-Under er fire konsepter. Endelig valg tas ved port G3 med Pugh-matrisen nederst, oppdatert med resultater fra eksperimentene. Valget dokumenteres som ADR-001 i [`beslutninger/`](beslutninger/).
+Under er fire konsepter. Valget skulle tas ved port G3 med Pugh-matrisen nederst. Det ble i stedet tatt i [ADR-010](beslutninger/ADR-010-v1-arkitektur.md) ut fra undersøkelsene for v1 (se [ADR-001](beslutninger/ADR-001-konseptvalg.md)).
 
 ## K1 – Brødmaskin i kjøleskap
 
@@ -38,7 +38,7 @@ Drivverket og formen fra en brukt brødmaskin bygges inn i et **ombygd lite vink
   - Lite plass til en hevekurv, og vanskelig å dosere ovenfra (N3).
 - **Rolle i planen:** Gangbart skjelett i fase 2. Kan bli en egen, enkel DIY-variant («Surdeigsbaker Mini»).
 
-## K2 – Eltebolle i hevekammer ⭐ valgt for v0 (uten kjøling)
+## K2 – Eltebolle i hevekammer ⭐ grunnlaget for v1 (uten kjøling, med brødmaskinform fra K1)
 
 Et isolert kammer med svak varme (kompressorkjøling i den opprinnelige versjonen, fjernet i ADR-007). I kammeret står en **avtakbar bolle i rustfritt stål** på lastceller, og en **eltekrok som drives ovenfra** av en girmotor i lokket. Lokket har også ToF-sensor og innløp for dosering. Kammeret har plass til en hevekurv ved siden av eller i stedet for bollen.
 
@@ -117,4 +117,4 @@ Den opprinnelige trappen var:
 2. **Fase 2, K1 (N2):** Drivverket og formen fra en brødmaskin i kabinettet.
 3. **Fase 3–4, K2 (N3):** Den egentlige eltemodulen med bolle, krok, vekt og dosering.
 
-**Etter ADR-007 og ADR-008** er K2 uten kjøling enkel nok til å bygges direkte som **v0 (N2)**. Trinn 1 og 2 blir valgfrie. Eksperimentene i fase 1 kan gjøres for hånd eller i v0. Dosering (N3) kommer som en v1-modul.
+**Etter ADR-007, ADR-008 og ADR-010** bygges K2 uten kjøling direkte som **prototype v1 (N3)**, med formen og eltebladet fra K1. Trinn 1 og 2 blir valgfrie, og v0 bygges ikke. Eksperimentene i fase 1 kan gjøres for hånd eller i v1.

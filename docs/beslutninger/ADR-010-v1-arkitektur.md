@@ -31,7 +31,7 @@ Kamera kommer i tillegg ([ADR-009](ADR-009-kamera.md)).
 | **Deigmengde** | 560 g mel (ca. 1,05 kg deig) som standard | Panasonic oppgir maks 600 g mel | 610 g som i referansen |
 | **Uttak** | **Frontdør** på kammeret. Formen dreies løs, løftes 2 cm og trekkes ut. | Taket kan være fast, med dosering og sensorer uten bevegelige ledninger | Vippelokk (høyere og med ledninger i hengselen) |
 | **Vekt** | Hele drivverket (holder, aksel, reim og motor) står på en plattform med **én enpunkts lastcelle på 10 kg** og NAU7802 | Ingenting annet bærer formen, så vekta blir riktig. Reimkraften holder seg innenfor det som veies. | Lastcelle bare under formen (motoren ville bære den) |
-| **Mel** | **Én beholder med melblanding** (ca. 2 kg) og en **vannrett skrue på 28 mm** med røreverk, stoppet av vekta (grovt, så fint). Klaff ved utløpet. | Ingen åpne løsninger har vist at de klarer mel. En vannrett skrue med røreverk og vektstyring er det beste kjente, og v1 er laget for å teste den (E11). | Skråskrue eller loddrett skrue (lavere, men mer risiko), to beholdere (dobbelt så mye) |
+| **Mel** | **Én beholder med melblanding** (ca. 1,5 kg, to brød) og en **vannrett skrue på 28 mm** med røreverk, stoppet av vekta (grovt, så fint). Klaff ved utløpet. | Ingen åpne løsninger har vist at de klarer mel. En vannrett skrue med røreverk og vektstyring er det beste kjente, og v1 er laget for å teste den (E11). | Skråskrue eller loddrett skrue (lavere, men mer risiko), to beholdere (dobbelt så mye) |
 | **Salt** | Liten beholder med **10 mm skrue** og egen klaff. Saltet og vannet doseres rett på deigen (saltlake i formen). | Salt renner lett, og vekta gir nøyaktigheten | Vibrasjonsrenne, ferdig saltlake på tank |
 | **Vann** | **Peristaltisk 24 V-pumpe** (Kamoer KPHM400) fra en tank på 1 l foran i tårnet, styrt av vekta. Pumpen går baklengs etter dosering. | Drypper ikke og er lett å rengjøre. Tanken fylles per baking. | Membranpumpe (drypper), vann på tank i en uke (biofilm) |
 | **Varme** | **Silikonmatte på 60 W** på en ribbeplate i kammergulvet, med **vifte**. PID-regulering på en føler mot bunnen av formen. Platen holdes ≤ 38 °C. | En vifte gir mer enn flere watt. Den holder deigen jevnt varm uten varme flekker. | PTC-vifteovn (for stor og ikke sikker i seg selv) |
@@ -45,7 +45,7 @@ Kamera kommer i tillegg ([ADR-009](ADR-009-kamera.md)).
 | **Hevemåling** | **ToF** (VL53L0X) i taket og **kamera** (Pi Zero 2 W + Camera Module 3 Wide) | Rette vegger i formen gir heving direkte fra høyden. Kameraet gir en ekstra måling og ser feil. | Bare modellen, uten måling: deigen ender på 47–184 % av målet |
 | **Levain** | Bygges i formen. Styres av modellen, fordi laget er for tynt til å måles. **Maskinen veier surdeigen.** | Bulkhevingen måles og retter opp. Simuleringen viser at det holder. | Egen levainkopp (plass og helleretning, som i v0) |
 | **Læring** | Aktiviteten til surdeigen lagres etter hver baking og brukes neste gang | Etter én baking er tidsfeilen ca. 10 min i simuleringen | – |
-| **Form og mål** | Kammer til høyre, tårn til venstre (mel, salt, vann, motor og elektronikk). Ca. 47 × 30 × 52 cm. | En vannrett melskrue må sitte over formen | Under 45 cm (krever skrå skrue eller mindre melbeholder, kan komme i v2) |
+| **Form og mål** | Kammer til høyre, tårn til venstre (vann, motor og elektronikk), mel og salt over taket. 48 × 31 × 53 cm (fra CAD). | En vannrett melskrue må sitte over formen | Under 45 cm (krever skrå skrue eller mindre melbeholder, kan komme i v2) |
 
 ## Konsekvenser
 
@@ -57,7 +57,7 @@ Kamera kommer i tillegg ([ADR-009](ADR-009-kamera.md)).
 **Risiko som må følges opp:**
 - **Melskruen (E11)** er den største utviklingsjobben. Reserveplanen er at du heller i forhåndsveid mel og maskinen gjør resten (N2).
 - **Formen og koblingen** må måles på en giver før CAD-målene låses. Holderen for formen printes etter målene.
-- **Høyden** (ca. 52 cm) kan være for mye under enkelte overskap.
+- **Høyden** (53 cm) og bredden (48 cm) er over rammen på 45 cm i [kravene](../00-visjon-og-suksesskriterier.md). Melbeholderen rommer to brød, ikke fire.
 - **Tidspresisjonen ved første baking** med en ukjent surdeig er ±40–60 min. Mål nær det tidligst mulige gir varsel om liten margin.
 - **ESPHome-støtten for TMC2209 over UART** er ny. Stepperne kjøres med step/dir til den er sluppet.
 

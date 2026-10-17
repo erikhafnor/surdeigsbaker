@@ -28,16 +28,16 @@ Suksess er en **ferdig prototype på kjøkkenbenken som har laget deigen til sin
 | **N0** | Instrumentert manuell baking | Logger temperaturer og heving | Alt |
 | **N1** | Smart hevekabinett | Holder temperaturen, planlegger og varsler | Blander, elter, bretter og former |
 | **N2** | Deigmaskin | Blander, elter, bulkhever med bretting og varsler når deigen er klar for forming | Veier og heller i ingrediensene, former og setter kurven i kjøleskapet |
-| **N3** | Doserer selv | Doserer mel, vann og salt, bygger levain i bollen og gjør resten | Tilsetter 1 ss surdeig, fyller på beholdere, former og setter kurven i kjøleskapet |
+| **N3** | Doserer selv | Doserer mel, vann og salt, bygger levain i formen og gjør resten | Tilsetter 1–2 ss surdeig, fyller på beholdere, former og setter kurven i kjøleskapet |
 | **N4** | Steller surdeigen | Som N3, og holder i tillegg surdeigskulturen i live | Fyller på og vasker ukentlig |
 | **N5** | Former selv | Leverer en ferdig formet deig i hevekurv | Steker |
 
 | Mål | Nivå | Kommentar |
 |---|---|---|
 | Første nyttige milepæl | N1 | Hevekabinettet fra fase 1 er allerede nyttig i hverdagen |
-| **v0, første maskin (nå)** | **N2** | Designet ligger i [`hardware/v0/`](../hardware/v0/README.md) ([ADR-008](beslutninger/ADR-008-v0-design.md)) |
+| v0, første design | N2 | Bygges ikke ([ADR-010](beslutninger/ADR-010-v1-arkitektur.md)). Beholdt i [`hardware/v0/`](../hardware/v0/README.md). |
 | Minimum (MVP) | **N2** | Det som absolutt må til for at prosjektet er i mål |
-| **Mål for prototype v1** | **N3** | Anbefalt ambisjonsnivå |
+| **Prototype v1 (bygges nå)** | **N3** | Designet ligger i [`hardware/v1/`](../hardware/v1/README.md) ([ADR-010](beslutninger/ADR-010-v1-arkitektur.md)) |
 | Strekkmål | N4 | Egen surdeigsmodul («Surhild-modulen») |
 | Senere versjoner | N5 | Forming er det vanskeligste å automatisere |
 
@@ -47,8 +47,8 @@ Hvordan en bakedag ser ut for deg på N2 (v0) og N3 (v1), står i [`11-bruksscen
 
 Maskinen gir fra seg deigen når bulkhevingen er ferdig. Eksperiment E06 avgjør hvilken av de to variantene under som blir standard.
 
-1. **Med forming** (som referansen, standard i v0): Du former deigen på 2–5 min, legger den i en hevekurv og setter kurven i kjøleskapet til neste dag. Det gir best kvalitet.
-2. **Uten forming** («tipp og stek»): Du setter lokk eller plast på hele bollen og setter den i kjøleskapet. Neste dag tipper du den kalde deigen rett i den varme gryta. Det er raskest, men krever en bolle til hvis du vil bake igjen før den er ledig.
+1. **Med forming** (som referansen, standard i v1): Du former deigen på 2–5 min, legger den i en hevekurv og setter kurven i kjøleskapet til neste dag. Det gir best kvalitet.
+2. **Uten forming** («tipp og stek»): Du setter plast over hele brødformen og setter den i kjøleskapet. Neste dag tipper du den kalde deigen rett i den varme gryta. Det er raskest, men eltebladet følger ofte med deigen ut, og du trenger en form til hvis du vil bake igjen før den er ledig.
 
 ### Akseptansekriterier for «første surdeigsbrød»
 
@@ -83,18 +83,18 @@ Rammene skal gjennomgås og fryses som *kravspesifikasjon v1* ved port G0 (se [v
 
 | Krav | Verdi (utkast) | Begrunnelse |
 |---|---|---|
-| Størrelse | B ≤ 45 cm, D ≤ 45 cm, H ≤ 45 cm. **v0: 35 × 35 × 54 cm**, ca. 70 cm med åpent lokk. | Skal stå på benken under overskapene. Uten ovn er det ingen krav til klaring for varme. v0 er for høy og må trekkes fram når lokket åpnes (ADR-008). **Mål din egen benk.** |
-| Strøm | Én 230 V-stikkontakt med en CE-merket 24 V-strømforsyning, ≤ 150 W | Eltemotor (ca. 100 W) og varme (50 W). Fastvaren slår av varmen mens motoren går. Ingen 230 V inne i maskinen (ADR-008). |
+| Størrelse | B ≤ 45 cm, D ≤ 45 cm, H ≤ 45 cm. **v1: 48 × 31 × 53 cm** (avvik i bredde og høyde, akseptert i ADR-010). | Skal stå på benken under overskapene. Uten ovn er det ingen krav til klaring for varme. v1 har dør foran og går under de fleste overskap, men må trekkes fram når melet fylles. Lavere i v2. **Mål din egen benk.** |
+| Strøm | Én 230 V-stikkontakt med en CE-merket 24 V-strømforsyning. **v1: 221 W** (GST220A24). | Eltemotor (120 W), varme (60 W), steppere og pumpe. Fastvaren slår av varmen og doseringen mens motoren går, så toppen er ca. 130 W. Ingen 230 V inne i maskinen. |
 | Deigtemperatur | Romtemperatur til 30 °C, ±0,5 °C. Bare varme. | Levain og bulk (24–27 °C). Ingen kjøling (ADR-007). |
 | Brødstørrelse | 1 brød, ca. 1 kg deig (550 g mel) | Som referanseoppskriften |
-| Overlevering | Avtakbar bolle. Hevekurven står i ditt eget kjøleskap. | De to overleveringsvariantene |
+| Overlevering | Avtakbar brødform. Hevekurven står i ditt eget kjøleskap. | De to overleveringsvariantene |
 | Støy | Stille om natten (≤ ca. 40 dB under heving) | Kjøkkenet er ofte nær soverom. Uten kompressor er det bare motoren som lager lyd, og den går bare noen minutter. |
 | Rengjøring | Alle deler i kontakt med mat er avtakbare, helst tåler de oppvaskmaskin | Hygiene og at maskinen faktisk blir brukt |
-| Påfylling | Mel og salt for ≥ 4 brød (N3) | Ukentlig rutine |
-| Matkontakt | Bare godkjente materialer (rustfritt stål, matgodkjent silikon, PTFE-belegg (non-stick), emalje). Ikke ubehandlet aluminium eller 3D-print. | Se [`06-sikkerhet.md`](06-sikkerhet.md) |
+| Påfylling | Mel og salt for ≥ 4 brød (N3). **v1: mel for 2 brød** (ca. 1,5 kg), salt for ca. 35. Vannet fylles per baking. | Ukentlig rutine. v1 avviker for melet: en større beholder gjør maskinen høyere (ADR-010). |
+| Matkontakt | Bare godkjente materialer mot deigen (rustfritt stål, matgodkjent silikon, PTFE-belegg (non-stick), emalje). Ikke ubehandlet aluminium eller 3D-print mot deigen. I v1 berører bare brødformen og eltebladet deigen. Printede deler som berører tørt mel og salt, er av naturfarget PETG etter EU 10/2011. | Se [`06-sikkerhet.md`](06-sikkerhet.md) |
 | Ubemannet drift | Trygg å la stå over natten | To uavhengige sikkerhetslag (maskinvare og programvare) |
-| Byggbarhet | Standarddeler, 3D-print bare utenfor matkontakt, ingen spesialverktøy utover vanlig makerspace | Målet er DIY |
-| Budsjett | **v0: ca. 9 000 kr i deler** ([stykkliste](../hardware/v0/stykkliste.csv)). Hele prosjektet: ca. 12 000–29 000 kr (grovt anslag). | Se [`09-budsjett-og-innkjop.md`](09-budsjett-og-innkjop.md). |
+| Byggbarhet | Standarddeler, 3D-print ikke mot deigen, ingen spesialverktøy utover vanlig makerspace. v1 trenger en brukt brødmaskin som giver. | Målet er DIY |
+| Budsjett | **v1: ca. 17 800 kr i deler** ([stykkliste](../hardware/v1/stykkliste.csv)), pluss frakt, giver og ca. 30 % buffer. | Se [`09-budsjett-og-innkjop.md`](09-budsjett-og-innkjop.md). |
 
 ## Utenfor omfang (i v1)
 

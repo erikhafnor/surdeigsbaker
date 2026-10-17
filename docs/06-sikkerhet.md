@@ -11,15 +11,15 @@ Stekingen gjøres i vanlig ovn ([ADR-006](beslutninger/ADR-006-steking-i-vanlig-
 
 Sikkerheten bygges derfor inn **fra første prototype**.
 
-## 0. Slik er sikkerheten løst i v0
+## 0. Slik er sikkerheten løst i v1
 
-Detaljer i [`hardware/v0/koblingsskjema.md`](../hardware/v0/koblingsskjema.md).
+Detaljer i [`hardware/v1/koblingsskjema.md`](../hardware/v1/koblingsskjema.md#sikkerhetsprinsipp). (v0 bygges ikke, se [ADR-010](beslutninger/ADR-010-v1-arkitektur.md).)
 
-| Lag | I v0 |
+| Lag | I v1 |
 |---|---|
-| **Lag 1: ren maskinvare** | KSD301 (60 °C, manuell reset) og termosikring (77 °C) i serie med varmeelementet. Sikring per kurs (1, 2, 3 og 5 A). Strømforsyningen har eget kortslutnings- og overlastvern. |
-| **Lag 2: frakobling uten programvare** | **Lokkbryteren** forsyner spolen til motorreléet K1: Lokket åpnes, og motoren mister strømmen. **Nødstoppen** forsyner spolene til både K1 (motor) og K2 (varme). Det er ingen egen sikkerhets-MCU i v0. Med bare 24 V, 150 W og vern i maskinvaren vurderes det som tilstrekkelig for prototypen. |
-| **Lag 3: fastvare** | Platen begrenses til 38 °C og bollen til 32 °C. Varmen slås av når en føler mangler og mens motoren går. Overstrøm i motoren gir stopp. Pause når lokket åpnes. Varmen er av etter omstart. |
+| **Lag 1: ren maskinvare** | Termosikring (72 °C) rett i varmekretsen. KSD301 (50 °C, manuell reset) i spolekretsen til varmereléet K2. Strømgrense i motordriveren (Pololu G2). Sikring per kurs (1, 2, 3, 5 og 10 A). Strømforsyningen har eget kortslutnings- og overlastvern. |
+| **Lag 2: frakobling uten programvare** | **Dørbryteren** forsyner spolen til motorreléet K1: Døra åpnes, og eltemotoren mister strømmen. **Nødstoppen** forsyner spolene til K1 (motor), K2 (varme) og K3 (dosering). Det er ingen egen sikkerhets-MCU i v1. Med bare 24 V og vern i maskinvaren vurderes det som tilstrekkelig for prototypen. |
+| **Lag 3: fastvare** | Kjøleprofilen begrenses til 38 °C (PWM) og 45 °C (K2 slipper). Varmen slås av når en føler mangler og mens maskinen veier. Over 6 A i motoren i 2 s gir stopp. Motoren står når døra er åpen, og fortsetter først etter **Fortsett**. Tom beholder gir stopp og varsel. |
 
 Punktene om 230 V i sjekklisten under gjelder bare hvis 230 V føres inn i maskinen. **v0 gjør ikke det.** Hold det slik.
 

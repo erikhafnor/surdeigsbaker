@@ -2,7 +2,7 @@
 
 Fastvare for maskinen i [`hardware/v0/`](../../hardware/v0/). Den kjører på en ESP32-S3-DevKitC-1 og er skrevet i [ESPHome](https://esphome.io). Koblingene står i [`koblingsskjema.md`](../../hardware/v0/koblingsskjema.md).
 
-> **Status:** utkast. Konfigurasjonen er validert med `esphome config` (ESPHome 2026.9.1), men den er **ikke kompilert eller testet på maskinvare ennå**. Regn med feil i første runde.
+> **v0 bygges ikke** ([ADR-010](../../docs/beslutninger/ADR-010-v1-arkitektur.md)). Bruk fastvaren i [`firmware/v1/`](../v1/README.md). Denne fastvaren beholdes som referanse. Den ble validert med `esphome config` (ESPHome 2026.9.1), men ble aldri kompilert eller testet på maskinvare.
 
 ## Hva den gjør
 

@@ -1,6 +1,6 @@
 # Surdeigsbaker v0 – byggeveiledning
 
-> **Status:** første utkast (v0.1, oktober 2026). Designet er laget og sjekket i CAD, men **ingenting er bygget ennå**. Du er den første som bygger det. Regn med at noe må justeres. Skriv ned avvik og legg dem inn som issues.
+> **v0 bygges ikke.** Prosjektet gikk rett til prototype v1 ([ADR-010](../../docs/beslutninger/ADR-010-v1-arkitektur.md)). Bygg v1 i stedet: [`hardware/v1/`](../v1/README.md). Designet under beholdes som referanse og er ikke oppdatert etter 2026-10-16.
 
 ![Surdeigsbaker v0 med åpent lokk](bilder/v0_aapen_snitt.png)
 

@@ -1,6 +1,20 @@
 # 07 – Systemarkitektur (utkast)
 
-> **Oppdatert 2026-10-16:** Maskinen har **ingen kjøling** ([ADR-007](beslutninger/ADR-007-ingen-kjoling.md)), og **v0 er designet** ([ADR-008](beslutninger/ADR-008-v0-design.md)). Arkitekturen som faktisk bygges nå, står i [`hardware/v0/README.md`](../hardware/v0/README.md) (mekanikk), [`hardware/v0/koblingsskjema.md`](../hardware/v0/koblingsskjema.md) (24 V, sikkerhetskjede og pinnekart) og [`firmware/v0/`](../firmware/v0/README.md) (ESPHome). Kort fortalt: bare 24 V fra en CE-merket strømforsyning, ESP32-S3 med ESPHome, varmeplate under en avtakbar rustfri bolle, C-krok drevet fra lokket, lokkbryter og nødstopp som bryter reléer. Avsnittene under om kjøling, kaldhold og 230 V er skrevet før dette og gjelder ikke v0.
+> **Oppdatert 2026-10-17:** Maskinen har **ingen kjøling** ([ADR-007](beslutninger/ADR-007-ingen-kjoling.md)), og **prototype v1 er designet** ([ADR-010](beslutninger/ADR-010-v1-arkitektur.md)). Arkitekturen som faktisk bygges, står i:
+>
+> - [`hardware/v1/README.md`](../hardware/v1/README.md): mekanikken
+> - [`hardware/v1/koblingsskjema.md`](../hardware/v1/koblingsskjema.md): 24 V, sikkerhetskjede og pinnekart
+> - [`firmware/v1/`](../firmware/v1/README.md): ESPHome med bakeprogrammet i C++
+>
+> Kort fortalt:
+>
+> - Bare 24 V fra en CE-merket strømforsyning, og ESP32-S3 med ESPHome.
+> - En brødmaskinform med eget drivverk står på én lastcelle.
+> - Mel, salt og vann doseres etter vekt.
+> - Varmen kommer fra en matte med vifte bak formen.
+> - Dørbryter og nødstopp bryter reléer.
+>
+> Avsnittene under om kjøling, kaldhold, 230 V og to nivåer med vert og mikrokontroller er skrevet før dette og gjelder ikke v1. Tabellene er oppdatert med det v1 bruker.
 
 Maskinen leverer deig som er **klar for forming**, og stekingen skjer i vanlig ovn ([ADR-006](beslutninger/ADR-006-steking-i-vanlig-ovn.md)). Arkitekturen tar utgangspunkt i konsept K2, «eltebolle i hevekammer» ([`03-konsepter.md`](03-konsepter.md)). Delsystemene er definert slik at de også passer trinnene på veien: K3 (hevekabinett) og K1 (brødmaskin i kjøleskap). Alt her er et **utkast** som skal modnes i fase 1–3.
 
@@ -8,53 +22,56 @@ Maskinen leverer deig som er **klar for forming**, og stekingen skjer i vanlig o
 
 ```mermaid
 flowchart TB
-  subgraph ING["Ingrediensmodul (N3)"]
-    MEL["Melbeholder<br/>snegle og omrører"]
-    VANN["Vanntank<br/>temperering og pumpe"]
-    SALT["Saltbeholder<br/>doserer · lager saltlake"]
+  subgraph ING["Dosering (N3, over taket og i tårnet)"]
+    MEL["Melbeholder<br/>skrue, røreverk og klaff"]
+    VANN["Vanntank<br/>peristaltisk pumpe"]
+    SALT["Saltboks<br/>skrue og klaff"]
   end
-  subgraph KAM["Hevekammer 4–30 °C"]
-    BOLLE["Avtakbar bolle<br/>på lastceller"]
-    KROK["Krok og girmotor<br/>(i lokket)"]
-    KURV["Plass til hevekurv"]
-    TOF["ToF-sensor / kamera"]
-    KJOL["Kjøling<br/>kompressor / Peltier"]
-    VARME["Svak varme ≤ 100 W<br/>+ termosikring"]
+  subgraph KAM["Kammer, romtemperatur til 28 °C"]
+    FORM["Brødform i holder<br/>(elteblad)"]
+    TAK["Takmodul: ToF, IR,<br/>kamera og utløp"]
+    VARME["Varmematte 60 W og vifte<br/>+ KSD301 og termosikring"]
   end
-  subgraph CTRL["Styring (tørt rom utenfor kammeret)"]
-    HOST["Vert: oppskrift, tidsplan,<br/>brukergrensesnitt, logg"]
-    MCU["Mikrokontroller: PID,<br/>motorer, dosering"]
-    SAFE["Sikkerhetsvakt<br/>(uavhengig)"]
+  subgraph VEKT["På lastcella"]
+    DRIV["Lagersøyle, reim<br/>og eltemotor 120 W"]
   end
-  VARSEL["Varsler: «tilsett saltlake»,<br/>«klar for forming», feil"]
+  subgraph CTRL["Styring (i tårnet)"]
+    MCU["ESP32-S3 med ESPHome:<br/>tidsplan, dosering, trinn, PID"]
+    PI["Pi Zero 2 W<br/>(kamera)"]
+    SAFE["Dørbryter, nødstopp<br/>og reléer (maskinvare)"]
+  end
+  VARSEL["Varsler: «klar for forming»,<br/>«fyll mel», feil"]
   OVN["Din vanlige ovn<br/>(valgfri smartovn-integrasjon)"]
-  ING --> BOLLE
-  HOST <--> MCU
+  ING --> FORM
+  FORM --- DRIV
   MCU --> KAM
   MCU --> ING
-  HOST --> VARSEL
+  MCU --> DRIV
+  MCU --> VARSEL
+  PI -.-> VARSEL
   VARSEL -.-> OVN
-  SAFE -. kan bryte .-> KAM
+  SAFE -. kan bryte .-> DRIV
+  SAFE -. kan bryte .-> VARME
 ```
 
 ## 2. Sensorer og aktuatorer (kandidater)
 
 | Funksjon | Kandidat | Merknad |
 |---|---|---|
-| Kammer- og deigtemperatur | DS18B20 (vanntett), PT1000 + MAX31865 for bedre nøyaktighet | Deigtemperaturen måles med føler mot bollen eller stikkføler |
+| Kammer- og deigtemperatur | v1: DS18B20 med fjær mot formbunnen (i holderen), MLX90614 mot overflaten, SHT40 i kammerluften. PT1000 + MAX31865 for bedre nøyaktighet. | Føleren i holderen står på vekta, så kabelen går gjennom veiesløyfa |
 | Romklima | SHT4x | Romtemperaturen brukes i modellen (som i Panasonic-brødmaskiner). Fukt i kammeret gir varsel om kondens. |
 | Heving i surdeigsglass | VL6180X (ToF, kort rekkevidde) | Dekkvindu må kalibreres for krysstale og dugg |
-| Heving i bollen | v0: VL53L0X. Tillegg: kamera (Pi Zero 2 W + Camera Module 3 Wide) ved kanten. Senere kanskje 8 × 8 ToF. | E14, [ADR-009](beslutninger/ADR-009-kamera.md) |
-| Feil og aktivitet | Motorstrøm (INA226) og kamera | E18 |
-| Vekt (dosering) | 5–10 kg lastcelle + NAU7802 eller HX711 | Tarer før hver tilsetning. Temperaturdrift ved 4–30 °C må kompenseres. |
+| Heving i formen | v1: VL53L0X i taket, glattet over 3 min. Tillegg: kamera (Pi Zero 2 W + Camera Module 3 Wide). Senere kanskje 8 × 8 ToF. | E14, [ADR-009](beslutninger/ADR-009-kamera.md) |
+| Feil og aktivitet | Motorstrøm (strømsignalet fra Pololu G2), vekta og kamera | E18 |
+| Vekt (dosering) | v1: én enpunkts lastcelle på 10 kg (C3) + NAU7802 under hele drivverket | Tarer før hver tilsetning. Motor, vifte og varme er av mens maskinen veier. |
 | CO₂ (valgfritt, E03) | STC31 (0–100 vol%) eller SprintIR-6S-100 | SCD41 blir mettet |
-| Kjøling | Kompressorenhet (ombygd vinkjøleskap eller kjøleboks) eller Peltier | Se avsnitt 4 |
-| Varme | Varmefolie eller PTC-element ≤ 100 W, CE-godkjent | SSR eller relé, med topolet relé i serie og termosikring |
-| Eltemotor | 100–200 W girmotor, ca. 80–150 o/min, ca. 5–10 N·m (anslag). I K1 brukes brødmaskinens motor. | Detekterer blokkering ut fra strømtrekk, termisk motorvern |
-| Lokk og bolle til stede | Endebrytere eller reed-brytere | Kroken stopper når lokket åpnes eller bollen er tatt ut |
-| Melsnegle (N3) | Steppermotor og snegle av rustfritt stål med omrører | Kjøres raskt til ca. 90 % av mengden, deretter i pulser styrt av vekta |
-| Vann (N3) | Peristaltisk pumpe | Doserer etter vekt, ikke volum |
-| Salt (N3) | Liten snegle eller cellehjulsdoserer fra en tett beholder utenfor kammeret | Doseres etter vekt og blandes med vann til saltlake, i bollen eller i en saltkopp (E12) |
+| ~~Kjøling~~ | Utgår (ADR-007) | – |
+| Varme | v1: silikonmatte 60 W på kjøleprofil, med vifte | Relé K2 (spole via KSD301), termosikring i kretsen, MOSFET med langsom PWM |
+| Eltemotor | v1: 24 V planetgirmotor 120 W, ca. 300–400 o/min, reim 2:1 til eltebladet | Strømgrense i Pololu G2. Fastvaren stopper ved over 6 A i 2 s. |
+| Dør lukket | v1: mikrobryter (KW11) i spolekretsen til motorreléet | Eltebladet stopper når døra åpnes. At formen står der, ser vekta. |
+| Melskrue (N3) | v1: NEMA17 med planetgir 5:1, printet skrue på 28 mm på rustfri aksel, røreverk og servoklaff | Grovdosering til 92 %, deretter finpulser styrt av vekta. Reversering ved bro. |
+| Vann (N3) | v1: Kamoer KPHM400, 24 V | Doserer etter vekt, ikke volum. Går baklengs etter dosering. |
+| Salt (N3) | v1: skrue på 10 mm med NEMA17 pannekake, fra en tett boks over taket | Doseres etter vekt. Vannet doseres rett etter, og saltlaken blir til i formen (E12). |
 
 ## 3. Effektbudsjett
 
@@ -62,11 +79,12 @@ Uten ovn blir effekten lav, og maskinen kan stå på en hvilken som helst stikko
 
 | Fase | Forbruker | Effekt |
 |---|---|---|
-| Elting og bretting | Eltemotor (v0: 24 V, ca. 100 W) | ≤ 100 W (kort tid) |
-| Levain og bulk (24–27 °C) | Varmeplate (v0: 50 W) | ≤ 50 W, vanligvis mye mindre |
+| Elting og bretting | Eltemotor (v1: 24 V, 120 W) | ≤ 120 W (kort tid) |
+| Levain og bulk (24–28 °C) | Varmematte (v1: 60 W) og vifte | ≤ 60 W, vanligvis mye mindre |
+| Dosering | Steppere, pumpe og servoer | ca. 30 W, noen minutter |
 | ~~Kald heving og kaldhold~~ | Utgår (ADR-007) | – |
-| Hele tiden | Elektronikk | ca. 5 W |
-| **Sperre i fastvaren** | Varmen er av mens motoren går. | **v0: ≤ 150 W fra 24 V-strømforsyningen** |
+| Hele tiden | Elektronikk og Pi Zero 2 W | ca. 9 W |
+| **Sperre i fastvaren** | Varmen og doseringen er av mens motoren går. | **v1: ca. 130 W i normal drift, 221 W strømforsyning** |
 
 ## 4. Termikk: grove tall
 
@@ -145,8 +163,9 @@ Hver baking får en **bake-ID**. Alle målinger logges med bake-ID-en, slik at l
 
 | Varsel | Når | Kanal |
 |---|---|---|
-| «Tilsett 1 ss surdeig» (N2/N3) | Ved start, hvis bollen ikke har levain | Display og mobil |
-| «Tilsett saltlaken» (v0) | Etter fermentolysen | Display, summer og mobil |
+| «Fant X g surdeig …» (N3) | Ved start, hvis vekta ikke finner 5–200 g surdeig i formen | Skjerm og nettside |
+| «Melet/saltet/vannet kommer ikke ut» (v1) | Når vekta ikke øker under dosering | Skjerm, summer og mobil |
+| «Døra ble åpnet …» (v1) | Når døra åpnes mens motoren går | Skjerm og rød LED |
 | «Deigen er klar for forming» | Slutten av bulkhevingen, helst innenfor tillatt tidsrom. Påminnelse etter 1 t. | Display, LED, summer og mobil (ntfy eller Home Assistant) |
 | Feil eller avvik | Umiddelbart (motor, temperatur, nødstopp, strømbrudd) | Mobil og lys/lyd på maskinen |
 
@@ -161,8 +180,8 @@ Mange nyere ovner kan fjernstyres (via produsentens app eller Home Assistant). M
 ## 7. Åpne arkitekturspørsmål
 
 - ~~Kjøling i K2~~ Avgjort: ingen kjøling (ADR-007).
-- ~~Hvordan kobles kroken og lokket?~~ v0: kroken henger i lokket med klokobling og tas av for vask. Lokket vippes opp etter at kroken er parkert (ADR-008).
+- ~~Hvordan kobles kroken og lokket?~~ v1: eltebladet i brødformen drives nedenfra. Taket er fast, og formen tas ut gjennom døra (ADR-010).
 - ~~Hevekurv i kammeret?~~ Avgjort: kurven står i brukerens kjøleskap.
-- Sikkerhetsvakt: I v0 gjøres lag 2 med lokkbryter, nødstopp og reléer, uten egen MCU. Trengs en egen watchdog i v1?
-- Brukergrensesnitt: v0 har to knapper, OLED, LED og nettside. Trengs en app?
-- Hvordan blir maskinen lavere enn 45 cm (v0 er 54 cm)?
+- Sikkerhetsvakt: I v1 gjøres lag 2 med dørbryter, nødstopp, KSD301 og reléer, uten egen MCU. Trengs en egen watchdog senere?
+- Brukergrensesnitt: v1 har dreieknapp med trykk, OLED, LED, nettside og Home Assistant. Trengs en app?
+- Hvordan blir maskinen lavere enn 45 cm (v1 er 53 cm)? Skrå melskrue eller mindre melbeholder i v2?

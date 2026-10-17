@@ -4,36 +4,36 @@
 
 ## Sammendrag
 
-> **Oppdatert 2026-10-16:** v0 bygges nå ([ADR-008](beslutninger/ADR-008-v0-design.md)). Den fullstendige stykklisten med antall, spesifikasjon og søkeord ligger i [`hardware/v0/stykkliste.csv`](../hardware/v0/stykkliste.csv). Hevekabinettet (K3) og brødmaskinskjelettet (K1) er valgfrie, og kjøling trengs ikke ([ADR-007](beslutninger/ADR-007-ingen-kjoling.md)).
+> **Oppdatert 2026-10-17:** v0 bygges ikke. Prosjektet går rett på prototype v1 ([ADR-010](beslutninger/ADR-010-v1-arkitektur.md)). Den fullstendige stykklisten med antall, spesifikasjon og søkeord ligger i [`hardware/v1/stykkliste.csv`](../hardware/v1/stykkliste.csv). Hevekabinettet (K3) og brødmaskinskjelettet (K1) er valgfrie, og kjøling trengs ikke ([ADR-007](beslutninger/ADR-007-ingen-kjoling.md)).
 
 | Fase | Innhold | Anslag (kr) |
 |---|---|---|
 | 0 | Måleverktøy for referansebrød | 1 450–3 850 (650–1 350 uten pH-meter) |
 | 1 | Måleoppsett for eksperimentene (uten hevekabinett) | 1 000–3 000 |
-| **2** | **v0 ([stykkliste](../hardware/v0/stykkliste.csv))** | **ca. 8 900 + frakt og ca. 30 % buffer = 10 000–12 000** |
-| 3–4 | Prototype v1: dosering, kretskort og forbedringer | 3 000–6 000 |
-| **Totalt** | | **ca. 15 000–25 000** |
+| **2** | **Prototype v1 ([stykkliste](../hardware/v1/stykkliste.csv))** | **ca. 17 800 + frakt og ca. 30 % buffer = 21 000–24 000** |
+| 3–4 | Kalibrering, reservedeler og forbedringer (f.eks. kretskort) | 2 000–5 000 |
+| **Totalt** | | **ca. 25 000–35 000** |
 
 Fordi stekingen skjer i vanlig ovn ([ADR-006](beslutninger/ADR-006-steking-i-vanlig-ovn.md)) og den kalde hevingen i ditt eget kjøleskap ([ADR-007](beslutninger/ADR-007-ingen-kjoling.md)), trengs verken stekemodul, gryte, varmeelementer for høy temperatur eller kjøling.
 
-## Fase 2 – v0 (kjøp nå)
+## Fase 2 – prototype v1 (kjøp nå)
 
-Fra [`hardware/v0/stykkliste.csv`](../hardware/v0/stykkliste.csv):
+Fra [`hardware/v1/stykkliste.csv`](../hardware/v1/stykkliste.csv):
 
 | Gruppe | Ca. pris (kr) |
 |---|---|
-| Ramme: 2020-profiler, ACM-plater kappet etter DXF, XPS, stramlåser | 2 400 |
-| Bolle og varme: rustfri bolle, aluminiumsplate, silikonelement 50 W, KSD301, termosikringer | 700 |
-| Drivverk: planetgirmotor 24 V, klokobling, rustfrie lager, krokstang, fjærer | 1 300 |
-| Elektronikk: 24 V-strømforsyning, ESP32-S3, BTS7960, INA226, reléer, sikringer, nødstopp, sensorer, OLED | 2 200 |
-| Kabler og kontakter | 700 |
-| Skruer og muttere | 850 |
-| Filament (PETG ca. 1,1 kg, litt TPU) | 700 |
-| **Sum** | **ca. 8 900** |
+| Ramme: 2020-profiler, ACM-plater og aluminiumsplater kappet etter DXF, XPS, dørpakning | 4 600 |
+| Form og drivverk: brukt Panasonic-brødmaskin (giver), girmotor 120 W, reimskiver og reim, aksel, lager, lastcelle | 3 000 |
+| Dosering: steppere, rustfrie aksler og lager, servoer, peristaltisk pumpe, slanger, vanntank | 2 300 |
+| Varme: silikonmatte 60 W, kjøleprofil, vifte, KSD301, termosikringer | 700 |
+| Elektronikk: Mean Well GST220A24, ESP32-S3, Pololu G2, TMC2209, DRV8871, reléer, sikringer, nødstopp, sensorer, OLED, ledninger | 4 800 |
+| Kamera: Pi Zero 2 W, Camera Module 3 Wide, kabel, minnekort, lys | 900 |
+| Festemidler og filament (PETG ca. 1,2 kg, derav naturfarget for matkontakt) | 1 500 |
+| **Sum** | **ca. 17 800** |
 
-**Valgfritt kamera** for E14, E17 og E18 ([ADR-009](beslutninger/ADR-009-kamera.md)): Raspberry Pi Zero 2 W, Camera Module 3 Wide, minnekort, glassvindu, varmemotstand og hvitt LED-lys, ca. 900–1 100 kr.
+Bestill giveren, girmotoren, lastcella og strømforsyningen først. Formen og koblingen må måles før du printer (se [byggeveiledningen](../hardware/v1/README.md#3-skaff-en-giver-og-mål-delene)).
 
-Bestill bollen, motoren og varmeelementet først. De må måles før du printer (se [byggeveiledningen](../hardware/v0/README.md#2-mål-delene-dine-før-du-printer)).
+v0-stykklisten (ca. 8 900 kr) ligger fortsatt i [`hardware/v0/stykkliste.csv`](../hardware/v0/stykkliste.csv) som referanse.
 
 ## Fase 0 – måleverktøy (kjøp nå)
 
@@ -85,9 +85,9 @@ Har allerede (antagelig): kjøkkenvekt (1 g), jerngryte, hevekurv, bakeskraper o
 | Kabinett eller koblingsboks for elektronikken (utenfor kammeret) | 200–400 |
 | Mekanisk tilpasning: brakett, gjennomføringer og tetninger i kabinettet | 200–500 |
 
-## Fase 3–4 – prototype v1 (K2, grovt)
+## Opprinnelig anslag for prototype v1 (K2, utdatert)
 
-> Skrevet før ADR-007 og ADR-008. Kjøling utgår, og mye av resten finnes allerede i v0. Ny pris anslås etter at v0 er testet.
+> Skrevet før ADR-007, ADR-008 og ADR-010. Kjøling utgår, og den faktiske stykklisten for v1 står over. Tabellen er beholdt for sporbarhet.
 
 | Delsystem | Innhold | Anslag (kr) |
 |---|---|---|
@@ -105,7 +105,7 @@ Har allerede (antagelig): kjøkkenvekt (1 g), jerngryte, hevekurv, bakeskraper o
 
 Disse trenger du ikke eie, men du trenger tilgang til dem:
 
-- 3D-skriver (bare for deler utenfor matkontakt)
+- 3D-skriver med dyse av rustfritt stål (ingen printede deler berører deigen, men noen berører tørt mel og salt)
 - Loddestasjon og multimeter
 - Bor og gjengeverktøy
 - Gjerne et makerspace med platebearbeiding

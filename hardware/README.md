@@ -1,14 +1,15 @@
 # Maskinvare
 
-**v0 er klar til bygging: [byggeveiledning](v0/README.md).**
+**v1 er klar til bygging: [byggeveiledning](v1/README.md)** ([ADR-010](../docs/beslutninger/ADR-010-v1-arkitektur.md)). v0 bygges ikke, men beholdes som referanse.
 
 | Mappe | Innhold |
 |---|---|
-| [`spec/`](spec/v0.yaml) | Parameterfila som alle mål leses fra |
-| [`cad/`](cad/README.md) | build123d-koden som lager STL, STEP, DXF, bilder og sjekkrapport |
-| [`v0/`](v0/README.md) | Det genererte designet, stykkliste, koblingsskjema og byggeveiledning |
+| [`spec/`](spec/) | Parameterfilene som alle mål leses fra ([`v1.yaml`](spec/v1.yaml), [`v0.yaml`](spec/v0.yaml)) |
+| [`cad/`](cad/README.md) | build123d-koden som lager STL, STEP, DXF, bilder og sjekkrapport ([`cad/v1/`](cad/v1/) for v1) |
+| [`v1/`](v1/README.md) | Det genererte designet, stykkliste, koblingsskjema og byggeveiledning |
+| [`v0/`](v0/README.md) | Det første designet (referanse) |
 
-Opprinnelig planlagt struktur (før ADR-008). Elektronikken i v0 er bare 24 V, så det blir ikke noe eget 230 V-kort:
+Opprinnelig planlagt struktur (før ADR-008). Elektronikken i v0 og v1 er bare 24 V, så det blir ikke noe eget 230 V-kort:
 
 ```text
 hardware/
